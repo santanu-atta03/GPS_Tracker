@@ -1,10 +1,11 @@
 import React from 'react'
 import { Button } from "@/components/ui/button"
+import Navbar from '../shared/Navbar'
 const Home = () => {
   return (
-    <div >
-      <Button>Login</Button>
-    </div>
+    <>
+    <Navbar/>
+    </>
   )
 }
 
