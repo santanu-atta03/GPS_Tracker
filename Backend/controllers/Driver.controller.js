@@ -36,3 +36,31 @@ export const createDriver = async (req, res) => {
     console.log(error);
   }
 };
+
+export const userFindByEmail = async (req, res) => {
+  try {
+    const userId = req.auth.sub;
+    let user = await Driver.findOne({ auth0Id: userId });
+    if (!user) {
+      return res.status(404).json({
+        message: "login first",
+        success: false,
+      });
+    }
+    const email = await Driver.findOne({ email: user.email });
+    if (!email) {
+      return req.status(404).json({
+        message: "user not exict",
+        success: false,
+      });
+    }
+    return res.status(200).json({
+      message: "user alredy exicet",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
