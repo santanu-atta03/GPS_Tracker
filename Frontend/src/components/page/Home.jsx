@@ -16,6 +16,9 @@ import { useState } from 'react';
 import { mockBusData } from '../../data/mockBusData';
 import { routes } from '../../data/mockBusData';
 
+import Navbar from '../shared/Navbar'
+
+
 const Home = ({ onSearch, onBusSelect }) => {
   const [searchType, setSearchType] = useState('route'); // 'route' or 'busId'
   const [fromLocation, setFromLocation] = useState('');
@@ -49,6 +52,7 @@ const Home = ({ onSearch, onBusSelect }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
       {/* Header */}
+      <Navbar />
       <header className="bg-white shadow-lg border-b border-green-100">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
