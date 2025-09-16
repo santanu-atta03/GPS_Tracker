@@ -5,11 +5,20 @@ const busSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  route: [
+   route: [
     {
-      type: { type: String, enum: ["Point"], default: "Point" },
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
       coordinates: {
-        type: [Number],
+        type: [Number], 
+        required: true,
+      },
+      timestamp: {
+        type: Date,
+        default: Date.now,  
       },
     },
   ],
