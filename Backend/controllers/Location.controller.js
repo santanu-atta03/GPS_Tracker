@@ -10,7 +10,9 @@ export const updatelocation = async (req, res) => {
         .json({ success: false, message: "Missing fields" });
     }
 
+ 
     const coordinates = [latitude ,longitude];  
+ 
 
     // Find bus by deviceID
     let bus = await Location.findOne({ deviceID });
@@ -47,7 +49,7 @@ export const updatelocation = async (req, res) => {
 
 export const getLocation = async (req, res) => {
   try {
-    const deviceID = req.params.deviceID;
+    const {deviceID} = req.params;
     if (!deviceID) {
       return res.status(404).json({
         message: "deviceID not found",

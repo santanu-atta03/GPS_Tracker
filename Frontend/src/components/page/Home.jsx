@@ -17,16 +17,20 @@ import { mockBusData } from '../../data/mockBusData';
 import { routes } from '../../data/mockBusData';
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from '../shared/Navbar'
+import { getBusLocationByDeviceId } from '../../services/operations/busAPI';
+import { useNavigate } from 'react-router-dom';
 
+ 
 
 const Home = ({ onSearch, onBusSelect }) => {
     const { getAccessTokenSilently } = useAuth0();
+ 
   const [searchType, setSearchType] = useState('route'); // 'route' or 'busId'
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
-  const [busId, setBusId] = useState('');
+  const [deviceID, setdeviceID] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-
+  const navigate = useNavigate();
   const locations = ['Kolkata Station', 'Esplanade', 'Park Street', 'Sealdah', 'Dumdum', 'Barrackpore'];
 
   const swapLocations = () => {
@@ -46,46 +50,31 @@ const Home = ({ onSearch, onBusSelect }) => {
     }
   };
 
-  const handleSearch = () => {
+  const handleSearch = async() => {
     if (searchType === 'route' && fromLocation && toLocation) {
       const foundRoutes = routes.filter(route => 
         route.from === fromLocation && route.to === toLocation
       );
       const buses = foundRoutes.flatMap(route => 
-        route.buses.map(busId => mockBusData[busId])
+        route.buses.map(deviceID => mockBusData[deviceID])
       );
       setSearchResults(buses);
-    } else if (searchType === 'busId' && busId) {
-      const bus = mockBusData[busId.toUpperCase()];
-      setSearchResults(bus ? [bus] : []);
+    } else if (searchType === 'busId' && deviceID) {
+        try{
+          const response = await getBusLocationByDeviceId(deviceID);
+          console.log("course details res: ", response);
+          setSearchResults(response.success ? [response?.latestLocations] : []);
+          setSearchResults(response ? [response] : []);
+        }catch(err){
+          console.log("Could not fetch bus Details")
+        }
+      
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
-      {/* Header */}
       <Navbar />
-      <header className="bg-white shadow-lg border-b border-green-100">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
-                <Navigation className="w-7 h-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
-                  BusTracker Pro
-                </h1>
-                <p className="text-gray-600 text-sm">Real-time bus tracking system</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2 bg-green-50 rounded-full px-4 py-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-green-700">Live Tracking Active</span>
-            </div>
-          </div>
-        </div>
-      </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Search Section */}
@@ -94,7 +83,7 @@ const Home = ({ onSearch, onBusSelect }) => {
           
           {/* Search Type Toggle */}
           <div className="flex justify-center mb-6">
-            <div className="bg-gray-100 rounded-full p-1 flex">
+            <div className="bg-gray-100 rounded-full p-2 flex transition-all duration-200">
               <button
                 onClick={() => setSearchType('route')}
                 className={`px-6 py-2 rounded-full transition-all duration-300 ${
@@ -165,8 +154,8 @@ const Home = ({ onSearch, onBusSelect }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">Bus ID</label>
               <input
                 type="text"
-                value={busId}
-                onChange={(e) => setBusId(e.target.value)}
+                value={deviceID}
+                onChange={(e) => setdeviceID(e.target.value)}
                 placeholder="Enter Bus ID (e.g., BUS001)"
                 className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               />
@@ -190,7 +179,7 @@ const Home = ({ onSearch, onBusSelect }) => {
             {searchResults.map(bus => (
               <div
                 key={bus.id}
-                onClick={() => onBusSelect(bus)}
+                onClick={() => navigate(`/bus/${bus.deviceID}`)}
                 className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 border border-green-100 overflow-hidden"
               >
                 <div className="bg-gradient-to-r from-green-500 to-green-600 p-4">
@@ -226,7 +215,7 @@ const Home = ({ onSearch, onBusSelect }) => {
           </div>
         )}
 
-        {searchResults.length === 0 && (fromLocation && toLocation) || busId ? (
+        {searchResults.length === 0 && (fromLocation && toLocation) || deviceID ? (
           <div className="text-center py-12">
             <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-medium text-gray-600 mb-2">No buses found</h3>
