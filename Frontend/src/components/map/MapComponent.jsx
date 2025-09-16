@@ -1,113 +1,3 @@
-// import React, { useState, useEffect, useRef } from 'react';
-// import { 
-//   Search, 
-//   ArrowUpDown, 
-//   MapPin, 
-//   Clock, 
-//   User, 
-//   Navigation, 
-//   ChevronLeft, 
-//   Zap, 
-//   Route, 
-//   AlertCircle 
-// } from 'lucide-react';
-
-
-
-// const routes = [
-//   { from: 'Kolkata Station', to: 'Barrackpore', buses: ['BUS001'] },
-//   { from: 'Esplanade', to: 'Sealdah', buses: ['BUS002'] },
-//   { from: 'Park Street', to: 'Dumdum', buses: ['BUS001', 'BUS002'] }
-// ];
-
-// // Simple Map Component (using SVG for demonstration)
-// const MapComponent = ({ route, currentLocation, busId }) => {
-//   const mapRef = useRef(null);
-//   const [animatedPosition, setAnimatedPosition] = useState(0);
-
-//   useEffect(() => {
-//     const interval = setInterval(() => {
-//       setAnimatedPosition(prev => (prev + 1) % 100);
-//     }, 2000);
-//     return () => clearInterval(interval);
-//   }, []);
-
-//   return (
-//     <div className="relative w-full h-64 bg-gradient-to-br from-green-50 to-blue-50 rounded-xl overflow-hidden border-2 border-green-100">
-//       <svg width="100%" height="100%" viewBox="0 0 400 200" className="absolute inset-0">
-//         {/* Background grid */}
-//         <defs>
-//           <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-//             <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" strokeWidth="0.5"/>
-//           </pattern>
-//         </defs>
-//         <rect width="100%" height="100%" fill="url(#grid)" />
-        
-//         {/* Route line */}
-//         {route && route.length > 1 && (
-//           <polyline
-//             points={route.map((point, i) => `${50 + i * 80},${100 + Math.sin(i) * 30}`).join(' ')}
-//             fill="none"
-//             stroke="#10b981"
-//             strokeWidth="4"
-//             strokeDasharray="5,5"
-//           />
-//         )}
-        
-//         {/* Route points */}
-//         {route && route.map((point, index) => (
-//           <g key={index}>
-//             <circle
-//               cx={50 + index * 80}
-//               cy={100 + Math.sin(index) * 30}
-//               r="6"
-//               fill={index === 0 ? "#ef4444" : index === route.length - 1 ? "#10b981" : "#3b82f6"}
-//               stroke="white"
-//               strokeWidth="2"
-//             />
-//             <text
-//               x={50 + index * 80}
-//               y={85 + Math.sin(index) * 30}
-//               textAnchor="middle"
-//               className="text-xs fill-gray-700 font-medium"
-//             >
-//               {point.name}
-//             </text>
-//           </g>
-//         ))}
-        
-//         {/* Animated bus */}
-//         {route && route.length > 1 && (
-//           <g>
-//             <circle
-//               cx={50 + (animatedPosition / 100) * (route.length - 1) * 80}
-//               cy={100 + Math.sin((animatedPosition / 100) * (route.length - 1)) * 30}
-//               r="8"
-//               fill="#fbbf24"
-//               stroke="#f59e0b"
-//               strokeWidth="2"
-//             />
-//             <text
-//               x={50 + (animatedPosition / 100) * (route.length - 1) * 80}
-//               y={105 + Math.sin((animatedPosition / 100) * (route.length - 1)) * 30}
-//               textAnchor="middle"
-//               className="text-xs fill-white font-bold"
-//             >
-//               🚌
-//             </text>
-//           </g>
-//         )}
-//       </svg>
-      
-//       <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-1 text-sm font-medium text-gray-700">
-//         Live Tracking
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default MapComponent
-
 import React, { useEffect, useState } from 'react';
 import {
   MapContainer,
@@ -119,7 +9,6 @@ import {
   Circle
 } from 'react-leaflet';
 import L from 'leaflet';
-import markerIconPng from 'leaflet/dist/images/marker-icon.png';
 
 // Custom Bus Icon (more realistic)
 const busIcon = new L.DivIcon({
@@ -201,6 +90,24 @@ const endIcon = new L.DivIcon({
   popupAnchor: [0, -17.5]
 });
 
+// Route point icon (small dot for route updates)
+const routePointIcon = new L.DivIcon({
+  html: `
+    <div style="
+      background: linear-gradient(45deg, #8b5cf6, #7c3aed);
+      border: 2px solid white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      box-shadow: 0 2px 6px rgba(139, 92, 246, 0.4);
+    "></div>
+  `,
+  className: 'custom-route-marker',
+  iconSize: [16, 16],
+  iconAnchor: [8, 8],
+  popupAnchor: [0, -8]
+});
+
 // Fit bounds component
 const FitBounds = ({ positions }) => {
   const map = useMap();
@@ -211,7 +118,7 @@ const FitBounds = ({ positions }) => {
       const bounds = L.latLngBounds(positions);
       // Fit bounds with more padding and minimum zoom for street details
       map.fitBounds(bounds, { 
-        padding: [30, 30],
+        padding: [50, 50],
         maxZoom: 16 // Ensure we can see street names
       });
     } catch (error) {
@@ -236,82 +143,133 @@ const UpdateMapView = ({ currentLocation }) => {
   return null;
 };
 
-const MapComponent = ({ routeCoords, currentLocation, busId }) => {
+const MapComponent = ({ routeCoords, currentLocation, busId, busData }) => {
   const [routeHistory, setRouteHistory] = useState([]);
+  
 
-  // Process route data
+  // Process route data - Fixed for your data structure
   useEffect(() => {
     if (!routeCoords || !Array.isArray(routeCoords)) {
-      setRouteHistory([]);
+      // If routeCoords is not provided, try to get it from busData
+      if (busData && busData.route && Array.isArray(busData.route)) {
+        const processedRoute = busData.route
+          .map((point, index) => {
+            if (!point.coordinates || point.coordinates.length < 2) return null;
+            
+            // Your coordinates are already in [lat, lng] format, so use them directly
+            const [lat, lng] = point.coordinates;
+            
+            console.log(`Route Point ${index + 1} - Lat: ${lat}, Lng: ${lng}`);
+            
+            if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+              console.warn('Invalid coordinates:', { lat, lng });
+              return null;
+            }
+            
+            return {
+              position: [lat, lng], // Leaflet expects [lat, lng]
+              timestamp: point.timestamp,
+              _id: point._id || `route_${index}`
+            };
+          })
+          .filter(Boolean)
+          .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+        setRouteHistory(processedRoute);
+        console.log("Processed Route History:", processedRoute);
+      } else {
+        setRouteHistory([]);
+      }
       return;
     }
 
-    // Convert route coordinates from [lng, lat] to [lat, lng] for Leaflet
+    // Process routeCoords if provided directly
     const processedRoute = routeCoords
-      .map(point => {
+      .map((point, index) => {
         if (!point.coordinates || point.coordinates.length < 2) return null;
-        const [lng, lat] = point.coordinates;
-        // Validate coordinates
+        
+        // Assuming coordinates are in [lat, lng] format based on your data
+        const [lat, lng] = point.coordinates;
+        
         if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
           console.warn('Invalid coordinates:', { lat, lng });
           return null;
         }
+        
         return {
           position: [lat, lng],
           timestamp: point.timestamp,
-          _id: point._id
+          _id: point._id || `route_${index}`
         };
       })
       .filter(Boolean)
-      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)); // Sort by timestamp
+      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
     setRouteHistory(processedRoute);
-  }, [routeCoords]);
+  }, [routeCoords, busData]);
 
-  // Convert current location
+  // Convert current location - Fixed for your data structure
   const convertedCurrentLocation = React.useMemo(() => {
-    if (!currentLocation || !Array.isArray(currentLocation) || currentLocation.length < 2) {
+    let location = currentLocation;
+    
+    // If currentLocation is not provided, try to get it from busData
+    if (!location && busData && busData.location && busData.location.coordinates) {
+      location = busData.location.coordinates;
+    }
+    
+    if (!location || !Array.isArray(location) || location.length < 2) {
       return null;
     }
-    const [lng, lat] = currentLocation;
+    
+    // Your coordinates are in [lat, lng] format
+    const [lat, lng] = location;
+    console.log("Current Location - Lat:", lat, "Lng:", lng);
+    
     if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
       console.warn('Invalid current location:', { lat, lng });
       return null;
     }
-    return [lat, lng];
-  }, [currentLocation]);
+    
+    return [lat, lng]; // Leaflet expects [lat, lng]
+  }, [currentLocation, busData]);
 
   // Get route positions for polyline
   const routePositions = routeHistory.map(point => point.position);
 
-  // Add current location to route if it's different from the last route point
+  // Create complete route including current location
   const allPositions = React.useMemo(() => {
-    if (!convertedCurrentLocation) return routePositions;
+    let positions = [...routePositions];
     
-    const lastRoutePoint = routePositions[routePositions.length - 1];
-    if (!lastRoutePoint) return [convertedCurrentLocation];
-    
-    // Check if current location is significantly different from last route point
-    const distance = Math.sqrt(
-      Math.pow(lastRoutePoint[0] - convertedCurrentLocation[0], 2) +
-      Math.pow(lastRoutePoint[1] - convertedCurrentLocation[1], 2)
-    );
-    
-    if (distance > 0.0001) { // ~10 meters threshold
-      return [...routePositions, convertedCurrentLocation];
+    if (convertedCurrentLocation) {
+      const lastRoutePoint = positions[positions.length - 1];
+      if (!lastRoutePoint) {
+        positions = [convertedCurrentLocation];
+      } else {
+        // Check if current location is significantly different from last route point
+        const distance = Math.sqrt(
+          Math.pow(lastRoutePoint[0] - convertedCurrentLocation[0], 2) +
+          Math.pow(lastRoutePoint[1] - convertedCurrentLocation[1], 2)
+        );
+        
+        if (distance > 0.0001) { // ~10 meters threshold
+          positions.push(convertedCurrentLocation);
+        }
+      }
     }
     
-    return routePositions;
+    console.log("All Positions for Route:", positions);
+    return positions;
   }, [routePositions, convertedCurrentLocation]);
 
   // Get start and end points
   const startPoint = routePositions[0];
   const endPoint = convertedCurrentLocation || routePositions[routePositions.length - 1];
 
-  // Default center for map
-  const mapCenter = convertedCurrentLocation || startPoint || [22.5726, 88.3639]; // Default to Kolkata
+  // Default center for map (Kolkata coordinates as fallback)
+  const mapCenter = convertedCurrentLocation || startPoint || [22.5726, 88.3639];
 
-  if (!routeCoords && !currentLocation) {
+
+  if (!busData && !currentLocation && (!routeCoords || routeCoords.length === 0)) {
     return (
       <div className="flex items-center justify-center h-72 bg-gray-100 rounded-xl">
         <p className="text-gray-500">No route data available</p>
@@ -323,7 +281,7 @@ const MapComponent = ({ routeCoords, currentLocation, busId }) => {
     <div className="relative">
       <MapContainer
         center={mapCenter}
-        zoom={16}
+        zoom={startPoint ? 14 : 12}
         scrollWheelZoom={true}
         zoomControl={false}
         style={{ 
@@ -335,28 +293,17 @@ const MapComponent = ({ routeCoords, currentLocation, busId }) => {
         }}
         className="leaflet-container"
       >
-        {/* Multiple tile layer options for rich street details */}
-        
-        {/* Option 1: ESRI World Street Map - Best for street names */}
-        <TileLayer
+        {/* ESRI World Street Map - Best for street names */}
+        {/* <TileLayer
           attribution='&copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ'
           url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'
           maxZoom={19}
-        />
+        /> */}
 
-        {/* Option 2: OpenStreetMap with higher zoom for street details - Uncomment to use instead */}
-        {/* <TileLayer
+        <TileLayer
           attribution='&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={19}
-        /> */}
-
-        {/* Option 3: CartoDB with labels - Clean modern look - Uncomment to use instead */}
-        {/* <TileLayer
-          attribution='&copy; <a href="https://carto.com/">CARTO</a> contributors'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-          maxZoom={19}
-        /> */}
+        />
 
         {/* Fit bounds to show entire route */}
         {allPositions.length > 0 && <FitBounds positions={allPositions} />}
@@ -380,7 +327,6 @@ const MapComponent = ({ routeCoords, currentLocation, busId }) => {
               color="#3b82f6"
               weight={5}
               opacity={0.9}
-              dashArray="10, 5"
             />
             {/* Active route line (animated effect) */}
             <Polyline
@@ -392,26 +338,22 @@ const MapComponent = ({ routeCoords, currentLocation, busId }) => {
           </>
         )}
 
-        {/* Route History Points - Smaller, more subtle circles */}
+        {/* Route History Points - Small markers for each route update */}
         {routeHistory.map((point, index) => (
-          <Circle
+          <Marker
             key={point._id || index}
-            center={point.position}
-            radius={15}
-            fillColor="#8b5cf6"
-            color="#7c3aed"
-            weight={2}
-            opacity={0.6}
-            fillOpacity={0.4}
+            position={point.position}
+            icon={routePointIcon}
           >
             <Popup>
               <div className="text-sm bg-white rounded-lg p-3 shadow-lg">
-                <p className="font-semibold text-gray-800">📍 Route Point {index + 1}</p>
+                <p className="font-semibold text-purple-600">📍 Route Update #{index + 1}</p>
                 <p className="text-gray-600">⏰ {new Date(point.timestamp).toLocaleString()}</p>
-                <p className="text-gray-500 text-xs">📍 {point.position[0].toFixed(6)}, {point.position[1].toFixed(6)}</p>
+                <p className="text-gray-500 text-xs">📍 Lat: {point.position[0].toFixed(6)}, Lng: {point.position[1].toFixed(6)}</p>
+                <p className="text-xs text-gray-400 mt-1">Bus location when route was updated</p>
               </div>
             </Popup>
-          </Circle>
+          </Marker>
         ))}
 
         {/* Start Point Marker */}
@@ -421,7 +363,7 @@ const MapComponent = ({ routeCoords, currentLocation, busId }) => {
               <div className="bg-white rounded-lg p-4 shadow-lg min-w-[200px]">
                 <h3 className="font-bold text-green-600 mb-2">🚏 Journey Start</h3>
                 <p className="text-sm text-gray-700"><strong>Bus ID:</strong> {busId}</p>
-                <p className="text-sm text-gray-600">📍 {startPoint[0].toFixed(6)}, {startPoint[1].toFixed(6)}</p>
+                <p className="text-sm text-gray-600">📍 Lat: {startPoint[0].toFixed(6)}, Lng: {startPoint[1].toFixed(6)}</p>
                 <p className="text-xs text-gray-500 mt-2">This is where the journey began</p>
               </div>
             </Popup>
@@ -435,25 +377,12 @@ const MapComponent = ({ routeCoords, currentLocation, busId }) => {
               <div className="bg-white rounded-lg p-4 shadow-lg min-w-[220px]">
                 <h3 className="font-bold text-blue-600 mb-2">🚌 Live Bus Location</h3>
                 <p className="text-sm text-gray-700"><strong>Bus ID:</strong> {busId}</p>
-                <p className="text-sm text-gray-600">📍 {convertedCurrentLocation[0].toFixed(6)}, {convertedCurrentLocation[1].toFixed(6)}</p>
+                <p className="text-sm text-gray-600">📍 Lat: {convertedCurrentLocation[0].toFixed(6)}, Lng: {convertedCurrentLocation[1].toFixed(6)}</p>
+                <p className="text-xs text-gray-500 mb-2">Last Updated: {busData?.lastUpdated ? new Date(busData.lastUpdated).toLocaleString() : 'Unknown'}</p>
                 <div className="flex items-center mt-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
-                  <span className="text-xs text-green-600 font-medium">Currently Moving</span>
+                  <span className="text-xs text-green-600 font-medium">Currently Active</span>
                 </div>
-              </div>
-            </Popup>
-          </Marker>
-        )}
-
-        {/* Destination Point (if bus has completed route) */}
-        {endPoint && endPoint !== convertedCurrentLocation && (
-          <Marker position={endPoint} icon={endIcon}>
-            <Popup>
-              <div className="bg-white rounded-lg p-4 shadow-lg min-w-[200px]">
-                <h3 className="font-bold text-red-600 mb-2">🎯 Last Position</h3>
-                <p className="text-sm text-gray-700"><strong>Bus ID:</strong> {busId}</p>
-                <p className="text-sm text-gray-600">📍 {endPoint[0].toFixed(6)}, {endPoint[1].toFixed(6)}</p>
-                <p className="text-xs text-gray-500 mt-2">Last known location</p>
               </div>
             </Popup>
           </Marker>
@@ -469,26 +398,33 @@ const MapComponent = ({ routeCoords, currentLocation, busId }) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-sm text-gray-700">Route Traveled</span>
+              <span className="text-sm text-gray-700">Route Points</span>
             </div>
+            <span className="text-sm font-medium text-gray-800">{routeHistory.length}</span>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-              <span className="text-sm text-gray-700">Checkpoints</span>
+              <span className="text-sm text-gray-700">Updates</span>
             </div>
             <span className="text-sm font-medium text-gray-800">{routeHistory.length}</span>
           </div>
           <hr className="border-gray-200 my-2" />
           <div className="text-xs text-gray-600 space-y-1">
             <div className="flex justify-between">
-              <span>Distance:</span>
-              <span className="font-medium">~{(allPositions.length * 0.3).toFixed(1)} km</span>
+              <span>Est. Distance:</span>
+              <span className="font-medium">~{(allPositions.length * 0.5).toFixed(1)} km</span>
             </div>
             <div className="flex justify-between">
-              <span>Speed:</span>
-              <span className="font-medium">~45 km/h</span>
+              <span>Route Updates:</span>
+              <span className="font-medium">{routeHistory.length}</span>
             </div>
+            {busData?.lastUpdated && (
+              <div className="flex justify-between">
+                <span>Last Update:</span>
+                <span className="font-medium">{new Date(busData.lastUpdated).toLocaleTimeString()}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -496,18 +432,21 @@ const MapComponent = ({ routeCoords, currentLocation, busId }) => {
       {/* Control Panel */}
       <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md rounded-xl p-3 shadow-lg border border-gray-200">
         <div className="flex flex-col space-y-2">
-          <button 
-            onClick={() => {/* Add zoom in functionality */}}
-            className="w-8 h-8 bg-white hover:bg-gray-50 border border-gray-300 rounded-md flex items-center justify-center text-gray-700 text-lg font-bold"
-          >
-            +
-          </button>
-          <button 
-            onClick={() => {/* Add zoom out functionality */}}
-            className="w-8 h-8 bg-white hover:bg-gray-50 border border-gray-300 rounded-md flex items-center justify-center text-gray-700 text-lg font-bold"
-          >
-            −
-          </button>
+          <div className="text-xs text-gray-600 font-medium mb-2">Map Controls</div>
+          <div className="space-y-1">
+            <div className="flex items-center text-xs text-gray-500">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+              <span>Route Path</span>
+            </div>
+            <div className="flex items-center text-xs text-gray-500">
+              <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+              <span>Updates</span>
+            </div>
+            <div className="flex items-center text-xs text-gray-500">
+              <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+              <span>Live Position</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

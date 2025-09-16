@@ -27,9 +27,7 @@ const BusDetailsPage = () => {
       try {
         // Replace this with your actual fetch function
         const response = await getBusLocationByDeviceId(deviceID);
-        console.log("Printing response in bus : ",response)
         setBus(response);
-        console.log("Setting bus : ",bus)
         if (!response) return;
 
         const newLocation = response.location.coordinates;
@@ -60,7 +58,6 @@ const BusDetailsPage = () => {
     // Cleanup interval on unmount or deviceID change
     return () => clearInterval(intervalId);
   }, [deviceID]);
-  console.log("Bus details : ", bus)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
