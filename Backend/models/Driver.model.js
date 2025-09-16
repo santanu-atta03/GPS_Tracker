@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const DriverDetails = new mongoose.Schema({
+  auth0Id: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   name: {
     type: String,
     required: true,

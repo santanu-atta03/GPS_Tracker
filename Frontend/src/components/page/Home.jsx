@@ -15,11 +15,12 @@ import {
 import { useState } from 'react';
 import { mockBusData } from '../../data/mockBusData';
 import { routes } from '../../data/mockBusData';
-
+import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from '../shared/Navbar'
 
 
 const Home = ({ onSearch, onBusSelect }) => {
+    const { getAccessTokenSilently } = useAuth0();
   const [searchType, setSearchType] = useState('route'); // 'route' or 'busId'
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
@@ -32,6 +33,17 @@ const Home = ({ onSearch, onBusSelect }) => {
     const temp = fromLocation;
     setFromLocation(toLocation);
     setToLocation(temp);
+  };
+   const updateProfile = async () => {
+    try {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v3",
+      });
+      console.log(token);
+      
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleSearch = () => {
@@ -247,8 +259,14 @@ const Home = ({ onSearch, onBusSelect }) => {
             <h3 className="text-lg font-bold text-gray-800 mb-2">Route Planning</h3>
             <p className="text-gray-600">Find the best routes and connections for your journey</p>
           </div>
+
         </div>
       </main>
+      <div> 
+        <Button onClick={updateProfile}>
+            auth0
+        </Button>
+      </div>
     </div>
   );
 };
