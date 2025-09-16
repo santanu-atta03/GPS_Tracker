@@ -47,7 +47,7 @@ export const updatelocation = async (req, res) => {
 
 export const getLocation = async (req, res) => {
   try {
-    const deviceID = req.params.deviceID;
+    const {deviceID} = req.body;
     if (!deviceID) {
       return res.status(404).json({
         message: "deviceID not found",
