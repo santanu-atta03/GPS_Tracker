@@ -1,22 +1,33 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const busSchema = new mongoose.Schema({
-    busID : {
-        type:String,
-        required:true,
+  deviceID: {
+    type: String,
+    required: true,
+  },
+  route: [
+    {
+      type: { type: String, enum: ["Point"], default: "Point" },
+      coordinates: {
+        type: [Number],
+      },
     },
-    route : {
-        type : String,
-
+  ],
+  location: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      default: "Point",
     },
-    location: {
-        type: { type: String, enum: ["Point"], default: "Point" },
-        coordinates: [Number],
+    coordinates: {
+      type: [Number],
     },
-    lastUpdated : {
-        type : Date,
-        default : Date.now(),
-    }
+  },
+  lastUpdated: {
+    type: Date,
+    default: Date.now,
+  },
 });
-
-module.exports = mongoose.model("Loacation",busSchema);
+ 
+const Location = mongoose.model("Location", busSchema);
+export default Location;
