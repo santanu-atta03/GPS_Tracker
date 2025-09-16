@@ -25,7 +25,6 @@ const jwtCheck = auth({
   issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
   tokenSigningAlg: "RS256",
 });
-app.use(jwtCheck);
 
 // ✅ Secured Test Route
 app.get("/authorized", (req, res) => {
@@ -39,7 +38,7 @@ app.use(cookieParser());
 // ✅ Public Test Route
 
 app.use("/api/v1", locationRoute);
-app.use("/api/v1/driver",driverRoute)
+app.use("/api/v1/driver", driverRoute);
 
 app.get("/", (req, res) => {
   return res.status(200).json({
