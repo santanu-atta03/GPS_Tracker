@@ -8,12 +8,12 @@ const {
 } = busEndpoints
 
 
-export const getBusLocationByDeviceId = async (busId) => {
+export const getBusLocationByDeviceId = async (deviceID) => {
   const toastId = toast.loading("Fetching bus location...");
   let result = null;
 
   try {
-    const response = await apiConnector("GET", BUS_DETAILS_API, {busId});
+    const response = await apiConnector("GET", BUS_DETAILS_API+`/${deviceID}`);
 
     if (!response?.data?.success) {
       throw new Error("Could not fetch bus location");

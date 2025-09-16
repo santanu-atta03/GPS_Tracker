@@ -23,7 +23,7 @@ const Home = ({ onSearch, onBusSelect }) => {
   const [searchType, setSearchType] = useState('route'); // 'route' or 'busId'
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
-  const [busId, setBusId] = useState('');
+  const [deviceID, setdeviceID] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
   const locations = ['Kolkata Station', 'Esplanade', 'Park Street', 'Sealdah', 'Dumdum', 'Barrackpore'];
@@ -40,12 +40,12 @@ const Home = ({ onSearch, onBusSelect }) => {
         route.from === fromLocation && route.to === toLocation
       );
       const buses = foundRoutes.flatMap(route => 
-        route.buses.map(busId => mockBusData[busId])
+        route.buses.map(deviceID => mockBusData[deviceID])
       );
       setSearchResults(buses);
-    } else if (searchType === 'busId' && busId) {
+    } else if (searchType === 'busId' && deviceID) {
         try{
-          const response = await getBusLocationByDeviceId(busId);
+          const response = await getBusLocationByDeviceId(deviceID);
           console.log("course details res: ", response);
           setSearchResults(response.success ? [response?.latestLocations] : []);
           setSearchResults(response ? [response] : []);
@@ -138,8 +138,8 @@ const Home = ({ onSearch, onBusSelect }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">Bus ID</label>
               <input
                 type="text"
-                value={busId}
-                onChange={(e) => setBusId(e.target.value)}
+                value={deviceID}
+                onChange={(e) => setdeviceID(e.target.value)}
                 placeholder="Enter Bus ID (e.g., BUS001)"
                 className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               />
@@ -199,7 +199,7 @@ const Home = ({ onSearch, onBusSelect }) => {
           </div>
         )}
 
-        {searchResults.length === 0 && (fromLocation && toLocation) || busId ? (
+        {searchResults.length === 0 && (fromLocation && toLocation) || deviceID ? (
           <div className="text-center py-12">
             <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-medium text-gray-600 mb-2">No buses found</h3>

@@ -5,6 +5,6 @@ const locationRoute = express.Router();
 
 locationRoute.put("/update/location",updatelocation)
 locationRoute.post("/create/newBus",createBusId)
-locationRoute.get("/get/location",getLocation)
+locationRoute.get("/get/location/:deviceID",getLocation)
 
 export default locationRoute;
