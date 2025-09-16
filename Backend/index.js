@@ -6,6 +6,7 @@ import locationRoute from "./routes/location.route.js";
 import { auth } from "express-oauth2-jwt-bearer";
 import cookieParser from "cookie-parser";
 import driverRoute from "./routes/Driver.route.js";
+import BusRoute from "./routes/bus.route.js";
 
 dotenv.config();
 connectToMongo();
@@ -39,7 +40,7 @@ app.use(cookieParser());
 
 app.use("/api/v1", locationRoute);
 app.use("/api/v1/driver", driverRoute);
-
+app.use("/api/v1/Bus",BusRoute)
 app.get("/", (req, res) => {
   return res.status(200).json({
     message: "Hello from backend",

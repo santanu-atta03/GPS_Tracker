@@ -63,4 +63,38 @@ export const userFindByEmail = async (req, res) => {
   }
 };
 
+export const updateProfile = async (req, res) => {
+  try {
+    const { fullname, licenceId, driverExp } = req.body;
+    const userId = req.auth.sub;
+    let user = await Driver.findOne({ auth0Id: userId });
+    if (!user) {
+      return res.status(404).json({
+        message: "login first",
+        success: false,
+      });
+    }
+    if (fullname) {
+      user.name = fullname;
+    }
+    if (licenceId) {
+      user.licenceId = licenceId;
+    }
+    if (driverExp) {
+      user.driverExp = driverExp;
+    }
+    const newDetails = await user.save();
+
+    return res.status(200).json({
+      message: "user update successfully",
+      newDetails,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+
 
