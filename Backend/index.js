@@ -3,24 +3,44 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import locationRoute from "./routes/location.route.js";
+import { auth } from "express-oauth2-jwt-bearer";
+import cookieParser from "cookie-parser";
+import driverRoute from "./routes/Driver.route.js";
+import BusRoute from "./routes/bus.route.js";
 
 dotenv.config();
 connectToMongo();
 
 const app = express();
 const port = process.env.PORT || 8000;
-app.use(express.json())
+
 // ✅ CORS Options
 const corsOptions = {
   origin: ["http://localhost:5173"],
   credentials: true,
 };
+
 app.use(cors(corsOptions));
+const jwtCheck = auth({
+  audience: process.env.AUTH0_AUDIENCE,
+  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
+  tokenSigningAlg: "RS256",
+});
+
+// ✅ Secured Test Route
+app.get("/authorized", (req, res) => {
+  res.send("Secured Resource");
+});
 
 // ✅ Middlewares
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 // ✅ Public Test Route
-app.use("/api/v1",locationRoute)
+
+app.use("/api/v1", locationRoute);
+app.use("/api/v1/driver", driverRoute);
+app.use("/api/v1/Bus",BusRoute)
 app.get("/", (req, res) => {
   return res.status(200).json({
     message: "Hello from backend",
