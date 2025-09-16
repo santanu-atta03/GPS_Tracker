@@ -17,7 +17,7 @@ import { mockBusData } from '../../data/mockBusData';
 import { routes } from '../../data/mockBusData';
 
 import Navbar from '../shared/Navbar'
-
+import { getBusLocationByDeviceId } from '../../services/operations/busAPI';
 
 const Home = ({ onSearch, onBusSelect }) => {
   const [searchType, setSearchType] = useState('route'); // 'route' or 'busId'
@@ -34,7 +34,7 @@ const Home = ({ onSearch, onBusSelect }) => {
     setToLocation(temp);
   };
 
-  const handleSearch = () => {
+  const handleSearch = async() => {
     if (searchType === 'route' && fromLocation && toLocation) {
       const foundRoutes = routes.filter(route => 
         route.from === fromLocation && route.to === toLocation
@@ -44,36 +44,21 @@ const Home = ({ onSearch, onBusSelect }) => {
       );
       setSearchResults(buses);
     } else if (searchType === 'busId' && busId) {
-      const bus = mockBusData[busId.toUpperCase()];
-      setSearchResults(bus ? [bus] : []);
+        try{
+          const response = await getBusLocationByDeviceId(busId);
+          console.log("course details res: ", response);
+          setSearchResults(response.success ? [response?.latestLocations] : []);
+          setSearchResults(response ? [response] : []);
+        }catch(err){
+          console.log("Could not fetch bus Details")
+        }
+      
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
-      {/* Header */}
       <Navbar />
-      <header className="bg-white shadow-lg border-b border-green-100">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
-                <Navigation className="w-7 h-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
-                  BusTracker Pro
-                </h1>
-                <p className="text-gray-600 text-sm">Real-time bus tracking system</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2 bg-green-50 rounded-full px-4 py-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-green-700">Live Tracking Active</span>
-            </div>
-          </div>
-        </div>
-      </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Search Section */}
@@ -82,7 +67,7 @@ const Home = ({ onSearch, onBusSelect }) => {
           
           {/* Search Type Toggle */}
           <div className="flex justify-center mb-6">
-            <div className="bg-gray-100 rounded-full p-1 flex">
+            <div className="bg-gray-100 rounded-full p-2 flex transition-all duration-200">
               <button
                 onClick={() => setSearchType('route')}
                 className={`px-6 py-2 rounded-full transition-all duration-300 ${
