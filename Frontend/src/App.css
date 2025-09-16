@@ -41,6 +41,19 @@ body{
   padding: 2em;
 }
 
+@import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
 .read-the-docs {
   color: #888;
+}
+
+.bus-marker {
+  filter: hue-rotate(200deg) brightness(1.2);
+}
+
+.start-marker {
+  filter: hue-rotate(90deg) brightness(1.1);
+}
+
+.end-marker {
+  filter: hue-rotate(340deg) brightness(1.1);
 }

@@ -18,14 +18,15 @@ import { routes } from '../../data/mockBusData';
 
 import Navbar from '../shared/Navbar'
 import { getBusLocationByDeviceId } from '../../services/operations/busAPI';
+import { useNavigate } from 'react-router-dom';
 
-const Home = ({ onSearch, onBusSelect }) => {
+const Home = () => {
   const [searchType, setSearchType] = useState('route'); // 'route' or 'busId'
   const [fromLocation, setFromLocation] = useState('');
   const [toLocation, setToLocation] = useState('');
   const [deviceID, setdeviceID] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-
+  const navigate = useNavigate();
   const locations = ['Kolkata Station', 'Esplanade', 'Park Street', 'Sealdah', 'Dumdum', 'Barrackpore'];
 
   const swapLocations = () => {
@@ -163,7 +164,7 @@ const Home = ({ onSearch, onBusSelect }) => {
             {searchResults.map(bus => (
               <div
                 key={bus.id}
-                onClick={() => onBusSelect(bus)}
+                onClick={() => navigate(`/bus/${bus.deviceID}`)}
                 className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 border border-green-100 overflow-hidden"
               >
                 <div className="bg-gradient-to-r from-green-500 to-green-600 p-4">

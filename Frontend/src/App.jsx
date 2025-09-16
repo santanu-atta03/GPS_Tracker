@@ -2,28 +2,22 @@
 import BusDetailsPage from './components/page/BusDetailsPage';
 import Home from './components/page/Home'
 import { useState } from 'react';
+import { Route, Routes,BrowserRouter } from 'react-router-dom';
+import 'leaflet/dist/leaflet.css';
+
 
 function App() {
- const [currentView, setCurrentView] = useState('home');
-  const [selectedBus, setSelectedBus] = useState(null);
-
-  const handleBusSelect = (bus) => {
-    setSelectedBus(bus);
-    setCurrentView('busDetails');
-  };
-
-  const handleBack = () => {
-    setCurrentView('home');
-    setSelectedBus(null);
-  };
 
   return (
     <div className="font-sans">
-      {currentView === 'home' ? (
-        <Home onBusSelect={handleBusSelect} />
-      ) : (
-        <BusDetailsPage bus={selectedBus} onBack={handleBack} />
-      )}
+      <BrowserRouter>
+      <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/bus/:deviceID' element={<BusDetailsPage />} />
+      </Routes>
+      </BrowserRouter>
+      
+      
     </div>
   );
 }
