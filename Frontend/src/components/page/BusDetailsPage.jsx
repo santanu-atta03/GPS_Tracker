@@ -12,6 +12,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { getBusLocationByDeviceId } from "../../services/operations/busAPI";
+import Navbar from "../shared/Navbar";
 
 const BusDetailsPage = () => {
   const [busDetails, setBusDetails] = useState(null);
@@ -202,6 +203,8 @@ const BusDetailsPage = () => {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
       {/* Header */}
       <header className="bg-white shadow-lg border-b border-green-100">
@@ -394,6 +397,7 @@ const BusDetailsPage = () => {
         </div>
       </main>
     </div>
+    </>
   );
 };
 

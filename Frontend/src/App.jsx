@@ -5,9 +5,10 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import Complete from "./components/page/Complete";
 import Bus from "./components/page/Bus";
+import CreateBus from "./components/page/CreateBus";
+import Profile from "./components/page/Profile";
 
 function App() {
- 
   const approute = createBrowserRouter([
     {
       path: "/",
@@ -22,8 +23,16 @@ function App() {
       element: <Complete />,
     },
     {
-      path:"/Bus",
-      element:<Bus/>
+      path: "/Bus",
+      element: <Bus />,
+    },
+    {
+      path: "/createbus",
+      element: <CreateBus />,
+    },
+    {
+      path:"/profile",
+      element:<Profile/>
     }
   ]);
 
@@ -31,7 +40,6 @@ function App() {
     <>
       <RouterProvider router={approute} />
     </>
- 
   );
 }
 
