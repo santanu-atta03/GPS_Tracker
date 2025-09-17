@@ -89,6 +89,8 @@ const Home = ({ onSearch, onBusSelect }) => {
     try {
       if (searchType === 'route' && fromCoords && toCoords) {
         // Search for buses along a route
+        console.log("Printing fromcor : ",fromCoords);
+        console.log("Printing tiocoords : ",toCoords);
         const result = await busSearchService.findBusesByRoute(fromCoords, toCoords, {
           radius: 1000, // 1km radius
           maxResults: 20

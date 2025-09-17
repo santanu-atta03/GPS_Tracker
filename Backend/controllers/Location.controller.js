@@ -1067,23 +1067,23 @@ export const getAllBus = async (req, res) => {
  * Enhanced route search with better debugging
  */
 export const getBusesAlongRoute = async (req, res) => {
-  const { fromLat, fromLng, toLat, toLng, radius } = req.query;
+  const { fromLat, fromLon, toLat, toLon, radius } = req.query;
   
-  console.log(`[getBusesAlongRoute] Query params:`, { fromLat, fromLng, toLat, toLng, radius });
+  console.log(`[getBusesAlongRoute] Query params:`, { fromLat, fromLon, toLat, toLon, radius });
   
-  if (!fromLat || !fromLng || !toLat || !toLng) {
+  if (!fromLat || !fromLon || !toLat || !toLon) {
     return res.status(400).json({
       success: false,
       message: "fromLat, fromLng, toLat, toLng are required",
-      received: { fromLat, fromLng, toLat, toLng, radius }
+      received: { fromLat, fromLon, toLat, toLon, radius }
     });
   }
 
   const searchRadius = radius ? parseInt(radius) : 10000; // 10km default
   const fromLatitude = parseFloat(fromLat);
-  const fromLongitude = parseFloat(fromLng);
+  const fromLongitude = parseFloat(fromLon);
   const toLatitude = parseFloat(toLat);
-  const toLongitude = parseFloat(toLng);
+  const toLongitude = parseFloat(toLon);
   
   console.log(`[getBusesAlongRoute] Parsed coordinates:`, {
     from: [fromLatitude, fromLongitude],
