@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { ArrowLeftRight } from "lucide-react";
 
-export default function LocationSearch() {
+export default function LocationSearch({onCoordsSelect }) {
   const [fromLocation, setFromLocation] = useState("");
   const [toLocation, setToLocation] = useState("");
   const [fromSuggestions, setFromSuggestions] = useState([]);
@@ -74,6 +74,17 @@ export default function LocationSearch() {
     setToCoords(fromCoords);
   };
 
+  const handleCoordsChange = () => {
+    if (fromCoords && toCoords) {
+      onCoordsSelect({ from: fromCoords, to: toCoords });
+    }
+  };
+
+
+  // Add useEffect to call callback when coords update
+  useEffect(() => {
+    handleCoordsChange();
+  }, [fromCoords, toCoords]);
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-4">

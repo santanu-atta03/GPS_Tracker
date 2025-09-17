@@ -108,3 +108,27 @@ export const createBusId = async (req, res) => {
     res.status(500).json({ message: "Server error", success: false });
   }
 };
+
+
+export const getAllBus = async (req, res) => {
+  const { lat, lng, radius } = req.query;
+  if (!lat || !lng) return res.status(400).json({ message: "lat & lng required" });
+
+  const meters = radius ? parseInt(radius) : 1000; // default 1km
+
+  try {
+    const buses = await Location.find({
+      location: {
+        $near: {
+          $geometry: { type: "Point", coordinates: [parseFloat(lng), parseFloat(lat)] },
+          $maxDistance: meters,
+        },
+      },
+    });
+
+    res.json(buses);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

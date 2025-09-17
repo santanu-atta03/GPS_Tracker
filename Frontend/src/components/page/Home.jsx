@@ -33,7 +33,9 @@ const Home = ({ onSearch, onBusSelect }) => {
   const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
   const locations = ['Kolkata Station', 'Esplanade', 'Park Street', 'Sealdah', 'Dumdum', 'Barrackpore'];
-
+  const [coords, setCoords] = useState(null);
+   const [fromCoords, setFromCoords] = useState(null);
+  const [buses, setBuses] = useState([]);
   const swapLocations = () => {
     const temp = fromLocation;
     setFromLocation(toLocation);
@@ -71,6 +73,18 @@ const Home = ({ onSearch, onBusSelect }) => {
         }
       
     }
+     else if (searchType === "location" && fromCoords) {
+    // 🔹 Search by user's current location (fromCoords)
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/get/search?lat=${fromCoords.lat}&lng=${fromCoords.lon}`
+      );
+      const data = await res.json();
+      setSearchResults(data); // buses returned by backend
+    } catch (err) {
+      console.error("Could not fetch nearby buses", err);
+    }
+  }
   };
 
   return (
@@ -110,8 +124,15 @@ const Home = ({ onSearch, onBusSelect }) => {
             </div>
           </div>
 
-          {searchType === 'route' ? (
-            <LocationSearch />
+          {searchType === 'route' || searchType === 'location' ? (
+            <LocationSearch 
+            onCoordsSelect={({ from, to }) => {
+            setFromCoords(from);
+            setToCoords(to);
+            if (from) setFromLocation(from.display_name || from.name || "");
+            if (to) setToLocation(to.display_name || to.name || "");
+          }}
+            />
           ) : (
             <div className="max-w-md mx-auto">
               <label className="block text-sm font-medium text-gray-700 mb-2">Bus ID</label>
