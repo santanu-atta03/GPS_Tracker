@@ -67,7 +67,7 @@ app.get("/api/v1/reverse-geocode", async (req, res) => {
       return res.status(400).json({ error: "Missing 'lat' or 'lon' parameter" });
     }
 
-    const url = `https://us1.locationiq.com/v1/reverse?key=LOCATIONIQ_API_KEY = pk.769b04a589221b0a3c78f5a7509d19badone secne&lat=${lat}&lon=${lon}&format=json`;
+    const url = `https://us1.locationiq.com/v1/reverse?key=LOCATIONIQ_API_KEY = pk.769b04a589221b0a3c78f5a7509d19ba&lat=${lat}&lon=${lon}&format=json`;
 
     const response = await fetch(url, {
       headers: {
