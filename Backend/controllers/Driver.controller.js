@@ -1,3 +1,4 @@
+import Bus from "../models/Bus.model.js";
 import Driver from "../models/Driver.model.js";
 
 export const createDriver = async (req, res) => {
@@ -76,6 +77,37 @@ export const updateProfile = async (req, res) => {
     return res.status(200).json({
       message: "user update successfully",
       newDetails,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const DriverCreateBus = async (req, res) => {
+  try {
+    const userId = req.auth.sub;
+    let user = await Driver.findOne({ auth0Id: userId });
+    if (!user) {
+      return res.status(404).json({
+        message: "login first",
+        success: false,
+      });
+    }
+    const AllBus = await Bus.find({ driver: user._id }).populate([
+      { path: "driver" },
+      { path: "location" },
+    ]);
+
+    if (!AllBus) {
+      return res.status(200).json({
+        message: "no subject found",
+        success: false,
+      });
+    }
+    return res.status(200).json({
+      message: "this is your createed Bus",
+      AllBus,
       success: true,
     });
   } catch (error) {

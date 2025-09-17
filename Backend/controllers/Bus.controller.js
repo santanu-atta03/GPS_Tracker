@@ -35,6 +35,7 @@ export const CreateDriver = async (req, res) => {
       to: to,
       from: from,
       driver: user._id,
+      location:newBusdetails._id
     };
     const newBus = await Bus.create(busDetails);
     return res.status(200).json({
