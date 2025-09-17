@@ -41,6 +41,23 @@ app.use(cookieParser());
 app.use("/api/v1", locationRoute);
 app.use("/api/v1/driver", driverRoute);
 app.use("/api/v1/Bus",BusRoute)
+app.get("/api/v1/search", async (req, res) => {
+  try {
+    const query = req.query.q;
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${query}`,
+      {
+        headers: {
+          "User-Agent": "myapp/1.0", // required by Nominatim
+        },
+      }
+    );
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch from Nominatim" });
+  }
+});
 app.get("/", (req, res) => {
   return res.status(200).json({
     message: "Hello from backend",
