@@ -21,11 +21,11 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-const jwtCheck = auth({
-  audience: process.env.AUTH0_AUDIENCE,
-  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
-  tokenSigningAlg: "RS256",
-});
+// const jwtCheck = auth({
+//   audience: process.env.AUTH0_AUDIENCE,
+//   issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
+//   tokenSigningAlg: "RS256",
+// });
 
 // ✅ Secured Test Route
 app.get("/authorized", (req, res) => {
@@ -45,7 +45,7 @@ app.get("/api/v1/search", async (req, res) => {
   try {
     const query = req.query.q;
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${query}`,
+      `https://us1.locationiq.com/v1/search?key=pk.769b04a589221b0a3c78f5a7509d19ba&q=${encodeURIComponent(query)}&format=json`,
       {
         headers: {
           "User-Agent": "myapp/1.0", // Nominatim requires this
@@ -63,18 +63,22 @@ app.get("/api/v1/search", async (req, res) => {
 app.get("/api/v1/reverse-geocode", async (req, res) => {
   try {
     const { lat, lon } = req.query;
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
-      {
-        headers: {
-          "User-Agent": "myapp/1.0",
-        },
-      }
-    );
+    if (!lat || !lon) {
+      return res.status(400).json({ error: "Missing 'lat' or 'lon' parameter" });
+    }
+
+    const url = `https://us1.locationiq.com/v1/reverse?key=pk.769b04a589221b0a3c78f5a7509d19ba&lat=${lat}&lon=${lon}&format=json`;
+
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": "myapp/1.0", // Optional for LocationIQ, but fine
+      },
+    });
+
     const data = await response.json();
     res.json(data);
   } catch (err) {
-    console.error(err);
+    console.error("Reverse geocode error:", err);
     res.status(500).json({ error: "Failed to fetch reverse geocoding data" });
   }
 });

@@ -31,7 +31,17 @@ export default function LocationSearch({
       );
       if (!res.ok) throw new Error("Failed to fetch suggestions");
       const data = await res.json();
-      setFn(data.slice(0, 5)); // Limit to 5 suggestions
+      
+console.log("Fetched data:", data);
+
+if (!Array.isArray(data)) {
+  console.warn("Expected array, got:", data);
+  throw new Error("Invalid API response");
+}
+
+setFn(data.slice(0, 5));
+
+      // Limit to 5 suggestions
     } catch (error) {
       console.error("Error fetching suggestions:", error);
       setFn([]);
