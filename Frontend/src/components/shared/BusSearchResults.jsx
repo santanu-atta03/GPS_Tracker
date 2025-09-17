@@ -56,6 +56,14 @@ const BusCard = ({ bus, onBusSelect, searchType, searchMetadata }) => {
     return 'Route information unavailable';
   };
 
+  // Handle different possible data structures
+  const deviceId = bus.deviceID || bus.deviceId || bus.id || 'Unknown';
+  const busName = bus.name || bus.busName || `Bus ${deviceId}`;
+  const busStatus = bus.status || 'Unknown';
+  const driverName = bus.driverName || bus.driver;
+  const currentLocation = bus.currentLocation || bus.location;
+  const lastUpdated = bus.lastUpdated || bus.timestamp || bus.updatedAt;
+
   return (
     <div
       onClick={handleClick}
@@ -65,13 +73,13 @@ const BusCard = ({ bus, onBusSelect, searchType, searchMetadata }) => {
         <div className="flex justify-between items-center">
           <div>
             <h3 className="text-white font-bold text-lg">
-              {bus.name || `Bus ${bus.deviceID}`}
+              {busName}
             </h3>
-            <p className="text-green-100 text-sm">{bus.deviceID}</p>
+            <p className="text-green-100 text-sm">{deviceId}</p>
           </div>
           <div className="text-right">
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(bus.status)}`}>
-              {bus.status || 'Unknown'}
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(busStatus)}`}>
+              {busStatus}
             </span>
             {bus.distanceFromSearch && (
               <p className="text-green-100 text-xs mt-1">
@@ -98,19 +106,30 @@ const BusCard = ({ bus, onBusSelect, searchType, searchMetadata }) => {
         )}
 
         {/* Driver Information */}
-        {bus.driverName && (
+        {driverName && (
           <div className="flex items-center text-gray-600">
             <User className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
-            <span className="text-sm">{bus.driverName}</span>
+            <span className="text-sm">{driverName}</span>
           </div>
         )}
 
         {/* Current Location */}
-        {bus.location && (
+        {(bus.location || currentLocation) && (
           <div className="flex items-center text-gray-600">
             <MapPin className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
             <span className="text-sm">
-              {bus.currentLocation || 'Live location available'}
+              {currentLocation || 'Live location available'}
+            </span>
+          </div>
+        )}
+
+        {/* Coordinates Display for debugging */}
+        {(bus.lat || bus.latitude) && (bus.lng || bus.longitude) && (
+          <div className="flex items-center text-gray-600">
+            <MapPin className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
+            <span className="text-xs">
+              Lat: {(bus.lat || bus.latitude)?.toFixed(6)}, 
+              Lng: {(bus.lng || bus.longitude)?.toFixed(6)}
             </span>
           </div>
         )}
@@ -134,9 +153,9 @@ const BusCard = ({ bus, onBusSelect, searchType, searchMetadata }) => {
         )}
 
         {/* Last Updated */}
-        {bus.lastUpdated && (
+        {lastUpdated && (
           <div className="text-xs text-gray-500 border-t pt-2 mt-3">
-            Last updated: {new Date(bus.lastUpdated).toLocaleTimeString()}
+            Last updated: {new Date(lastUpdated).toLocaleString()}
           </div>
         )}
       </div>
@@ -152,6 +171,11 @@ const BusSearchResults = ({
   onBusSelect,
   error = null 
 }) => {
+  console.log("BusSearchResults - Error:", error);
+  console.log("BusSearchResults - Results:", searchResults);
+  console.log("BusSearchResults - Loading:", isLoading);
+  console.log("BusSearchResults - Results type:", typeof searchResults, Array.isArray(searchResults));
+  
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -177,7 +201,10 @@ const BusSearchResults = ({
     );
   }
 
-  if (!searchResults || searchResults.length === 0) {
+  // Ensure searchResults is always an array
+  const resultsArray = Array.isArray(searchResults) ? searchResults : (searchResults ? [searchResults] : []);
+  
+  if (resultsArray.length === 0) {
     return (
       <div className="text-center py-12">
         <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -185,6 +212,8 @@ const BusSearchResults = ({
         <p className="text-gray-500 mb-4">
           {searchType === 'route' 
             ? "No buses found for this route. Try searching with nearby locations or check back later."
+            : searchType === 'busId'
+            ? "No bus found with this ID. Please check the bus ID and try again."
             : "No buses found in this area. Try expanding your search radius or searching in a different location."
           }
         </p>
@@ -207,40 +236,48 @@ const BusSearchResults = ({
         <div className="flex items-center">
           <Zap className="w-5 h-5 text-green-500 mr-2" />
           <span className="text-lg font-semibold text-gray-800">
-            {searchResults.length} bus{searchResults.length === 1 ? '' : 'es'} found
+            {resultsArray.length} bus{resultsArray.length === 1 ? '' : 'es'} found
           </span>
         </div>
-        {searchMetadata && searchMetadata.searchRadius && (
+        {searchMetadata && searchMetadata.radius && (
           <span className="text-sm text-gray-500">
-            Within {searchMetadata.searchRadius}m radius
+            Within {searchMetadata.radius}m radius
           </span>
         )}
       </div>
 
       {/* Results Grid */}
       <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {searchResults.map((bus, index) => (
-          <BusCard
-            key={bus.deviceID || index}
-            bus={bus}
-            onBusSelect={onBusSelect}
-            searchType={searchType}
-            searchMetadata={searchMetadata}
-          />
-        ))}
+        {resultsArray.map((bus, index) => {
+          const key = bus.deviceID || bus.deviceId || bus.id || index;
+          return (
+            <BusCard
+              key={key}
+              bus={bus}
+              onBusSelect={onBusSelect}
+              searchType={searchType}
+              searchMetadata={searchMetadata}
+            />
+          );
+        })}
       </div>
 
       {/* Search Metadata Footer */}
       {searchMetadata && (
         <div className="text-center text-sm text-gray-500 bg-gray-50 rounded-lg p-3">
-          {searchType === 'location' && searchMetadata.searchLocation && (
+          {searchType === 'location' && searchMetadata.coordinates && (
             <p>
-              Searched near: {searchMetadata.searchLocation.lat?.toFixed(6)}, {searchMetadata.searchLocation.lng?.toFixed(6)}
+              Searched near: {searchMetadata.coordinates.lat?.toFixed(6)}, {searchMetadata.coordinates.lng?.toFixed(6)}
             </p>
           )}
           {searchType === 'route' && searchMetadata.routeInfo && (
             <p>
               Route search: {searchMetadata.routeInfo.from} → {searchMetadata.routeInfo.to}
+            </p>
+          )}
+          {searchType === 'busId' && searchMetadata.deviceId && (
+            <p>
+              Bus ID search: {searchMetadata.deviceId}
             </p>
           )}
           <p className="mt-1">

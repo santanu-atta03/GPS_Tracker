@@ -1,261 +1,3 @@
-// import React from 'react'
-// import { Button } from "@/components/ui/button"
-// import { 
-//   Search, 
-//   ArrowUpDown, 
-//   Route, 
-//   Navigation, 
-//   Clock, 
-//   User, 
-//   MapPin, 
-//   AlertCircle,
-//   ArrowLeftRight,
-//   Zap 
-// } from 'lucide-react';
-// import { useState } from 'react';
-// import { mockBusData } from '../../data/mockBusData';
-// import { routes } from '../../data/mockBusData';
-// import { useAuth0 } from "@auth0/auth0-react";
-// import Navbar from '../shared/Navbar'
-// import { getBusLocationByDeviceId } from '../../services/operations/busAPI';
-// import { useNavigate } from 'react-router-dom';
-// import LocationSearch from '../shared/LocationSearch';
-
- 
-
-// const Home = ({ onSearch, onBusSelect }) => {
-//     const { getAccessTokenSilently } = useAuth0();
- 
-//   const [searchType, setSearchType] = useState('route'); // 'route' or 'busId'
-//   const [deviceID, setdeviceID] = useState('');
-//   const [searchResults, setSearchResults] = useState([]);
-//   const navigate = useNavigate();
-//   const locations = ['Kolkata Station', 'Esplanade', 'Park Street', 'Sealdah', 'Dumdum', 'Barrackpore'];
-//   const [coords, setCoords] = useState(null);
-//   const [buses, setBuses] = useState([]);
-
-//   const [fromCoords, setFromCoords] = useState(null);
-//   const [toCoords, setToCoords] = useState(null);
-//   const [fromLocation, setFromLocation] = useState("");
-//   const [toLocation, setToLocation] = useState("");
-//   const swapLocations = () => {
-//     const temp = fromLocation;
-//     setFromLocation(toLocation);
-//     setToLocation(temp);
-//   };
-//    const updateProfile = async () => {
-//     try {
-//       const token = await getAccessTokenSilently({
-//         audience: "http://localhost:5000/api/v3",
-//       });
-//       console.log(token);
-      
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
-
-//   const handleSearch = async () => {
-//   if (searchType === 'route' && fromLocation && toLocation) {
-//     const foundRoutes = routes.filter(route => 
-//       route.from.toLowerCase() === fromLocation.toLowerCase() && 
-//       route.to.toLowerCase() === toLocation.toLowerCase()
-//     );
-
-//     const buses = foundRoutes.flatMap(route => 
-//       route.buses.map(deviceID => mockBusData[deviceID])
-//     );
-
-//     setSearchResults(buses);
-
-//   } else if (searchType === 'busId' && deviceID) {
-//     try {
-//       const response = await getBusLocationByDeviceId(deviceID);
-//       console.log("Bus details response: ", response);
-
-//       setSearchResults(response.success ? [response?.latestLocations] : []);
-
-//     } catch (err) {
-//       console.error("Could not fetch bus details", err);
-//     }
-
-//   } else if (searchType === "location" && fromCoords) {
-//     try {
-//       const res = await fetch(
-//         `${import.meta.env.VITE_BASE_URL}/get/search?lat=${fromCoords.lat}&lng=${fromCoords.lon}&radius=1000`
-//       );
-//       const data = await res.json();
-//       setSearchResults(data);
-//     } catch (err) {
-//       console.error("Could not fetch nearby buses", err);
-//     }
-//   }
-// };
-
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
-//       <Navbar />
-
-//       <main className="max-w-7xl mx-auto px-4 py-8">
-//         {/* Search Section */}
-//         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-green-100">
-//           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Find Your Bus</h2>
-          
-//           {/* Search Type Toggle */}
-//           <div className="flex justify-center mb-6">
-//             <div className="bg-gray-100 rounded-full p-2 flex transition-all duration-200">
-//               <button
-//                 onClick={() => setSearchType('route')}
-//                 className={`px-6 py-2 rounded-full transition-all duration-300 ${
-//                   searchType === 'route'
-//                     ? 'bg-green-500 text-white shadow-lg'
-//                     : 'text-gray-600 hover:text-gray-800'
-//                 }`}
-//               >
-//                 <Route className="w-4 h-4 inline mr-2" />
-//                 By Route
-//               </button>
-//               <button
-//                 onClick={() => setSearchType('busId')}
-//                 className={`px-6 py-2 rounded-full transition-all duration-300 ${
-//                   searchType === 'busId'
-//                     ? 'bg-green-500 text-white shadow-lg'
-//                     : 'text-gray-600 hover:text-gray-800'
-//                 }`}
-//               >
-//                 <Navigation className="w-4 h-4 inline mr-2" />
-//                 By Bus ID
-//               </button>
-//             </div>
-//           </div>
-
-//           {searchType === 'route' || searchType === 'location' ? (
-//             <LocationSearch
-//         onCoordsSelect={({ from, to }) => {
-//           setFromCoords(from);
-//           setToCoords(to);
-
-//           if (from) setFromLocation(from.display_name || from.name || "");
-//           if (to) setToLocation(to.display_name || to.name || "");
-//         }}
-//       />
-//           ) : (
-//             <div className="max-w-md mx-auto">
-//               <label className="block text-sm font-medium text-gray-700 mb-2">Bus ID</label>
-//               <input
-//                 type="text"
-//                 value={deviceID}
-//                 onChange={(e) => setdeviceID(e.target.value)}
-//                 placeholder="Enter Bus ID (e.g., BUS001)"
-//                 className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-//               />
-//             </div>
-//           )}
-
-//           <div className="text-center mt-6">
-//             <button
-//               onClick={handleSearch}
-//               className="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center mx-auto"
-//             >
-//               <Search className="w-5 h-5 mr-2" />
-//               Search Buses
-//             </button>
-//           </div>
-//         </div>
-
-//         {/* Search Results */}
-//         {searchResults.length > 0 && (
-//           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-//             {searchResults.map(bus => (
-//               <div
-//                 key={bus.id}
-//                 onClick={() => navigate(`/bus/${bus.deviceID}`)}
-//                 className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 border border-green-100 overflow-hidden"
-//               >
-//                 <div className="bg-gradient-to-r from-green-500 to-green-600 p-4">
-//                   <div className="flex justify-between items-center">
-//                     <h3 className="text-white font-bold text-lg">{bus.name}</h3>
-//                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-//                       bus.status === 'On Route' 
-//                         ? 'bg-green-100 text-green-800' 
-//                         : 'bg-yellow-100 text-yellow-800'
-//                     }`}>
-//                       {bus.status}
-//                     </span>
-//                   </div>
-//                   <p className="text-green-100 text-sm">{bus.id}</p>
-//                 </div>
-                
-//                 <div className="p-4 space-y-3">
-//                   <div className="flex items-center text-gray-600">
-//                     <Clock className="w-4 h-4 mr-2 text-green-500" />
-//                     <span className="text-sm">Expected: {bus.expectedTime}</span>
-//                   </div>
-//                   <div className="flex items-center text-gray-600">
-//                     <User className="w-4 h-4 mr-2 text-green-500" />
-//                     <span className="text-sm">{bus.driverName}</span>
-//                   </div>
-//                   <div className="flex items-center text-gray-600">
-//                     <MapPin className="w-4 h-4 mr-2 text-green-500" />
-//                     <span className="text-sm">{bus.route[0].name} → {bus.route[bus.route.length - 1].name}</span>
-//                   </div>
-//                 </div>
-//               </div>
-//             ))}
-//           </div>
-//         )}
-
-//         {searchResults.length === 0 && (fromLocation && toLocation) || deviceID ? (
-//           <div className="text-center py-12">
-//             <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-//             <h3 className="text-xl font-medium text-gray-600 mb-2">No buses found</h3>
-//             <p className="text-gray-500">Try searching with different criteria</p>
-//           </div>
-//         ) : null}
-
-//         {/* Features Section */}
-//         <div className="mt-16 grid md:grid-cols-3 gap-8">
-//           <div className="text-center p-6 bg-white rounded-xl shadow-lg border border-green-100">
-//             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-//               <Zap className="w-8 h-8 text-green-600" />
-//             </div>
-//             <h3 className="text-lg font-bold text-gray-800 mb-2">Real-time Tracking</h3>
-//             <p className="text-gray-600">Get live location updates of your bus with precise GPS tracking</p>
-//           </div>
-          
-//           <div className="text-center p-6 bg-white rounded-xl shadow-lg border border-green-100">
-//             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-//               <Clock className="w-8 h-8 text-green-600" />
-//             </div>
-//             <h3 className="text-lg font-bold text-gray-800 mb-2">Accurate ETAs</h3>
-//             <p className="text-gray-600">Know exactly when your bus will arrive at your stop</p>
-//           </div>
-          
-//           <div className="text-center p-6 bg-white rounded-xl shadow-lg border border-green-100">
-//             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-//               <Navigation className="w-8 h-8 text-green-600" />
-//             </div>
-//             <h3 className="text-lg font-bold text-gray-800 mb-2">Route Planning</h3>
-//             <p className="text-gray-600">Find the best routes and connections for your journey</p>
-//           </div>
-
-//         </div>
-//       </main>
-//       <div> 
-//         <Button onClick={updateProfile}>
-//             auth0
-//         </Button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Home
-
-
-
-
 // components/Home.jsx
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
@@ -271,10 +13,10 @@ import {
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from 'react-router-dom';
 
-// Import our new components and services
+// Import our components and services
 import Navbar from '../shared/Navbar';
-import LocationSearch from './LocationSearch';
-import BusSearchResults from './BusSearchResults';
+import LocationSearch from '../shared/LocationSearch';
+import BusSearchResults from '../shared/BusSearchResults';
 import { busSearchService } from '../../services/busSearchService';
 import { getBusLocationByDeviceId } from '../../services/operations/busAPI';
 
@@ -332,8 +74,9 @@ const Home = ({ onSearch, onBusSelect }) => {
     if (onBusSelect) {
       onBusSelect(bus);
     }
-    // Navigate to bus details page
-    navigate(`/bus/${bus.deviceID}`);
+    // Navigate to bus details page using the correct device ID property
+    const deviceId = bus.deviceID || bus.deviceId || bus.id;
+    navigate(`/bus/${deviceId}`);
   };
 
   // Main search function
@@ -352,10 +95,10 @@ const Home = ({ onSearch, onBusSelect }) => {
         });
 
         if (result.success) {
-          setSearchResults(result.buses);
+          setSearchResults(result.buses || []);
           setSearchMetadata(result.metadata);
           
-          if (result.buses.length === 0) {
+          if (!result.buses || result.buses.length === 0) {
             setError("No buses found for this route. The buses might not be currently operating on this path or try searching with nearby locations.");
           }
         } else {
@@ -364,33 +107,56 @@ const Home = ({ onSearch, onBusSelect }) => {
 
       } else if (searchType === 'location' && fromCoords) {
         // Search for buses near a single location
-        const buses = await busSearchService.findNearbyBuses(fromCoords, 1000);
-        setSearchResults(buses);
-        setSearchMetadata({
-          searchType: 'location',
-          coordinates: fromCoords,
-          radius: 1000,
-          totalFound: buses.length
-        });
+        try {
+          const buses = await busSearchService.findNearbyBuses(fromCoords, 1000);
+          const busArray = Array.isArray(buses) ? buses : [];
+          
+          setSearchResults(busArray);
+          setSearchMetadata({
+            searchType: 'location',
+            coordinates: fromCoords,
+            radius: 1000,
+            totalFound: busArray.length
+          });
 
-        if (buses.length === 0) {
-          setError("No buses found in this area. Try searching in a different location or check back later.");
+          if (busArray.length === 0) {
+            setError("No buses found in this area. Try searching in a different location or check back later.");
+          }
+        } catch (err) {
+          console.error("Location search error:", err);
+          setError("Error searching for buses in this area. Please try again.");
         }
 
       } else if (searchType === 'busId' && deviceID.trim()) {
         // Search for a specific bus by ID
-        const response = await getBusLocationByDeviceId(deviceID.trim());
-        console.log("Bus details response:", response);
+        try {
+          const busData = await getBusLocationByDeviceId(deviceID.trim());
+          console.log("Bus details response:", busData);
 
-        if (response.success && response.latestLocations) {
-          setSearchResults([response.latestLocations]);
-          setSearchMetadata({
-            searchType: 'busId',
-            deviceId: deviceID.trim(),
-            totalFound: 1
-          });
-        } else {
-          setError(`Bus with ID "${deviceID}" not found. Please check the bus ID and try again.`);
+          // Handle the API response structure
+          if (busData && busData !== null) {
+            // Ensure we're always setting an array
+            const busArray = Array.isArray(busData) ? busData : [busData];
+            
+            setSearchResults(busArray);
+            setSearchMetadata({
+              searchType: 'busId',
+              deviceId: deviceID.trim(),
+              totalFound: busArray.length
+            });
+            
+            console.log("Setting bus results:", busArray);
+          } else {
+            setError(`Bus with ID "${deviceID}" not found. Please check the bus ID and try again.`);
+            setSearchResults([]);
+          }
+        } catch (err) {
+          console.error("Bus ID search error:", err);
+          if (err.response?.status === 404 || err.message.includes('not found')) {
+            setError(`Bus with ID "${deviceID}" not found. Please check the bus ID and try again.`);
+          } else {
+            setError("Error searching for bus. Please check the bus ID and try again.");
+          }
           setSearchResults([]);
         }
 
@@ -428,11 +194,29 @@ const Home = ({ onSearch, onBusSelect }) => {
     return false;
   };
 
+  // Handle Enter key press in bus ID input
+  const handleBusIdKeyPress = (e) => {
+    if (e.key === 'Enter' && canSearch()) {
+      handleSearch();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">
+            Find Your Perfect Bus Route
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Search for buses by route, location, or bus ID. Get real-time information 
+            and track your journey with ease.
+          </p>
+        </div>
+
         {/* Search Section */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-green-100">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Find Your Bus</h2>
@@ -493,6 +277,7 @@ const Home = ({ onSearch, onBusSelect }) => {
             <LocationSearch
               onCoordsSelect={handleCoordsSelect}
               onLocationChange={handleLocationChange}
+              searchType={searchType}
             />
           ) : (
             <div className="max-w-md mx-auto">
@@ -503,13 +288,9 @@ const Home = ({ onSearch, onBusSelect }) => {
                 type="text"
                 value={deviceID}
                 onChange={(e) => setDeviceID(e.target.value)}
-                placeholder="Enter Bus ID (e.g., BUS001)"
+                onKeyPress={handleBusIdKeyPress}
+                placeholder="Enter Bus ID (e.g., BUS-1234)"
                 className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && canSearch()) {
-                    handleSearch();
-                  }
-                }}
               />
             </div>
           )}
@@ -540,6 +321,41 @@ const Home = ({ onSearch, onBusSelect }) => {
           </div>
         </div>
 
+        {/* Quick Stats */}
+        {searchResults.length === 0 && !error && !isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-green-100 text-center">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-6 h-6 text-green-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Real-Time Tracking</h3>
+              <p className="text-gray-600 text-sm">
+                Get live updates on bus locations and arrival times
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-green-100 text-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Clock className="w-6 h-6 text-blue-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Accurate ETAs</h3>
+              <p className="text-gray-600 text-sm">
+                Plan your journey with precise arrival predictions
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-green-100 text-center">
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Route className="w-6 h-6 text-purple-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Route Optimization</h3>
+              <p className="text-gray-600 text-sm">
+                Find the best routes for your daily commute
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Search Results */}
         <BusSearchResults
           searchResults={searchResults}
@@ -550,40 +366,24 @@ const Home = ({ onSearch, onBusSelect }) => {
           error={error}
         />
 
-        {/* Features Section */}
-        <div className="mt-16 grid md:grid-cols-3 gap-8">
-          <div className="text-center p-6 bg-white rounded-xl shadow-lg border border-green-100">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Zap className="w-8 h-8 text-green-600" />
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-8">
+            <div className="flex items-start">
+              <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
+              <div>
+                <h3 className="text-red-800 font-medium mb-1">Search Error</h3>
+                <p className="text-red-700 text-sm">{error}</p>
+              </div>
             </div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Real-time Tracking</h3>
-            <p className="text-gray-600">Get live location updates of your bus with precise GPS tracking</p>
           </div>
-          
-          <div className="text-center p-6 bg-white rounded-xl shadow-lg border border-green-100">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Clock className="w-8 h-8 text-green-600" />
-            </div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Accurate ETAs</h3>
-            <p className="text-gray-600">Know exactly when your bus will arrive at your stop</p>
-          </div>
-          
-          <div className="text-center p-6 bg-white rounded-xl shadow-lg border border-green-100">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Navigation className="w-8 h-8 text-green-600" />
-            </div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Route Planning</h3>
-            <p className="text-gray-600">Find the best routes and connections for your journey</p>
-          </div>
-        </div>
-      </main>
+        )}
 
-      {/* Auth0 Test Button (for development) */}
-      <div className="fixed bottom-4 right-4">
-        <Button onClick={updateProfile} variant="outline" size="sm">
-          Test Auth0
-        </Button>
-      </div>
+        {/* Footer */}
+        <footer className="mt-16 text-center text-gray-500 text-sm">
+          <p>&copy; 2024 Bus Tracker. All rights reserved.</p>
+        </footer>
+      </main>
     </div>
   );
 };

@@ -7,12 +7,13 @@ import 'leaflet/dist/leaflet.css';
 
 
 function App() {
-
+  const [onBusSelect, setOnBusSelect] = useState();
+  
   return (
     <div className="font-sans">
       <BrowserRouter>
       <Routes>
-          <Route path='/' element={<Home />} />
+          <Route path='/' element={<Home onBusSelect={onBusSelect}/>} />
           <Route path='/bus/:deviceID' element={<BusDetailsPage />} />
       </Routes>
       </BrowserRouter>

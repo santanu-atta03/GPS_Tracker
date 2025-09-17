@@ -1,14 +1,67 @@
 // services/busSearchService.js
 
+import { apiConnector } from "./apiConnector";
+
 export class BusSearchService {
   constructor(baseURL = import.meta.env.VITE_BASE_URL) {
     this.baseURL = baseURL;
   }
 
   /**
-   * Find buses along a route from point A to point B
-   * This searches for buses that have route points near the from/to locations
+   * Transform API response to consistent format
    */
+  transformBusData(busData) {
+    if (!busData) return null;
+    
+    return {
+      // Core identifiers
+      deviceID: busData.deviceID,
+      id: busData.deviceID,
+      deviceId: busData.deviceID,
+      
+      // Basic info
+      name: busData.name || `Bus ${busData.deviceID}`,
+      busName: busData.busName || `Bus ${busData.deviceID}`,
+      status: busData.status || 'Active',
+      
+      // Location data - handle both API response formats
+      location: busData.location,
+      currentLocation: busData.currentLocation || 'Live tracking available',
+      lat: busData.location?.coordinates?.[1] || busData.lat,
+      lng: busData.location?.coordinates?.[0] || busData.lng,
+      latitude: busData.location?.coordinates?.[1] || busData.latitude,
+      longitude: busData.location?.coordinates?.[0] || busData.longitude,
+      
+      // Route data
+      route: busData.route || [],
+      
+      // Time data
+      lastUpdated: busData.lastUpdated,
+      timestamp: busData.lastUpdated,
+      updatedAt: busData.lastUpdated,
+      startTime: busData.startTime || '06:00 AM',
+      expectedTime: busData.expectedTime || 'Calculating...',
+      destinationTime: busData.destinationTime || '08:00 PM',
+      
+      // Driver data
+      driverName: busData.driverName || 'Driver Available',
+      driver: busData.driverName || 'Driver Available',
+      driverPhone: busData.driverPhone || 'Contact Support',
+      
+      // Distance data (if available)
+      distanceFromSearch: busData.distanceFromSearch,
+      formattedDistance: busData.formattedDistance,
+      
+      // Route match data (if available)
+      routeMatch: busData.routeMatch,
+      routeAnalysis: busData.routeAnalysis,
+      
+      // Metadata
+      _id: busData._id,
+      __v: busData.__v
+    };
+  }
+
   async findBusesByRoute(fromCoords, toCoords, options = {}) {
     const {
       radius = 1000, // 1km default radius
@@ -35,7 +88,11 @@ export class BusSearchService {
           fromCoords,
           toCoords,
           radius,
-          totalFound: routeBuses.length
+          totalFound: routeBuses.length,
+          routeInfo: {
+            from: `${fromCoords.lat?.toFixed(4)}, ${fromCoords.lon?.toFixed(4)}`,
+            to: `${toCoords.lat?.toFixed(4)}, ${toCoords.lon?.toFixed(4)}`
+          }
         }
       };
     } catch (error) {
@@ -48,37 +105,54 @@ export class BusSearchService {
     }
   }
 
-  /**
-   * Find buses near a specific location
-   */
   async findNearbyBuses(coords, radius = 1000) {
     try {
-      const response = await fetch(
-        `${this.baseURL}/api/v1/get/search?lat=${coords.lat}&lng=${coords.lon}&radius=${radius}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          }
-        }
+      // Use the correct coordinate property names for the API
+      const lat = coords.lat || coords.latitude;
+      const lng = coords.lon || coords.lng || coords.longitude;
+      
+      if (!lat || !lng) {
+        throw new Error('Invalid coordinates provided');
+      }
+      
+      const response = await apiConnector("GET",
+        `${this.baseURL}/get/search?lat=${lat}&lng=${lng}&radius=${radius}`
       );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const buses = await response.json();
+      const data = await response.json();
       
-      // Add distance calculation to each bus
-      return buses.map(bus => ({
-        ...bus,
-        distanceFromSearch: this.calculateDistance(
-          coords.lat, 
-          coords.lon, 
-          bus.location.coordinates[1], // lat
-          bus.location.coordinates[0]  // lng
-        )
-      })).sort((a, b) => a.distanceFromSearch - b.distanceFromSearch);
+      // Handle different API response formats
+      let buses = [];
+      if (data.success && data.buses) {
+        buses = data.buses;
+      } else if (Array.isArray(data)) {
+        buses = data;
+      } else {
+        buses = [];
+      }
+      
+      // Transform and add distance calculation to each bus
+      return buses.map(bus => {
+        const transformedBus = this.transformBusData(bus);
+        
+        // Calculate distance if not already provided
+        if (!transformedBus.distanceFromSearch) {
+          const busLat = transformedBus.lat || transformedBus.latitude;
+          const busLng = transformedBus.lng || transformedBus.longitude;
+          
+          if (busLat && busLng) {
+            transformedBus.distanceFromSearch = this.calculateDistance(
+              lat, lng, busLat, busLng
+            );
+          }
+        }
+        
+        return transformedBus;
+      }).sort((a, b) => (a.distanceFromSearch || 0) - (b.distanceFromSearch || 0));
 
     } catch (error) {
       console.error('Error finding nearby buses:', error);
@@ -86,9 +160,6 @@ export class BusSearchService {
     }
   }
 
-  /**
-   * Find buses that have routes connecting the from and to points
-   */
   findBusesAlongRoute(fromBuses, toBuses, fromCoords, toCoords) {
     // Create sets of bus IDs for efficient lookup
     const fromBusIds = new Set(fromBuses.map(bus => bus.deviceID));
@@ -143,19 +214,34 @@ export class BusSearchService {
     let nearTo = false;
     
     bus.route.forEach(point => {
+      let lat, lng;
+      
+      // Handle different route point formats
       if (point.coordinates && point.coordinates.length >= 2) {
-        const [lng, lat] = point.coordinates;
-        
-        const distanceFromStart = this.calculateDistance(
-          fromCoords.lat, fromCoords.lon, lat, lng
-        );
-        const distanceFromEnd = this.calculateDistance(
-          toCoords.lat, toCoords.lon, lat, lng
-        );
-        
-        if (distanceFromStart <= threshold) nearFrom = true;
-        if (distanceFromEnd <= threshold) nearTo = true;
+        [lng, lat] = point.coordinates; // GeoJSON format
+      } else if (point.lat && point.lng) {
+        lat = point.lat;
+        lng = point.lng;
+      } else if (point.latitude && point.longitude) {
+        lat = point.latitude;
+        lng = point.longitude;
+      } else {
+        return; // Skip invalid points
       }
+      
+      const distanceFromStart = this.calculateDistance(
+        fromCoords.lat || fromCoords.latitude, 
+        fromCoords.lon || fromCoords.lng || fromCoords.longitude, 
+        lat, lng
+      );
+      const distanceFromEnd = this.calculateDistance(
+        toCoords.lat || toCoords.latitude, 
+        toCoords.lon || toCoords.lng || toCoords.longitude, 
+        lat, lng
+      );
+      
+      if (distanceFromStart <= threshold) nearFrom = true;
+      if (distanceFromEnd <= threshold) nearTo = true;
     });
     
     return nearFrom && nearTo;
@@ -175,24 +261,39 @@ export class BusSearchService {
     let toIndex = -1;
     
     bus.route.forEach((point, index) => {
+      let lat, lng;
+      
+      // Handle different route point formats
       if (point.coordinates && point.coordinates.length >= 2) {
-        const [lng, lat] = point.coordinates;
-        
-        const distanceFromStart = this.calculateDistance(
-          fromCoords.lat, fromCoords.lon, lat, lng
-        );
-        const distanceFromEnd = this.calculateDistance(
-          toCoords.lat, toCoords.lon, lat, lng
-        );
-        
-        if (distanceFromStart < minFromDistance) {
-          minFromDistance = distanceFromStart;
-          fromIndex = index;
-        }
-        if (distanceFromEnd < minToDistance) {
-          minToDistance = distanceFromEnd;
-          toIndex = index;
-        }
+        [lng, lat] = point.coordinates;
+      } else if (point.lat && point.lng) {
+        lat = point.lat;
+        lng = point.lng;
+      } else if (point.latitude && point.longitude) {
+        lat = point.latitude;
+        lng = point.longitude;
+      } else {
+        return;
+      }
+      
+      const distanceFromStart = this.calculateDistance(
+        fromCoords.lat || fromCoords.latitude, 
+        fromCoords.lon || fromCoords.lng || fromCoords.longitude, 
+        lat, lng
+      );
+      const distanceFromEnd = this.calculateDistance(
+        toCoords.lat || toCoords.latitude, 
+        toCoords.lon || toCoords.lng || toCoords.longitude, 
+        lat, lng
+      );
+      
+      if (distanceFromStart < minFromDistance) {
+        minFromDistance = distanceFromStart;
+        fromIndex = index;
+      }
+      if (distanceFromEnd < minToDistance) {
+        minToDistance = distanceFromEnd;
+        toIndex = index;
       }
     });
     
@@ -249,11 +350,20 @@ export class BusSearchService {
    */
   async getBusById(deviceId) {
     try {
-      const response = await fetch(`${this.baseURL}/api/v1/bus/${deviceId}`);
+      const response = await apiConnector("GET",`${this.baseURL}/bus/${deviceId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      return await response.json();
+      const data = await response.json();
+      
+      // Handle different response formats
+      if (data.success && data.latestLocations) {
+        return this.transformBusData(data.latestLocations);
+      } else if (data.latestLocations) {
+        return this.transformBusData(data.latestLocations);
+      } else {
+        return this.transformBusData(data);
+      }
     } catch (error) {
       console.error('Error fetching bus by ID:', error);
       throw error;

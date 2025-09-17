@@ -37,6 +37,6 @@ const busSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
- busSchema.index({ location: "2dsphere" });
+busSchema.index({ location: "2dsphere" });
 const Location = mongoose.model("Location", busSchema);
 export default Location;
