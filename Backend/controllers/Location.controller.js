@@ -964,12 +964,12 @@ export const getAllBus = async (req, res) => {
       }))
     );
     
-    const pipeline = [
+     const pipeline = [
       {
         $geoNear: {
           near: {
             type: "Point",
-            coordinates: [longitude, latitude], // GeoJSON format
+            coordinates: [longitude, latitude],
           },
           distanceField: "distanceFromSearch",
           maxDistance: searchRadius,
@@ -989,20 +989,23 @@ export const getAllBus = async (req, res) => {
               },
               else: {
                 $concat: [
-                  { $toString: { $round: { $divide: ["$distanceFromSearch", 100] } } },
-                  "0m"
+                  {
+                    $toString: {
+                      $round: [
+                        { $divide: ["$distanceFromSearch", 1000] },
+                        1
+                      ]
+                    }
+                  },
+                  "km"
                 ]
               }
             }
           }
         }
       },
-      {
-        $sort: { distanceFromSearch: 1 },
-      },
-      {
-        $limit: 100
-      }
+      { $sort: { distanceFromSearch: 1 } },
+      { $limit: 100 }
     ];
 
     console.log(`[getAllBus] Running aggregation pipeline...`);
