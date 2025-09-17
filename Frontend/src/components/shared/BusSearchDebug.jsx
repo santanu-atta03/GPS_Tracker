@@ -466,7 +466,7 @@ const BusSearchDebug = () => {
           </li>
           <li className="flex items-start">
             <span className="text-red-500 mr-2">•</span>
-            <span><strong>Missing geospatial index:</strong> Run <code>{db.locations.createIndex({"location": "2dsphere"})}</code> in MongoDB</span>
+            {/* <span><strong>Missing geospatial index:</strong> Run <code>{db.locations.createIndex({"location": "2dsphere"})}</code> in MongoDB</span> */}
           </li>
           <li className="flex items-start">
             <span className="text-red-500 mr-2">•</span>

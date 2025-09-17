@@ -490,7 +490,7 @@ export class BusSearchService {
 
       // FIXED: Use the correct route search endpoint
       const response = await apiConnector("GET", 
-        `${this.baseURL}/route/search?fromLat=${fromCoords.lat}&fromLng=${fromCoords.lng}&toLat=${toCoords.lat}&toLng=${toCoords.lng}&radius=${radius}`
+        `${this.baseURL}/route/search?fromLat=${fromCoords.lat}&fromLng=${fromCoords.lon}&toLat=${toCoords.lat}&toLng=${toCoords.lon}&radius=${radius}`
       );
       
       if (!response || !response.data) {
