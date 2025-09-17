@@ -12,10 +12,15 @@ const BusDetails = mongoose.Schema({
     type: String,
   },
   driver: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Driver",
-      required: true,
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Driver",
+    required: true,
+  },
+  location: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Location",
+    required: true,
+  },
 });
 
 const Bus = mongoose.model("Bus", BusDetails);
