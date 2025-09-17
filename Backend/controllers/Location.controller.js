@@ -1089,17 +1089,17 @@ export const getBusesAlongRoute = async (req, res) => {
   const toLongitude = parseFloat(toLon);
   
   console.log(`[getBusesAlongRoute] Parsed coordinates:`, {
-    from: [fromLatitude, fromLongitude],
-    to: [toLatitude, toLongitude],
+    from: [fromLatitude, fromLon],
+    to: [toLatitude, toLon],
     radius: searchRadius
   });
   
   // Validate all coordinates
   const coords = [
-    { name: 'fromLat', value: fromLatitude },
-    { name: 'fromLng', value: fromLongitude },
-    { name: 'toLat', value: toLatitude },
-    { name: 'toLng', value: toLongitude }
+    { name: 'fromLat', value: fromLat },
+    { name: 'fromLng', value: fromLon },
+    { name: 'toLat', value: toLat },
+    { name: 'toLon', value: toLon }
   ];
   
   const invalidCoords = coords.filter(coord => 
@@ -1117,7 +1117,7 @@ export const getBusesAlongRoute = async (req, res) => {
   }
   
   try {
-    console.log(`[getBusesAlongRoute] Searching route: (${fromLatitude}, ${fromLongitude}) -> (${toLatitude}, ${toLongitude})`);
+    console.log(`[getBusesAlongRoute] Searching route: (${fromLat}, ${fromLon}) -> (${toLat}, ${toLon})`);
     
     // Debug: Check total buses
     const totalBuses = await Location.countDocuments();
@@ -1129,7 +1129,7 @@ export const getBusesAlongRoute = async (req, res) => {
         $geoNear: {
           near: {
             type: "Point",
-            coordinates: [fromLongitude, fromLatitude] // GeoJSON [lng, lat]
+            coordinates: [fromLon, fromLat] // GeoJSON [lng, lat]
           },
           distanceField: "distanceFromStart",
           maxDistance: searchRadius,
@@ -1143,7 +1143,7 @@ export const getBusesAlongRoute = async (req, res) => {
         $geoNear: {
           near: {
             type: "Point",
-            coordinates: [toLongitude, toLatitude] // GeoJSON [lng, lat]
+            coordinates: [toLon, toLat] // GeoJSON [lng, lat]
           },
           distanceField: "distanceFromEnd",
           maxDistance: searchRadius,
