@@ -21,11 +21,11 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-const jwtCheck = auth({
-  audience: process.env.AUTH0_AUDIENCE,
-  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
-  tokenSigningAlg: "RS256",
-});
+// const jwtCheck = auth({
+//   audience: process.env.AUTH0_AUDIENCE,
+//   issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
+//   tokenSigningAlg: "RS256",
+// });
 
 // ✅ Secured Test Route
 app.get("/authorized", (req, res) => {
