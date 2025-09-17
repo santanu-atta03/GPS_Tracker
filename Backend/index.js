@@ -45,7 +45,7 @@ app.get("/api/v1/search", async (req, res) => {
   try {
     const query = req.query.q;
     const response = await fetch(
-      `https://us1.locationiq.com/v1/search?key=${process.env.LOCATIONIQ_API_KEY}&q=${encodeURIComponent(query)}&format=json`,
+      `https://us1.locationiq.com/v1/search?key=LOCATIONIQ_API_KEY = pk.769b04a589221b0a3c78f5a7509d19ba&q=${encodeURIComponent(query)}&format=json`,
       {
         headers: {
           "User-Agent": "myapp/1.0", // Nominatim requires this
@@ -67,7 +67,7 @@ app.get("/api/v1/reverse-geocode", async (req, res) => {
       return res.status(400).json({ error: "Missing 'lat' or 'lon' parameter" });
     }
 
-    const url = `https://us1.locationiq.com/v1/reverse?key=${process.env.LOCATIONIQ_API_KEY}&lat=${lat}&lon=${lon}&format=json`;
+    const url = `https://us1.locationiq.com/v1/reverse?key=LOCATIONIQ_API_KEY = pk.769b04a589221b0a3c78f5a7509d19badone secne&lat=${lat}&lon=${lon}&format=json`;
 
     const response = await fetch(url, {
       headers: {
