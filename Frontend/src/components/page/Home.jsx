@@ -93,7 +93,7 @@ const Home = ({ onSearch, onBusSelect }) => {
           radius: 1000, // 1km radius
           maxResults: 20
         });
-
+        console.log("Printing result in home : ",result)
         if (result.success) {
           setSearchResults(result.buses || []);
           setSearchMetadata(result.metadata);

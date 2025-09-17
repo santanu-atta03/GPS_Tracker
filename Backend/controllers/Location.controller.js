@@ -109,15 +109,14 @@ export const createBusId = async (req, res) => {
   }
 };
 
-
 export const getAllBus = async (req, res) => {
   const { lat, lng, radius } = req.query;
-  
+
   // Validation
   if (!lat || !lng) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       success: false,
-      message: "lat & lng are required parameters" 
+      message: "lat & lng are required parameters",
     });
   }
 
@@ -126,38 +125,49 @@ export const getAllBus = async (req, res) => {
   const searchRadius = radius ? parseInt(radius) : 1000; // default 1km
 
   // Validate coordinates
-  if (isNaN(latitude) || isNaN(longitude) || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+  if (
+    isNaN(latitude) ||
+    isNaN(longitude) ||
+    latitude < -90 ||
+    latitude > 90 ||
+    longitude < -180 ||
+    longitude > 180
+  ) {
     return res.status(400).json({
       success: false,
-      message: "Invalid coordinates provided"
+      message: "Invalid coordinates provided",
     });
   }
 
   try {
-    const buses = await Location.find({
-      location: {
-        $near: {
-          $geometry: { 
-            type: "Point", 
-            coordinates: [longitude, latitude] // Note: GeoJSON uses [lng, lat]
+    const pipeline = [
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: [longitude, latitude],
           },
-          $maxDistance: searchRadius,
+          distanceField: "distanceFromSearch",
+          maxDistance: searchRadius,
+          spherical: true,
         },
       },
-    }).sort({ lastUpdated: -1 }); // Sort by most recent updates first
+      {
+        $sort: { lastUpdated: -1 },
+      },
+    ];
 
-    // Calculate distance for each bus
-    const busesWithDistance = buses.map(bus => {
-      const busLng = bus.location.coordinates[0];
-      const busLat = bus.location.coordinates[1];
-      const distance = calculateDistance(latitude, longitude, busLat, busLng);
-      
-      return {
-        ...bus.toJSON(),
-        distanceFromSearch: Math.round(distance),
-        formattedDistance: distance < 1000 ? `${Math.round(distance)}m` : `${(distance/1000).toFixed(1)}km`
-      };
-    });
+    const buses = await Location.aggregate(pipeline);
+
+    // Map and format the distance from the aggregation result
+    const busesWithDistance = buses.map((bus) => ({
+      ...bus,
+      distanceFromSearch: Math.round(bus.distanceFromSearch),
+      formattedDistance:
+        bus.distanceFromSearch < 1000
+          ? `${Math.round(bus.distanceFromSearch)}m`
+          : `${(bus.distanceFromSearch / 1000).toFixed(1)}km`,
+    }));
 
     res.json({
       success: true,
@@ -166,19 +176,88 @@ export const getAllBus = async (req, res) => {
         searchLocation: { latitude, longitude },
         radius: searchRadius,
         totalFound: busesWithDistance.length,
-        searchTime: new Date().toISOString()
-      }
+        searchTime: new Date().toISOString(),
+      },
     });
-
   } catch (err) {
-    console.error('Error in getAllBus:', err);
-    res.status(500).json({ 
+    console.error("Error in getAllBus:", err);
+    res.status(500).json({
       success: false,
       message: "Server error while searching for buses",
-      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
     });
   }
 };
+
+// export const getAllBus = async (req, res) => {
+//   const { lat, lng, radius } = req.query;
+  
+//   // Validation
+//   if (!lat || !lng) {
+//     return res.status(400).json({ 
+//       success: false,
+//       message: "lat & lng are required parameters" 
+//     });
+//   }
+
+//   const latitude = parseFloat(lat);
+//   const longitude = parseFloat(lng);
+//   const searchRadius = radius ? parseInt(radius) : 1000; // default 1km
+
+//   // Validate coordinates
+//   if (isNaN(latitude) || isNaN(longitude) || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Invalid coordinates provided"
+//     });
+//   }
+
+//   try {
+//     const buses = await Location.find({
+//       location: {
+//         $near: {
+//           $geometry: { 
+//             type: "Point", 
+//             coordinates: [longitude, latitude] // Note: GeoJSON uses [lng, lat]
+//           },
+//           $maxDistance: searchRadius,
+//         },
+//       },
+//     }).sort({ lastUpdated: -1 }); // Sort by most recent updates first
+
+//     // Calculate distance for each bus
+//     const busesWithDistance = buses.map(bus => {
+//       const busLng = bus.location.coordinates[0];
+//       const busLat = bus.location.coordinates[1];
+//       const distance = calculateDistance(latitude, longitude, busLat, busLng);
+      
+//       return {
+//         ...bus.toJSON(),
+//         distanceFromSearch: Math.round(distance),
+//         formattedDistance: distance < 1000 ? `${Math.round(distance)}m` : `${(distance/1000).toFixed(1)}km`
+//       };
+//     });
+
+//     res.json({
+//       success: true,
+//       buses: busesWithDistance,
+//       metadata: {
+//         searchLocation: { latitude, longitude },
+//         radius: searchRadius,
+//         totalFound: busesWithDistance.length,
+//         searchTime: new Date().toISOString()
+//       }
+//     });
+
+//   } catch (err) {
+//     console.error('Error in getAllBus:', err);
+//     res.status(500).json({ 
+//       success: false,
+//       message: "Server error while searching for buses",
+//       error: process.env.NODE_ENV === 'development' ? err.message : undefined
+//     });
+//   }
+// };
 
 /**
  * Get buses along a route (between two points)

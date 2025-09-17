@@ -115,10 +115,11 @@ export class BusSearchService {
         throw new Error('Invalid coordinates provided');
       }
       
+      console.log("before response in find nearby bus : ",lat,lng);
       const response = await apiConnector("GET",
         `${this.baseURL}/get/search?lat=${lat}&lng=${lng}&radius=${radius}`
       );
-
+      console.log("Printing response in find nearby bus : ",response);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
