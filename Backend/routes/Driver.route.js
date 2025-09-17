@@ -4,6 +4,6 @@ import { createDriver, updateProfile, userFindByEmail } from "../controllers/Dri
 const driverRoute = express.Router()
 
 driverRoute.post("/createUser",isAuthenticated, createDriver)
-driverRoute.get("/veryfi/email",isAuthenticated,userFindByEmail)
+driverRoute.get("/veryfi/email/:email",userFindByEmail)
 driverRoute.put("/update/profile",isAuthenticated, updateProfile)
 export default  driverRoute

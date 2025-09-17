@@ -1,25 +1,31 @@
- import './App.css'
-import BusDetailsPage from './components/page/BusDetailsPage';
-import Home from './components/page/Home'
-import { useState } from 'react';
-import { Route, Routes,BrowserRouter } from 'react-router-dom';
-import 'leaflet/dist/leaflet.css';
-
+import "./App.css";
+import BusDetailsPage from "./components/page/BusDetailsPage";
+import Home from "./components/page/Home";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "leaflet/dist/leaflet.css";
+import Complete from "./components/page/Complete";
 
 function App() {
+  const approute = createBrowserRouter([
+    {
+      path: "/",
+      element: <Home />,
+    },
+    {
+      path: "/bus/:deviceID",
+      element: <BusDetailsPage />,
+    },
+    {
+      path: "/complete/profile",
+      element: <Complete />,
+    },
+  ]);
 
   return (
-    <div className="font-sans">
-      <BrowserRouter>
-      <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/bus/:deviceID' element={<BusDetailsPage />} />
-      </Routes>
-      </BrowserRouter>
-      
-      
-    </div>
+    <>
+      <RouterProvider router={approute} />
+    </>
   );
 }
 
-export default App
+export default App;
