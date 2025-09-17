@@ -1,3 +1,4 @@
+import Bus from "../models/Bus.model.js";
 import Location from "../models/Location.model.js";
 
 export const updatelocation = async (req, res) => {
@@ -490,3 +491,51 @@ function analyzeRouteForJourney(bus, journey) {
     isCorrectDirection: directionScore > 0
   };
 }
+export const getAllBusDetails = async (req, res) => {
+  try {
+    const buses = await Bus.find({})
+      .populate("driver")
+      .populate("location"); // this brings full Location doc
+
+    if (!buses || buses.length === 0) {
+      return res.status(404).json({
+        message: "No buses found",
+        success: false,
+      });
+    }
+
+    const busData = buses.map((bus) => {
+      // if populated location exists
+      const loc = bus.location;
+
+      return {
+        deviceID: bus.deviceID,
+        from: bus.from,
+        to: bus.to,
+        driver: {
+          id: bus.driver?._id,
+          name: bus.driver?.name,
+          experience: bus.driver?.driverExp,
+        },
+        location: loc
+          ? {
+              coordinates: loc.location?.coordinates || [0, 0],
+              lastUpdated: loc.lastUpdated || null,
+            }
+          : {
+              coordinates: [0, 0],
+              lastUpdated: null,
+            },
+      };
+    });
+
+    return res.status(200).json({
+      message: "All bus details found",
+      success: true,
+      buses: busData,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", success: false });
+  }
+};

@@ -7,6 +7,7 @@ import Complete from "./components/page/Complete";
 import Bus from "./components/page/Bus";
 import CreateBus from "./components/page/CreateBus";
 import Profile from "./components/page/Profile";
+import BusMap from "./components/page/BusMap";
 
 function App() {
   const approute = createBrowserRouter([
@@ -33,6 +34,10 @@ function App() {
     {
       path:"/profile",
       element:<Profile/>
+    },
+    {
+      path:"/view/map",
+      element:<BusMap/>
     }
   ]);
 
