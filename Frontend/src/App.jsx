@@ -7,6 +7,7 @@ import Complete from "./components/page/Complete";
 import Bus from "./components/page/Bus";
 
 function App() {
+ 
   const approute = createBrowserRouter([
     {
       path: "/",
@@ -30,6 +31,7 @@ function App() {
     <>
       <RouterProvider router={approute} />
     </>
+ 
   );
 }
 
