@@ -14,6 +14,7 @@ import {
   Phone,
   Activity 
 } from 'lucide-react';
+import BusSearchDebug from './BusSearchDebug';
 
 const BusCard = ({ bus, onBusSelect, searchType, searchMetadata }) => {
   const handleClick = () => {
@@ -343,6 +344,7 @@ const BusSearchResults = ({
             : "No buses found in this area. Try expanding your search radius or searching in a different location."
           }
         </p>
+        <BusSearchDebug />
         <div className="flex justify-center space-x-4">
           <button
             onClick={() => window.location.reload()}
