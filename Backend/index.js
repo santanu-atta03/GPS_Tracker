@@ -41,21 +41,24 @@ app.use(cookieParser());
 app.use("/api/v1", locationRoute);
 app.use("/api/v1/driver", driverRoute);
 app.use("/api/v1/Bus",BusRoute)
-app.get("/api/v1/reverse-geocode", async (req, res) => {
+app.get("/api/v1/search", async (req, res) => {
   try {
-    const { lat, lon } = req.query;
+    const query = req.query.q;
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
+      `https://nominatim.openstreetmap.org/search?format=json&q=${query}`,
       {
-        headers: { "User-Agent": "myapp/1.0" },
+        headers: {
+          "User-Agent": "myapp/1.0", // Nominatim requires this
+        },
       }
     );
     const data = await response.json();
     res.json(data);
   } catch (err) {
-    res.status(500).json({ error: "Failed to reverse geocode" });
+    res.status(500).json({ error: "Failed to fetch from Nominatim" });
   }
 });
+
 
 app.get("/api/v1/reverse-geocode", async (req, res) => {
   try {
