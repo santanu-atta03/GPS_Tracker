@@ -57,6 +57,25 @@ app.get("/api/v1/reverse-geocode", async (req, res) => {
   }
 });
 
+app.get("/api/v1/reverse-geocode", async (req, res) => {
+  try {
+    const { lat, lon } = req.query;
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
+      {
+        headers: {
+          "User-Agent": "myapp/1.0",
+        },
+      }
+    );
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch reverse geocoding data" });
+  }
+});
+
 app.get("/", (req, res) => {
   return res.status(200).json({
     message: "Hello from backend",
