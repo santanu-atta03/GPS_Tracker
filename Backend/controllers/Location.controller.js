@@ -730,8 +730,8 @@ function analyzeRouteForJourney(bus, journey) {
   };
 
   // Get bus current location
-  const busLat = bus.location?.coordinates?.[1];
-  const busLng = bus.location?.coordinates?.[0];
+  const busLat = bus.location?.coordinates?.[0];
+  const busLng = bus.location?.coordinates?.[1];
   
   if (busLat && busLng) {
     analysis.fromDistance = calculateDistance(journey.from.lat, journey.from.lng, busLat, busLng);
@@ -747,7 +747,7 @@ function analyzeRouteForJourney(bus, journey) {
     
     bus.route.forEach((point, index) => {
       if (point.coordinates && Array.isArray(point.coordinates) && point.coordinates.length >= 2) {
-        const [lng, lat] = point.coordinates;
+        const [lat, lng] = point.coordinates;
 
         const distanceFromStart = calculateDistance(
           journey.from.lat, journey.from.lng, lat, lng
