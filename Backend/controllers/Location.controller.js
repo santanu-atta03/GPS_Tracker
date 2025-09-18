@@ -564,6 +564,7 @@ export const getBusesAlongRoute = async (req, res) => {
     // FIXED: Analyze each bus for route relevance
     const analyzedBuses = allBuses.map(bus => {
       // Get bus coordinates
+      console.log("[getBusesAlongRoute] lat & lon : ",bus)
       const busLat = bus.location?.coordinates?.[0];
       const busLng = bus.location?.coordinates?.[1];
       
