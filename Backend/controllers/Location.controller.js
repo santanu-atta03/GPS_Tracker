@@ -759,23 +759,23 @@ function analyzeRouteForJourney(bus, journey) {
   return analysis;
 }
  
-  });
+//   });
   
-  const directionScore = toIndex > fromIndex ? 1 : -0.5;
-  const maxDistance = 2000;
-  const fromScore = Math.max(0, (maxDistance - minFromDistance) / maxDistance);
-  const toScore = Math.max(0, (maxDistance - minToDistance) / maxDistance);
-  const score = (fromScore + toScore) * directionScore;
+//   const directionScore = toIndex > fromIndex ? 1 : -0.5;
+//   const maxDistance = 2000;
+//   const fromScore = Math.max(0, (maxDistance - minFromDistance) / maxDistance);
+//   const toScore = Math.max(0, (maxDistance - minToDistance) / maxDistance);
+//   const score = (fromScore + toScore) * directionScore;
   
-  return {
-    score,
-    fromDistance: minFromDistance,
-    toDistance: minToDistance,
-    fromIndex,
-    toIndex,
-    isCorrectDirection: directionScore > 0
-  };
-}
+//   return {
+//     score,
+//     fromDistance: minFromDistance,
+//     toDistance: minToDistance,
+//     fromIndex,
+//     toIndex,
+//     isCorrectDirection: directionScore > 0
+//   };
+// }
 export const getAllBusDetails = async (req, res) => {
   try {
     const buses = await Bus.find({})
