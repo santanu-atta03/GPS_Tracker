@@ -117,7 +117,7 @@ export const updatelocation = async (req, res) => {
       });
     }
     
-    const coordinates = [lng, lat]; // GeoJSON format [lng, lat]
+    const coordinates = [lat, lng]; // [latitude, longitude] format
     const currentTime = new Date();
     console.log(`[updatelocation] Parsed coordinates:`, coordinates);
     
@@ -132,7 +132,7 @@ export const updatelocation = async (req, res) => {
       if (bus.location && bus.location.coordinates.length > 0) {
         const prevCoords = bus.location.coordinates;
         const distance = calculateDistance(
-          prevCoords[1], prevCoords[0], 
+          prevCoords[0], prevCoords[1], 
           lat, lng
         );
         
@@ -196,7 +196,7 @@ export const updatelocation = async (req, res) => {
     logError('updatelocation', error, req.body);
     res.status(500).json({ success: false, error: error.message });
   }
-};
+};updating location
 
 export const getAllBus = async (req, res) => {
   const { lat, lng, radius } = req.query;
