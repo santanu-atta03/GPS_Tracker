@@ -1,4 +1,4 @@
-  
+
 import Bus from "../models/Bus.model.js";
 import Location from "../models/Location.model.js";
 
