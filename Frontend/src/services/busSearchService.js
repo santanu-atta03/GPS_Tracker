@@ -352,7 +352,7 @@ export class BusSearchService {
       }
 
       // FIXED: Use correct parameter names (fromLon, toLon)
-      const apiUrl = `${this.baseURL}/api/v1/route/search?fromLat=${fromCoords.lat}&fromLon=${fromCoords.lon}&toLat=${toCoords.lat}&toLon=${toCoords.lon}&radius=${radius}`;
+      const apiUrl = `${this.baseURL}/route/search?fromLat=${fromCoords.lat}&fromLon=${fromCoords.lon}&toLat=${toCoords.lat}&toLon=${toCoords.lon}&radius=${radius}`;
       
       console.log('🌐 API URL:', apiUrl);
 
@@ -460,7 +460,7 @@ export class BusSearchService {
         throw new Error(`Coordinates out of valid range: lat=${lat} (must be -90 to 90), lng=${lng} (must be -180 to 180)`);
       }
 
-      const apiUrl = `${this.baseURL}/api/v1/get/search?lat=${lat}&lng=${lng}&radius=${radius}`;
+      const apiUrl = `${this.baseURL}/get/search?lat=${lat}&lng=${lng}&radius=${radius}`;
       console.log('🌐 Nearby API URL:', apiUrl);
 
       const response = await apiConnector("GET", apiUrl);
@@ -537,7 +537,7 @@ export class BusSearchService {
         throw new Error('Device ID is required');
       }
 
-      const response = await apiConnector("GET", `${this.baseURL}/api/v1/bus/${deviceId}`);
+      const response = await apiConnector("GET", `${this.baseURL}/bus/${deviceId}`);
       if (!response || !response.data) {
         throw new Error(`HTTP error! status: ${response?.status || 'unknown'}`);
       }

@@ -27,7 +27,7 @@ export default function LocationSearch({
     setIsLoadingSuggestions(true);
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/v1/search?q=${encodeURIComponent(query)}`
+        `${import.meta.env.VITE_BASE_URL}/search?q=${encodeURIComponent(query)}`
       );
       if (!res.ok) throw new Error("Failed to fetch suggestions");
       const data = await res.json();

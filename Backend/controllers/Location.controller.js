@@ -564,8 +564,8 @@ export const getBusesAlongRoute = async (req, res) => {
     // FIXED: Analyze each bus for route relevance
     const analyzedBuses = allBuses.map(bus => {
       // Get bus coordinates
-      const busLat = bus.location?.coordinates?.[1];
-      const busLng = bus.location?.coordinates?.[0];
+      const busLat = bus.location?.coordinates?.[0];
+      const busLng = bus.location?.coordinates?.[1];
       
       if (!busLat || !busLng) {
         console.log(`[getBusesAlongRoute] Bus ${bus.deviceID} has invalid coordinates:`, bus.location?.coordinates);
