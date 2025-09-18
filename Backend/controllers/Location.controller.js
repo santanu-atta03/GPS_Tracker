@@ -1131,6 +1131,7 @@ export const getBusesAlongRoute = async (req, res) => {
             type: "Point",
             coordinates: [fromLon, fromLat] // GeoJSON [lng, lat]
           },
+          key : "location",
           distanceField: "distanceFromStart",
           maxDistance: searchRadius,
           spherical: true,
