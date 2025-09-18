@@ -196,7 +196,7 @@ export const updatelocation = async (req, res) => {
     logError('updatelocation', error, req.body);
     res.status(500).json({ success: false, error: error.message });
   }
-};updating location
+};
 
 export const getAllBus = async (req, res) => {
   const { lat, lng, radius } = req.query;
