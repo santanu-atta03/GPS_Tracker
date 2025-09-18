@@ -1,4 +1,4 @@
-// // services/busSearchService.js
+// services/busSearchService.js - FIXED VERSION
 
 // import { apiConnector } from "./apiConnector";
 
@@ -12,7 +12,7 @@
 //    */
 //   transformBusData(busData) {
 //     if (!busData) return null;
-    
+  
 //     return {
 //       // Core identifiers
 //       deviceID: busData.deviceID,
@@ -24,13 +24,14 @@
 //       busName: busData.busName || `Bus ${busData.deviceID}`,
 //       status: busData.status || 'Active',
       
-//       // Location data - handle both API response formats
+//       // Location data - FIXED coordinate handling
 //       location: busData.location,
 //       currentLocation: busData.currentLocation || 'Live tracking available',
-//       lat: busData.location?.coordinates?.[1] || busData.lat,
-//       lng: busData.location?.coordinates?.[0] || busData.lng,
-//       latitude: busData.location?.coordinates?.[1] || busData.latitude,
-//       longitude: busData.location?.coordinates?.[0] || busData.longitude,
+//       // Handle GeoJSON format [lng, lat] properly
+//       lat: busData.location?.coordinates?.[1] || busData.lat || busData.latitude,
+//       lng: busData.location?.coordinates?.[0] || busData.lng || busData.longitude,
+//       latitude: busData.location?.coordinates?.[1] || busData.latitude || busData.lat,
+//       longitude: busData.location?.coordinates?.[0] || busData.longitude || busData.lng,
       
 //       // Route data
 //       route: busData.route || [],
@@ -50,6 +51,8 @@
       
 //       // Distance data (if available)
 //       distanceFromSearch: busData.distanceFromSearch,
+//       distanceFromStart: busData.distanceFromStart,
+//       distanceFromEnd: busData.distanceFromEnd,
 //       formattedDistance: busData.formattedDistance,
       
 //       // Route match data (if available)
@@ -63,10 +66,10 @@
 //   }
 
 //   /**
-//    * Enhanced route search that finds buses along or near the desired route
+//    * FIXED: Enhanced route search with proper endpoint usage
 //    */
 //   async findBusesByRoute(fromCoords, toCoords, options = {}) {
-//     const { radius = 10000, maxResults = 50 } = options; // Increased default radius to 5km
+//     const { radius = 10000, maxResults = 50 } = options;
 
 //     try {
 //       console.log('Searching for buses along route:', {
@@ -75,89 +78,40 @@
 //         radius
 //       });
 
-//       // Get all buses within a reasonable distance from both points
-//       const [fromBuses, toBuses] = await Promise.all([
-//         this.findNearbyBuses(fromCoords, radius),
-//         this.findNearbyBuses(toCoords, radius)
-//       ]);
-
-//       console.log(`Found ${fromBuses.length} buses near starting point, ${toBuses.length} near destination`);
-
-//       // Combine and deduplicate all buses
-//       const allBusesMap = new Map();
+//       // FIXED: Use the correct route search endpoint
+//       const response = await apiConnector("GET", 
+//         `${this.baseURL}/route/search?fromLat=${fromCoords.lat}&fromLon=${fromCoords.lon}&toLat=${toCoords.lat}&toLon=${toCoords.lon}&radius=${radius}`
+//       );
       
-//       [...fromBuses, ...toBuses].forEach(bus => {
-//         if (!allBusesMap.has(bus.deviceID)) {
-//           allBusesMap.set(bus.deviceID, bus);
-//         }
-//       });
+//       if (!response || !response.data) {
+//         throw new Error('No response data received');
+//       }
 
-//       const allBuses = Array.from(allBusesMap.values());
-//       console.log(`Total unique buses found: ${allBuses.length}`);
+//       const data = response.data;
 
-//       // Analyze each bus for route relevance
-//       const analyzedBuses = allBuses.map(bus => {
-//         const routeAnalysis = this.analyzeRouteForJourney(bus, fromCoords, toCoords);
+//       if (!data.success) {
+//         console.warn('API route search returned success: false', data);
 //         return {
-//           ...bus,
-//           routeMatch: routeAnalysis,
-//           routeRelevanceScore: routeAnalysis.score
+//           success: false,
+//           error: data.message || 'Route search failed',
+//           buses: []
 //         };
-//       });
-
-//       // Filter buses based on route relevance
-//       const relevantBuses = analyzedBuses.filter(bus => {
-//         // Include buses that are either:
-//         // 1. Close to the starting point (within 2km)
-//         // 2. Close to the destination (within 2km)
-//         // 3. Have route points that pass through the journey path
-//         // 4. Have a positive route relevance score
-
-//         const isNearStart = bus.routeMatch.fromDistance <= 2000;
-//         const isNearDestination = bus.routeMatch.toDistance <= 2000;
-//         const hasPositiveScore = bus.routeRelevanceScore > 0;
-//         const passesThrough = bus.routeMatch.passesThrough;
-
-//         return isNearStart || isNearDestination || hasPositiveScore || passesThrough;
-//       });
-
-//       console.log(`Filtered to ${relevantBuses.length} relevant buses`);
-
-//       // Sort by route relevance and proximity
-//       relevantBuses.sort((a, b) => {
-//         // First priority: buses that pass through the route
-//         if (a.routeMatch.passesThrough && !b.routeMatch.passesThrough) return -1;
-//         if (!a.routeMatch.passesThrough && b.routeMatch.passesThrough) return 1;
-
-//         // Second priority: correct direction
-//         if (a.routeMatch.isCorrectDirection && !b.routeMatch.isCorrectDirection) return -1;
-//         if (!a.routeMatch.isCorrectDirection && b.routeMatch.isCorrectDirection) return 1;
-
-//         // Third priority: route relevance score
-//         if (a.routeRelevanceScore !== b.routeRelevanceScore) {
-//           return b.routeRelevanceScore - a.routeRelevanceScore;
-//         }
-
-//         // Finally: distance from starting point
-//         return (a.routeMatch.fromDistance || Infinity) - (b.routeMatch.fromDistance || Infinity);
-//       });
-
-//       const finalResults = relevantBuses.slice(0, maxResults);
+//       }
+      
+//       const buses = data.buses || [];
+//       console.log(`Route API returned ${buses.length} buses`);
+      
+//       const transformedBuses = buses.map(bus => this.transformBusData(bus));
 
 //       return {
 //         success: true,
-//         buses: finalResults,
-//         metadata: {
+//         buses: transformedBuses,
+//         metadata: data.metadata || {
 //           searchType: 'route',
 //           fromCoords,
 //           toCoords,
 //           radius,
-//           totalFound: finalResults.length,
-//           totalScanned: allBuses.length,
-//           routeInfo: {
-//             from: `${fromCoords.lat?.toFixed(4)}, ${fromCoords.lon?.toFixed(4)}`,
-//             to: `${toCoords.lat?.toFixed(4)}, ${toCoords.lon?.toFixed(4)}`
-//           }
+//           totalFound: transformedBuses.length
 //         }
 //       };
 //     } catch (error) {
@@ -171,153 +125,20 @@
 //   }
 
 //   /**
-//    * Enhanced route analysis that checks if a bus route is relevant to the journey
+//    * FIXED: Find nearby buses with better error handling
 //    */
-//   analyzeRouteForJourney(bus, fromCoords, toCoords) {
-//     const analysis = {
-//       score: 0,
-//       fromDistance: Infinity,
-//       toDistance: Infinity,
-//       fromIndex: -1,
-//       toIndex: -1,
-//       isCorrectDirection: false,
-//       passesThrough: false,
-//       routePoints: []
-//     };
-
-//     // Check current location distance
-//     if (bus.lat && bus.lng) {
-//       analysis.fromDistance = Math.min(
-//         analysis.fromDistance,
-//         this.calculateDistance(fromCoords.lat, fromCoords.lon, bus.lat, bus.lng)
-//       );
-//       analysis.toDistance = Math.min(
-//         analysis.toDistance,
-//         this.calculateDistance(toCoords.lat, toCoords.lon, bus.lat, bus.lng)
-//       );
-//     }
-
-//     // Analyze route points if available
-//     if (bus.route && Array.isArray(bus.route) && bus.route.length > 0) {
-//       let minFromDistance = Infinity;
-//       let minToDistance = Infinity;
-//       let closestFromIndex = -1;
-//       let closestToIndex = -1;
-      
-//       bus.route.forEach((point, index) => {
-//         let lat, lng;
-        
-//         // Handle different route point formats
-//         if (point.coordinates && Array.isArray(point.coordinates) && point.coordinates.length >= 2) {
-//           [lng, lat] = point.coordinates; // GeoJSON format [lng, lat]
-//         } else if (point.lat !== undefined && point.lng !== undefined) {
-//           lat = point.lat;
-//           lng = point.lng;
-//         } else if (point.latitude !== undefined && point.longitude !== undefined) {
-//           lat = point.latitude;
-//           lng = point.longitude;
-//         } else {
-//           return; // Skip invalid points
-//         }
-
-//         if (lat === undefined || lng === undefined) return;
-
-//         // Calculate distances to from and to points
-//         const distanceFromStart = this.calculateDistance(
-//           fromCoords.lat || fromCoords.latitude, 
-//           fromCoords.lon || fromCoords.lng || fromCoords.longitude, 
-//           lat, lng
-//         );
-//         const distanceToEnd = this.calculateDistance(
-//           toCoords.lat || toCoords.latitude, 
-//           toCoords.lon || toCoords.lng || toCoords.longitude, 
-//           lat, lng
-//         );
-
-//         // Track closest points
-//         if (distanceFromStart < minFromDistance) {
-//           minFromDistance = distanceFromStart;
-//           closestFromIndex = index;
-//         }
-//         if (distanceToEnd < minToDistance) {
-//           minToDistance = distanceToEnd;
-//           closestToIndex = index;
-//         }
-
-//         // Store route point for analysis
-//         analysis.routePoints.push({
-//           lat, lng, index,
-//           distanceFromStart,
-//           distanceToEnd
-//         });
-//       });
-
-//       analysis.fromDistance = Math.min(analysis.fromDistance, minFromDistance);
-//       analysis.toDistance = Math.min(analysis.toDistance, minToDistance);
-//       analysis.fromIndex = closestFromIndex;
-//       analysis.toIndex = closestToIndex;
-
-//       // Check if route passes through both points (within reasonable distance)
-//       const threshold = 1000; // 1km threshold
-//       const nearFrom = minFromDistance <= threshold;
-//       const nearTo = minToDistance <= threshold;
-//       analysis.passesThrough = nearFrom && nearTo;
-
-//       // Check direction (if destination point comes after starting point in route)
-//       if (closestFromIndex >= 0 && closestToIndex >= 0) {
-//         analysis.isCorrectDirection = closestToIndex > closestFromIndex;
-//       }
-
-//       // Calculate route relevance score
-//       const maxDistance = 3000; // 3km max distance
-//       const fromScore = Math.max(0, (maxDistance - minFromDistance) / maxDistance);
-//       const toScore = Math.max(0, (maxDistance - minToDistance) / maxDistance);
-      
-//       let baseScore = (fromScore + toScore) / 2;
-      
-//       // Bonus for correct direction
-//       if (analysis.isCorrectDirection) {
-//         baseScore *= 1.5;
-//       }
-      
-//       // Bonus for passing through both points
-//       if (analysis.passesThrough) {
-//         baseScore *= 2.0;
-//       }
-      
-//       // Penalty for wrong direction but still some relevance
-//       if (closestFromIndex >= 0 && closestToIndex >= 0 && !analysis.isCorrectDirection) {
-//         baseScore *= 0.3;
-//       }
-
-//       analysis.score = baseScore;
-//     }
-
-//     // If no route data, score based on proximity to either point
-//     if ((!bus.route || bus.route.length === 0) && analysis.fromDistance < Infinity) {
-//       const maxDistance = 2000; // 2km for buses without route data
-//       if (analysis.fromDistance <= maxDistance || analysis.toDistance <= maxDistance) {
-//         const proximityScore = Math.max(
-//           (maxDistance - analysis.fromDistance) / maxDistance,
-//           (maxDistance - analysis.toDistance) / maxDistance
-//         );
-//         analysis.score = Math.max(0, proximityScore * 0.5); // Lower score for buses without route
-//       }
-//     }
-
-//     return analysis;
-//   }
-
-//   /**
-//    * Find nearby buses with improved error handling
-//    */
-//   async findNearbyBuses(coords, radius) {
+//   async findNearbyBuses(coords, radius = 10000) {
 //     try {
 //       const lat = coords.lat || coords.latitude;
-//       const lng = coords.lon || coords.lng || coords.longitude;
+//       const lng = coords.lng || coords.lon || coords.longitude;
 
-//       if (!lat || !lng) {
+//       if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
 //         throw new Error('Invalid coordinates provided');
+//       }
+
+//       // Validate coordinate ranges
+//       if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+//         throw new Error('Coordinates out of valid range');
 //       }
 
 //       console.log(`Searching for buses near: ${lat}, ${lng} within ${radius}m`);
@@ -338,13 +159,12 @@
 //       }
       
 //       const buses = data.buses || [];
-//       console.log(`API returned ${buses.length} buses`);
+//       console.log(`Nearby API returned ${buses.length} buses`);
       
 //       return buses.map(bus => this.transformBusData(bus));
       
 //     } catch (error) {
 //       console.error('Error finding nearby buses:', error);
-//       // Return empty array instead of throwing to allow the search to continue
 //       return [];
 //     }
 //   }
@@ -353,6 +173,8 @@
 //    * Calculate distance between two points using Haversine formula
 //    */
 //   calculateDistance(lat1, lon1, lat2, lon2) {
+//     if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity;
+    
 //     const R = 6371e3; // Earth's radius in meters
 //     const φ1 = lat1 * Math.PI / 180;
 //     const φ2 = lat2 * Math.PI / 180;
@@ -371,6 +193,8 @@
 //    * Format distance for display
 //    */
 //   formatDistance(meters) {
+//     if (!meters || meters === Infinity) return 'Unknown';
+    
 //     if (meters < 1000) {
 //       return `${Math.round(meters)}m`;
 //     } else {
@@ -383,23 +207,51 @@
 //    */
 //   async getBusById(deviceId) {
 //     try {
+//       if (!deviceId) {
+//         throw new Error('Device ID is required');
+//       }
+
 //       const response = await apiConnector("GET",`${this.baseURL}/bus/${deviceId}`);
 //       if (!response || !response.data) {
-//         throw new Error(`HTTP error! status: ${response.status}`);
+//         throw new Error(`HTTP error! status: ${response?.status || 'unknown'}`);
 //       }
 //       const data = response.data;
       
+//       if (!data.success) {
+//         throw new Error(data.message || 'Failed to fetch bus details');
+//       }
+      
 //       // Handle different response formats
-//       if (data.success && data.latestLocations) {
+//       if (data.latestLocations) {
 //         return this.transformBusData(data.latestLocations);
-//       } else if (data.latestLocations) {
-//         return this.transformBusData(data.latestLocations);
+//       } else if (data.bus) {
+//         return this.transformBusData(data.bus);
 //       } else {
 //         return this.transformBusData(data);
 //       }
 //     } catch (error) {
 //       console.error('Error fetching bus by ID:', error);
 //       throw error;
+//     }
+//   }
+
+//   /**
+//    * ADDED: Debug method to test coordinates
+//    */
+//   async debugCoordinates(lat, lng) {
+//     console.log('Debug coordinates:', { lat, lng });
+//     console.log('Lat type:', typeof lat, 'Lng type:', typeof lng);
+//     console.log('Lat valid:', !isNaN(lat) && lat >= -90 && lat <= 90);
+//     console.log('Lng valid:', !isNaN(lng) && lng >= -180 && lng <= 180);
+    
+//     // Test a simple nearby search
+//     try {
+//       const result = await this.findNearbyBuses({ lat, lng }, 5000);
+//       console.log('Debug search result:', result.length, 'buses found');
+//       return result;
+//     } catch (error) {
+//       console.error('Debug search error:', error);
+//       return [];
 //     }
 //   }
 // }
@@ -409,7 +261,6 @@
 
 
 // services/busSearchService.js - FIXED VERSION
-
 import { apiConnector } from "./apiConnector";
 
 export class BusSearchService {
@@ -434,7 +285,7 @@ export class BusSearchService {
       busName: busData.busName || `Bus ${busData.deviceID}`,
       status: busData.status || 'Active',
       
-      // Location data - FIXED coordinate handling
+      // FIXED: Better coordinate handling
       location: busData.location,
       currentLocation: busData.currentLocation || 'Live tracking available',
       // Handle GeoJSON format [lng, lat] properly
@@ -463,7 +314,9 @@ export class BusSearchService {
       distanceFromSearch: busData.distanceFromSearch,
       distanceFromStart: busData.distanceFromStart,
       distanceFromEnd: busData.distanceFromEnd,
+      distanceToEnd: busData.distanceToEnd,
       formattedDistance: busData.formattedDistance,
+      detourRatio: busData.detourRatio,
       
       // Route match data (if available)
       routeMatch: busData.routeMatch,
@@ -476,42 +329,85 @@ export class BusSearchService {
   }
 
   /**
-   * FIXED: Enhanced route search with proper endpoint usage
+   * FIXED: Enhanced route search with better error handling and debugging
    */
   async findBusesByRoute(fromCoords, toCoords, options = {}) {
-    const { radius = 10000, maxResults = 50 } = options;
+    const { radius = 15000, maxResults = 50 } = options; // Increased default radius
 
     try {
-      console.log('Searching for buses along route:', {
+      console.log('🔍 Route Search Parameters:', {
         from: fromCoords,
         to: toCoords,
-        radius
+        radius,
+        baseURL: this.baseURL
       });
 
-      // FIXED: Use the correct route search endpoint
-      const response = await apiConnector("GET", 
-        `${this.baseURL}/route/search?fromLat=${fromCoords.lat}&fromLon=${fromCoords.lon}&toLat=${toCoords.lat}&toLon=${toCoords.lon}&radius=${radius}`
-      );
+      // FIXED: Validate coordinates before making API call
+      if (!fromCoords?.lat || !fromCoords?.lon || !toCoords?.lat || !toCoords?.lon) {
+        throw new Error('Invalid coordinates: missing lat/lon values');
+      }
+
+      if (isNaN(fromCoords.lat) || isNaN(fromCoords.lon) || isNaN(toCoords.lat) || isNaN(toCoords.lon)) {
+        throw new Error('Invalid coordinates: coordinates are not numbers');
+      }
+
+      // FIXED: Use correct parameter names (fromLon, toLon)
+      const apiUrl = `${this.baseURL}/route/search?fromLat=${fromCoords.lat}&fromLon=${fromCoords.lon}&toLat=${toCoords.lat}&toLon=${toCoords.lon}&radius=${radius}`;
       
+      console.log('🌐 API URL:', apiUrl);
+
+      const response = await apiConnector("GET", apiUrl);
+      
+      console.log('📡 API Response:', {
+        status: response?.status,
+        hasData: !!response?.data,
+        dataKeys: response?.data ? Object.keys(response.data) : 'No data'
+      });
+
       if (!response || !response.data) {
-        throw new Error('No response data received');
+        console.error('❌ No response data received');
+        throw new Error('No response data received from route search API');
       }
 
       const data = response.data;
+      console.log('📊 Response Data:', {
+        success: data.success,
+        busCount: data.buses?.length || 0,
+        metadata: data.metadata,
+        hasDebug: !!data.debug
+      });
 
       if (!data.success) {
-        console.warn('API route search returned success: false', data);
+        console.warn('⚠️  API route search returned success: false', {
+          message: data.message,
+          error: data.error
+        });
         return {
           success: false,
-          error: data.message || 'Route search failed',
+          error: data.message || data.error || 'Route search failed - no specific error message',
           buses: []
         };
       }
       
       const buses = data.buses || [];
-      console.log(`Route API returned ${buses.length} buses`);
+      console.log(`✅ Route API returned ${buses.length} buses`);
+      
+      // Log first few buses for debugging
+      if (buses.length > 0) {
+        console.log('🚌 Sample buses from API:', 
+          buses.slice(0, 2).map(bus => ({
+            deviceID: bus.deviceID,
+            coordinates: bus.location?.coordinates,
+            distanceFromStart: bus.distanceFromStart,
+            distanceToEnd: bus.distanceToEnd,
+            routeScore: bus.routeRelevanceScore
+          }))
+        );
+      }
       
       const transformedBuses = buses.map(bus => this.transformBusData(bus));
+
+      console.log(`🔄 Transformed ${transformedBuses.length} buses`);
 
       return {
         success: true,
@@ -521,15 +417,26 @@ export class BusSearchService {
           fromCoords,
           toCoords,
           radius,
-          totalFound: transformedBuses.length
-        }
+          totalFound: transformedBuses.length,
+          searchTime: new Date().toISOString()
+        },
+        debug: data.debug
       };
     } catch (error) {
-      console.error('Error in findBusesByRoute:', error);
+      console.error('❌ Error in findBusesByRoute:', {
+        message: error.message,
+        stack: error.stack,
+        searchParams: { fromCoords, toCoords, radius }
+      });
       return {
         success: false,
-        error: error.message,
-        buses: []
+        error: `Route search failed: ${error.message}`,
+        buses: [],
+        debug: {
+          searchParams: { fromCoords, toCoords, radius },
+          errorType: error.name,
+          timestamp: new Date().toISOString()
+        }
       };
     }
   }
@@ -542,39 +449,48 @@ export class BusSearchService {
       const lat = coords.lat || coords.latitude;
       const lng = coords.lng || coords.lon || coords.longitude;
 
+      console.log('🔍 Nearby Search Parameters:', { lat, lng, radius });
+
       if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
-        throw new Error('Invalid coordinates provided');
+        throw new Error(`Invalid coordinates provided: lat=${lat}, lng=${lng}`);
       }
 
       // Validate coordinate ranges
       if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-        throw new Error('Coordinates out of valid range');
+        throw new Error(`Coordinates out of valid range: lat=${lat} (must be -90 to 90), lng=${lng} (must be -180 to 180)`);
       }
 
-      console.log(`Searching for buses near: ${lat}, ${lng} within ${radius}m`);
+      const apiUrl = `${this.baseURL}/get/search?lat=${lat}&lng=${lng}&radius=${radius}`;
+      console.log('🌐 Nearby API URL:', apiUrl);
 
-      const response = await apiConnector("GET",
-        `${this.baseURL}/get/search?lat=${lat}&lng=${lng}&radius=${radius}`
-      );
+      const response = await apiConnector("GET", apiUrl);
       
       if (!response || !response.data) {
-        throw new Error('No response data received');
+        throw new Error('No response data received from nearby search API');
       }
 
       const data = response.data;
+      console.log('📡 Nearby API Response:', {
+        success: data.success,
+        busCount: data.buses?.length || 0
+      });
 
       if (!data.success) {
-        console.warn('API search returned success: false', data);
+        console.warn('⚠️  Nearby search returned success: false', data);
         return []; // Return empty array instead of throwing error
       }
       
       const buses = data.buses || [];
-      console.log(`Nearby API returned ${buses.length} buses`);
+      console.log(`✅ Nearby API returned ${buses.length} buses`);
       
       return buses.map(bus => this.transformBusData(bus));
       
     } catch (error) {
-      console.error('Error finding nearby buses:', error);
+      console.error('❌ Error finding nearby buses:', {
+        message: error.message,
+        coords,
+        radius
+      });
       return [];
     }
   }
@@ -621,7 +537,7 @@ export class BusSearchService {
         throw new Error('Device ID is required');
       }
 
-      const response = await apiConnector("GET",`${this.baseURL}/bus/${deviceId}`);
+      const response = await apiConnector("GET", `${this.baseURL}/bus/${deviceId}`);
       if (!response || !response.data) {
         throw new Error(`HTTP error! status: ${response?.status || 'unknown'}`);
       }
@@ -640,28 +556,44 @@ export class BusSearchService {
         return this.transformBusData(data);
       }
     } catch (error) {
-      console.error('Error fetching bus by ID:', error);
+      console.error('❌ Error fetching bus by ID:', error);
       throw error;
     }
   }
 
   /**
-   * ADDED: Debug method to test coordinates
+   * Debug method to test endpoints
    */
-  async debugCoordinates(lat, lng) {
-    console.log('Debug coordinates:', { lat, lng });
-    console.log('Lat type:', typeof lat, 'Lng type:', typeof lng);
-    console.log('Lat valid:', !isNaN(lat) && lat >= -90 && lat <= 90);
-    console.log('Lng valid:', !isNaN(lng) && lng >= -180 && lng <= 180);
-    
-    // Test a simple nearby search
+  async debugEndpoints() {
     try {
-      const result = await this.findNearbyBuses({ lat, lng }, 5000);
-      console.log('Debug search result:', result.length, 'buses found');
-      return result;
+      console.log('🧪 Testing API endpoints...');
+      
+      // Test base connectivity
+      const healthCheck = await fetch(`${this.baseURL}/`);
+      console.log('🏥 Health check:', healthCheck.status);
+      
+      // Test search endpoints with sample data
+      const testCoords = { lat: 28.6139, lng: 77.2090 }; // Delhi coordinates
+      
+      const nearbyTest = await this.findNearbyBuses(testCoords, 5000);
+      console.log('🧪 Nearby test result:', nearbyTest.length, 'buses');
+      
+      const routeTest = await this.findBusesByRoute(
+        testCoords,
+        { lat: 28.7041, lng: 77.1025 }, // Another Delhi location
+        { radius: 5000 }
+      );
+      console.log('🧪 Route test result:', routeTest.buses?.length || 0, 'buses');
+      
+      return {
+        baseURL: this.baseURL,
+        healthCheck: healthCheck.status,
+        nearbySearch: nearbyTest.length,
+        routeSearch: routeTest.buses?.length || 0
+      };
     } catch (error) {
-      console.error('Debug search error:', error);
-      return [];
+      console.error('🧪 Debug endpoints error:', error);
+      return { error: error.message };
     }
   }
 }

@@ -1,49 +1,44 @@
-  
 import Bus from "../models/Bus.model.js";
 import Location from "../models/Location.model.js";
-
-// Enhanced error logging
-const logError = (functionName, error, context = {}) => {
-  console.error(`[${functionName}] Error:`, {
-    message: error.message,
-    stack: error.stack,
-    context,
-    timestamp: new Date().toISOString()
-  });
-};
-
-// Enhanced success logging
-const logSuccess = (functionName, result, context = {}) => {
-  console.log(`[${functionName}] Success:`, {
-    result: typeof result === 'object' ? Object.keys(result) : result,
-    context,
-    timestamp: new Date().toISOString()
-  });
-};
 
 export const updatelocation = async (req, res) => {
   try {
     const { deviceID, latitude, longitude } = req.body;
-    
-    console.log(`[updatelocation] Received request:`, { deviceID, latitude, longitude });
+
+    console.log(`[updatelocation] Received request:`, {
+      deviceID,
+      latitude,
+      longitude,
+    });
 
     if (!deviceID || !latitude || !longitude) {
-      return res.status(400).json({ 
-        success: false, 
+      return res.status(400).json({
+        success: false,
         message: "Missing required fields: deviceID, latitude, longitude",
-        received: { deviceID: !!deviceID, latitude: !!latitude, longitude: !!longitude }
+        received: {
+          deviceID: !!deviceID,
+          latitude: !!latitude,
+          longitude: !!longitude,
+        },
       });
     }
 
     // Validate coordinates
     const lat = parseFloat(latitude);
     const lng = parseFloat(longitude);
-    
-    if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+
+    if (
+      isNaN(lat) ||
+      isNaN(lng) ||
+      lat < -90 ||
+      lat > 90 ||
+      lng < -180 ||
+      lng > 180
+    ) {
       return res.status(400).json({
         success: false,
         message: "Invalid coordinates",
-        details: { latitude: lat, longitude: lng, valid: false }
+        details: { latitude: lat, longitude: lng, valid: false },
       });
     }
 
@@ -59,20 +54,26 @@ export const updatelocation = async (req, res) => {
       if (bus.location && bus.location.coordinates.length > 0) {
         const prevCoords = bus.location.coordinates;
         const distance = calculateDistance(
-          prevCoords[1], prevCoords[0], 
-          lat, lng
+          prevCoords[1],
+          prevCoords[0],
+          lat,
+          lng
         );
-        
-        console.log(`[updatelocation] Distance from previous location: ${distance}m`);
-        
+
+        console.log(
+          `[updatelocation] Distance from previous location: ${distance}m`
+        );
+
         // Only add to route if moved more than 10 meters
         if (distance > 10) {
           bus.route.push({
             type: "Point",
             coordinates: prevCoords,
-            timestamp: bus.lastUpdated || new Date()
+            timestamp: bus.lastUpdated || new Date(),
           });
-          console.log(`[updatelocation] Added route point, total route points: ${bus.route.length}`);
+          console.log(
+            `[updatelocation] Added route point, total route points: ${bus.route.length}`
+          );
         }
       }
 
@@ -87,17 +88,23 @@ export const updatelocation = async (req, res) => {
       }
 
       await bus.save();
-      logSuccess('updatelocation', 'Location updated', { deviceID, coordinates });
+      logSuccess("updatelocation", "Location updated", {
+        deviceID,
+        coordinates,
+      });
       return res.json({ success: true, message: "Location updated", bus });
     } else {
       // If new bus → create new document
       const newBus = new Location({
         deviceID,
         location: { type: "Point", coordinates },
-        route: []
+        route: [],
       });
       await newBus.save();
-      logSuccess('updatelocation', 'New bus created', { deviceID, coordinates });
+      logSuccess("updatelocation", "New bus created", {
+        deviceID,
+        coordinates,
+      });
       return res.json({
         success: true,
         message: "New bus created",
@@ -105,14 +112,14 @@ export const updatelocation = async (req, res) => {
       });
     }
   } catch (error) {
-    logError('updatelocation', error, req.body);
+    logError("updatelocation", error, req.body);
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
 export const getAllBus = async (req, res) => {
   const { lat, lng, radius } = req.query;
-  
+
   console.log(`[getAllBus] Query params:`, { lat, lng, radius });
 
   // Validation
@@ -120,7 +127,7 @@ export const getAllBus = async (req, res) => {
     return res.status(400).json({
       success: false,
       message: "lat & lng are required parameters",
-      received: { lat, lng, radius }
+      received: { lat, lng, radius },
     });
   }
 
@@ -128,7 +135,11 @@ export const getAllBus = async (req, res) => {
   const longitude = parseFloat(lng);
   const searchRadius = radius ? parseInt(radius) : 10000; // Default 10km
 
-  console.log(`[getAllBus] Parsed values:`, { latitude, longitude, searchRadius });
+  console.log(`[getAllBus] Parsed values:`, {
+    latitude,
+    longitude,
+    searchRadius,
+  });
 
   // Validate coordinates
   if (
@@ -142,33 +153,36 @@ export const getAllBus = async (req, res) => {
     return res.status(400).json({
       success: false,
       message: "Invalid coordinates provided",
-      details: { 
-        latitude, 
-        longitude, 
+      details: {
+        latitude,
+        longitude,
         validLat: !isNaN(latitude) && latitude >= -90 && latitude <= 90,
-        validLng: !isNaN(longitude) && longitude >= -180 && longitude <= 180
-      }
+        validLng: !isNaN(longitude) && longitude >= -180 && longitude <= 180,
+      },
     });
   }
 
   try {
-    console.log(`[getAllBus] Searching near ${latitude}, ${longitude} within ${searchRadius}m`);
-    
+    console.log(
+      `[getAllBus] Searching near ${latitude}, ${longitude} within ${searchRadius}m`
+    );
+
     // Debug: Check if there are any buses in the database
     const totalBusCount = await Location.countDocuments();
     console.log(`[getAllBus] Total buses in database: ${totalBusCount}`);
-    
+
     // Debug: Get a sample of buses to check their coordinates
     const sampleBuses = await Location.find({}).limit(3);
-    console.log(`[getAllBus] Sample bus locations:`, 
-      sampleBuses.map(bus => ({
+    console.log(
+      `[getAllBus] Sample bus locations:`,
+      sampleBuses.map((bus) => ({
         deviceID: bus.deviceID,
         coordinates: bus.location?.coordinates,
-        hasLocation: !!bus.location
+        hasLocation: !!bus.location,
       }))
     );
-    
-     const pipeline = [
+
+    const pipeline = [
       {
         $geoNear: {
           near: {
@@ -188,28 +202,25 @@ export const getAllBus = async (req, res) => {
               then: {
                 $concat: [
                   { $toString: { $round: "$distanceFromSearch" } },
-                  "m"
-                ]
+                  "m",
+                ],
               },
               else: {
                 $concat: [
                   {
                     $toString: {
-                      $round: [
-                        { $divide: ["$distanceFromSearch", 1000] },
-                        1
-                      ]
-                    }
+                      $round: [{ $divide: ["$distanceFromSearch", 1000] }, 1],
+                    },
                   },
-                  "km"
-                ]
-              }
-            }
-          }
-        }
+                  "km",
+                ],
+              },
+            },
+          },
+        },
       },
       { $sort: { distanceFromSearch: 1 } },
-      { $limit: 100 }
+      { $limit: 100 },
     ];
 
     console.log(`[getAllBus] Running aggregation pipeline...`);
@@ -217,8 +228,12 @@ export const getAllBus = async (req, res) => {
     console.log(`[getAllBus] Aggregation returned ${buses.length} buses`);
 
     // Debug: Log distances of found buses
-    buses.slice(0, 5).forEach(bus => {
-      console.log(`[getAllBus] Bus ${bus.deviceID}: ${Math.round(bus.distanceFromSearch)}m away`);
+    buses.slice(0, 5).forEach((bus) => {
+      console.log(
+        `[getAllBus] Bus ${bus.deviceID}: ${Math.round(
+          bus.distanceFromSearch
+        )}m away`
+      );
     });
 
     // Format the results
@@ -233,10 +248,14 @@ export const getAllBus = async (req, res) => {
       startTime: bus.startTime || "06:00 AM",
       expectedTime: bus.expectedTime || "Calculating...",
       destinationTime: bus.destinationTime || "08:00 PM",
-      status: bus.status || "Active"
+      status: bus.status || "Active",
     }));
 
-    logSuccess('getAllBus', `Found ${busesWithDistance.length} buses`, { latitude, longitude, searchRadius });
+    logSuccess("getAllBus", `Found ${busesWithDistance.length} buses`, {
+      latitude,
+      longitude,
+      searchRadius,
+    });
 
     res.json({
       success: true,
@@ -250,226 +269,27 @@ export const getAllBus = async (req, res) => {
       },
       debug: {
         coordinates: [longitude, latitude],
-        sampleLocations: sampleBuses.map(b => b.location?.coordinates).filter(Boolean)
-      }
+        sampleLocations: sampleBuses
+          .map((b) => b.location?.coordinates)
+          .filter(Boolean),
+      },
     });
   } catch (err) {
-    logError('getAllBus', err, { latitude, longitude, searchRadius });
-    
+    logError("getAllBus", err, { latitude, longitude, searchRadius });
+
     // Enhanced error response
     res.status(500).json({
       success: false,
       message: "Server error while searching for buses",
       error: process.env.NODE_ENV === "development" ? err.message : undefined,
-      debug: process.env.NODE_ENV === "development" ? {
-        searchParams: { latitude, longitude, searchRadius },
-        errorType: err.name,
-        mongoError: err.code
-      } : undefined
-    });
-  }
-};
-
-/**
- * Enhanced route search with better debugging
- */
-export const getBusesAlongRoute = async (req, res) => {
-  const { fromLat, fromLon, toLat, toLon, radius } = req.query;
-  
-  console.log(`[getBusesAlongRoute] Query params:`, { fromLat, fromLon, toLat, toLon, radius });
-  
-  if (!fromLat || !fromLon || !toLat || !toLon) {
-    return res.status(400).json({
-      success: false,
-      message: "fromLat, fromLng, toLat, toLng are required",
-      received: { fromLat, fromLon, toLat, toLon, radius }
-    });
-  }
-
-  const searchRadius = radius ? parseInt(radius) : 10000; // 10km default
-  const fromLatitude = parseFloat(fromLat);
-  const fromLongitude = parseFloat(fromLon);
-  const toLatitude = parseFloat(toLat);
-  const toLongitude = parseFloat(toLon);
-  
-  console.log(`[getBusesAlongRoute] Parsed coordinates:`, {
-    from: [fromLatitude, fromLon],
-    to: [toLatitude, toLon],
-    radius: searchRadius
-  });
-  
-  // Validate all coordinates
-  const coords = [
-    { name: 'fromLat', value: fromLat },
-    { name: 'fromLng', value: fromLon },
-    { name: 'toLat', value: toLat },
-    { name: 'toLon', value: toLon }
-  ];
-  
-  const invalidCoords = coords.filter(coord => 
-    isNaN(coord.value) || 
-    (coord.name.includes('Lat') && (coord.value < -90 || coord.value > 90)) ||
-    (coord.name.includes('Lng') && (coord.value < -180 || coord.value > 180))
-  );
-  
-  if (invalidCoords.length > 0) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid coordinates",
-      invalidCoords: invalidCoords.map(c => ({ [c.name]: c.value }))
-    });
-  }
-  
-  try {
-    console.log(`[getBusesAlongRoute] Searching route: (${fromLat}, ${fromLon}) -> (${toLat}, ${toLon})`);
-    
-    // Debug: Check total buses
-    const totalBuses = await Location.countDocuments();
-    console.log(`[getBusesAlongRoute] Total buses in database: ${totalBuses}`);
-    
-    // Get all buses within expanded radius from both points
-    const fromSearchPromise = Location.aggregate([
-      {
-        $geoNear: {
-          near: {
-            type: "Point",
-            coordinates: [fromLon, fromLat] // GeoJSON [lng, lat]
-          },
-          distanceField: "distanceFromStart",
-          maxDistance: searchRadius,
-          spherical: true,
-        },
-      }
-    ]);
-    
-    const toSearchPromise = Location.aggregate([
-      {
-        $geoNear: {
-          near: {
-            type: "Point",
-            coordinates: [toLon, toLat] // GeoJSON [lng, lat]
-          },
-          distanceField: "distanceFromEnd",
-          maxDistance: searchRadius,
-          spherical: true,
-        },
-      }
-    ]);
-
-    const [fromBuses, toBuses] = await Promise.all([fromSearchPromise, toSearchPromise]);
-
-    console.log(`[getBusesAlongRoute] Found ${fromBuses.length} buses near start, ${toBuses.length} near end`);
-
-    // Combine and deduplicate buses
-    const allBusesMap = new Map();
-    
-    [...fromBuses, ...toBuses].forEach(bus => {
-      if (!allBusesMap.has(bus.deviceID)) {
-        allBusesMap.set(bus.deviceID, {
-          ...bus,
-          distanceFromStart: bus.distanceFromStart || Infinity,
-          distanceFromEnd: bus.distanceFromEnd || Infinity
-        });
-      } else {
-        // Update with minimum distances
-        const existing = allBusesMap.get(bus.deviceID);
-        existing.distanceFromStart = Math.min(existing.distanceFromStart || Infinity, bus.distanceFromStart || Infinity);
-        existing.distanceFromEnd = Math.min(existing.distanceFromEnd || Infinity, bus.distanceFromEnd || Infinity);
-      }
-    });
-
-    const allBuses = Array.from(allBusesMap.values());
-    console.log(`[getBusesAlongRoute] Total unique buses: ${allBuses.length}`);
-
-    // Analyze each bus for route relevance
-    const analyzedBuses = allBuses.map(bus => {
-      const routeAnalysis = analyzeRouteForJourney(bus, {
-        from: { lat: fromLatitude, lng: fromLongitude },
-        to: { lat: toLatitude, lng: toLongitude }
-      });
-      
-      return {
-        ...bus,
-        routeAnalysis,
-        routeMatch: routeAnalysis, // Backwards compatibility
-        routeRelevanceScore: routeAnalysis.score,
-        // Add mock data
-        driverName: bus.driverName || "Driver Available",
-        driverPhone: bus.driverPhone || "+91-9876543210",
-        startTime: bus.startTime || "06:00 AM",
-        expectedTime: bus.expectedTime || "Calculating...",
-        destinationTime: bus.destinationTime || "08:00 PM",
-        status: bus.status || "Active",
-        distanceFromSearch: Math.min(bus.distanceFromStart || Infinity, bus.distanceFromEnd || Infinity)
-      };
-    });
-
-    // Filter for relevant buses
-    const relevantBuses = analyzedBuses.filter(bus => {
-      const isNearStart = (bus.distanceFromStart || Infinity) <= 5000; // 5km
-      const isNearEnd = (bus.distanceFromEnd || Infinity) <= 5000;
-      const hasPositiveScore = bus.routeRelevanceScore > 0.1;
-      const passesThrough = bus.routeAnalysis.passesThrough;
-      
-      return isNearStart || isNearEnd || hasPositiveScore || passesThrough;
-    });
-
-    console.log(`[getBusesAlongRoute] Filtered to ${relevantBuses.length} relevant buses`);
-
-    // Sort by relevance
-    relevantBuses.sort((a, b) => {
-      // Prioritize buses that pass through the route
-      if (a.routeAnalysis.passesThrough && !b.routeAnalysis.passesThrough) return -1;
-      if (!a.routeAnalysis.passesThrough && b.routeAnalysis.passesThrough) return 1;
-      
-      // Then by correct direction
-      if (a.routeAnalysis.isCorrectDirection && !b.routeAnalysis.isCorrectDirection) return -1;
-      if (!a.routeAnalysis.isCorrectDirection && b.routeAnalysis.isCorrectDirection) return 1;
-      
-      // Then by relevance score
-      return b.routeRelevanceScore - a.routeRelevanceScore;
-    });
-
-    logSuccess('getBusesAlongRoute', `Found ${relevantBuses.length} route buses`, {
-      from: [fromLatitude, fromLongitude],
-      to: [toLatitude, toLongitude]
-    });
-
-    res.json({
-      success: true,
-      buses: relevantBuses.slice(0, 50), // Limit results
-      metadata: {
-        fromLocation: { lat: fromLatitude, lng: fromLongitude },
-        toLocation: { lat: toLatitude, lng: toLongitude },
-        radius: searchRadius,
-        fromBusesCount: fromBuses.length,
-        toBusesCount: toBuses.length,
-        routeBusesCount: relevantBuses.length,
-        totalInDatabase: totalBuses,
-        searchTime: new Date().toISOString()
-      },
-      debug: {
-        fromSearchCoords: [fromLongitude, fromLatitude],
-        toSearchCoords: [toLongitude, toLatitude],
-        analysisResults: analyzedBuses.slice(0, 3).map(bus => ({
-          deviceID: bus.deviceID,
-          score: bus.routeRelevanceScore,
-          passesThrough: bus.routeAnalysis.passesThrough,
-          isCorrectDirection: bus.routeAnalysis.isCorrectDirection
-        }))
-      }
-    });
-
-  } catch (err) {
-    logError('getBusesAlongRoute', err, { fromLatitude, fromLongitude, toLatitude, toLongitude, searchRadius });
-    res.status(500).json({
-      success: false,
-      message: "Server error while searching for route buses",
-      error: process.env.NODE_ENV === 'development' ? err.message : undefined,
-      debug: process.env.NODE_ENV === 'development' ? {
-        searchParams: { fromLatitude, fromLongitude, toLatitude, toLongitude, searchRadius },
-        errorType: err.name
-      } : undefined
+      debug:
+        process.env.NODE_ENV === "development"
+          ? {
+              searchParams: { latitude, longitude, searchRadius },
+              errorType: err.name,
+              mongoError: err.code,
+            }
+          : undefined,
     });
   }
 };
@@ -479,29 +299,39 @@ export const debugDatabase = async (req, res) => {
   try {
     const stats = {
       totalBuses: await Location.countDocuments(),
-      busesWithLocation: await Location.countDocuments({ location: { $exists: true } }),
-      busesWithRoute: await Location.countDocuments({ 'route.0': { $exists: true } }),
-      sampleBuses: await Location.find({}).limit(5).select('deviceID location route')
+      busesWithLocation: await Location.countDocuments({
+        location: { $exists: true },
+      }),
+      busesWithRoute: await Location.countDocuments({
+        "route.0": { $exists: true },
+      }),
+      sampleBuses: await Location.find({})
+        .limit(5)
+        .select("deviceID location route"),
     };
-    
+
     // Check indexes
     const indexes = await Location.collection.getIndexes();
-    
+
     res.json({
       success: true,
       debug: {
         ...stats,
         indexes: Object.keys(indexes),
-        hasGeoIndex: Object.keys(indexes).some(key => key.includes('location')),
-        sampleCoordinates: stats.sampleBuses.map(bus => ({
+        hasGeoIndex: Object.keys(indexes).some((key) =>
+          key.includes("location")
+        ),
+        sampleCoordinates: stats.sampleBuses.map((bus) => ({
           deviceID: bus.deviceID,
           coordinates: bus.location?.coordinates,
-          coordinateType: bus.location?.coordinates ? typeof bus.location.coordinates[0] : 'none'
-        }))
-      }
+          coordinateType: bus.location?.coordinates
+            ? typeof bus.location.coordinates[0]
+            : "none",
+        })),
+      },
     });
   } catch (error) {
-    logError('debugDatabase', error);
+    logError("debugDatabase", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
@@ -511,7 +341,7 @@ export const getLocation = async (req, res) => {
   try {
     const { deviceID } = req.params;
     console.log(`[getLocation] Looking for device: ${deviceID}`);
-    
+
     if (!deviceID) {
       return res.status(404).json({
         message: "deviceID not found",
@@ -527,15 +357,15 @@ export const getLocation = async (req, res) => {
         success: false,
       });
     }
-    
-    logSuccess('getLocation', 'Device found', { deviceID });
+
+    logSuccess("getLocation", "Device found", { deviceID });
     return res.status(200).json({
       message: "device location get successfully",
       latestLocations,
       success: true,
     });
   } catch (error) {
-    logError('getLocation', error, { deviceID: req.params.deviceID });
+    logError("getLocation", error, { deviceID: req.params.deviceID });
     res.status(500).json({ error: error.message });
   }
 };
@@ -561,19 +391,19 @@ export const createBusId = async (req, res) => {
       });
     }
 
-    const newBus = await Location.create({ 
+    const newBus = await Location.create({
       deviceID,
-      route: []
+      route: [],
     });
 
-    logSuccess('createBusId', 'Bus created', { deviceID });
+    logSuccess("createBusId", "Bus created", { deviceID });
     return res.status(200).json({
       message: "bus registered successfully",
       newBus: newBus.toObject(),
       success: true,
     });
   } catch (error) {
-    logError('createBusId', error, req.body);
+    logError("createBusId", error, req.body);
     res.status(500).json({ message: "Server error", success: false });
   }
 };
@@ -581,22 +411,24 @@ export const createBusId = async (req, res) => {
 export const getBusByDeviceId = async (req, res) => {
   const { deviceId } = req.params;
   console.log(`[getBusByDeviceId] Looking for device: ${deviceId}`);
-  
+
   if (!deviceId) {
     return res.status(400).json({
       success: false,
-      message: "Device ID is required"
+      message: "Device ID is required",
     });
   }
 
   try {
-    const bus = await Location.findOne({ deviceID: deviceId }).sort({ lastUpdated: -1 });
-    
+    const bus = await Location.findOne({ deviceID: deviceId }).sort({
+      lastUpdated: -1,
+    });
+
     if (!bus) {
       console.log(`[getBusByDeviceId] Bus not found: ${deviceId}`);
       return res.status(404).json({
         success: false,
-        message: `Bus with device ID ${deviceId} not found`
+        message: `Bus with device ID ${deviceId} not found`,
       });
     }
 
@@ -608,178 +440,31 @@ export const getBusByDeviceId = async (req, res) => {
       startTime: bus.startTime || "06:00 AM",
       expectedTime: bus.expectedTime || "Calculating...",
       destinationTime: bus.destinationTime || "08:00 PM",
-      status: bus.status || "Active"
+      status: bus.status || "Active",
     };
 
-    logSuccess('getBusByDeviceId', 'Bus found', { deviceId });
+    logSuccess("getBusByDeviceId", "Bus found", { deviceId });
     res.json({
       success: true,
       latestLocations: busWithMockData,
       metadata: {
         deviceId,
-        searchTime: new Date().toISOString()
-      }
+        searchTime: new Date().toISOString(),
+      },
     });
-
   } catch (err) {
-    logError('getBusByDeviceId', err, { deviceId });
+    logError("getBusByDeviceId", err, { deviceId });
     res.status(500).json({
       success: false,
       message: "Server error while fetching bus details",
-      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
     });
   }
 };
 
-// Helper Functions
-
-/**
- * Calculate distance between two points using Haversine formula
- */
-function calculateDistance(lat1, lon1, lat2, lon2) {
-  if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
-  
-  const R = 6371e3; // Earth's radius in meters
-  const φ1 = lat1 * Math.PI / 180;
-  const φ2 = lat2 * Math.PI / 180;
-  const Δφ = (lat2 - lat1) * Math.PI / 180;
-  const Δλ = (lon2 - lon1) * Math.PI / 180;
-
-  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ/2) * Math.sin(Δλ/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-  return R * c;
-}
-
-/**
- * Enhanced route analysis for journey matching with debugging
- */
-function analyzeRouteForJourney(bus, journey) {
-  const analysis = {
-    score: 0,
-    fromDistance: Infinity,
-    toDistance: Infinity,
-    fromIndex: -1,
-    toIndex: -1,
-    isCorrectDirection: false,
-    passesThrough: false,
-    routePoints: []
-  };
-
-  // Check current location distance first
-  if (bus.location && bus.location.coordinates && bus.location.coordinates.length >= 2) {
-    const [lng, lat] = bus.location.coordinates;
-    analysis.fromDistance = calculateDistance(journey.from.lat, journey.from.lng, lat, lng);
-    analysis.toDistance = calculateDistance(journey.to.lat, journey.to.lng, lat, lng);
-  }
-
-  // Analyze route points if available
-  if (bus.route && Array.isArray(bus.route) && bus.route.length > 0) {
-    let minFromDistance = analysis.fromDistance;
-    let minToDistance = analysis.toDistance;
-    let closestFromIndex = -1;
-    let closestToIndex = -1;
-    
-    bus.route.forEach((point, index) => {
-      if (point.coordinates && Array.isArray(point.coordinates) && point.coordinates.length >= 2) {
-        const [lng, lat] = point.coordinates;
-
-        const distanceFromStart = calculateDistance(
-          journey.from.lat, journey.from.lng, lat, lng
-        );
-        const distanceToEnd = calculateDistance(
-          journey.to.lat, journey.to.lng, lat, lng
-        );
-
-        if (distanceFromStart < minFromDistance) {
-          minFromDistance = distanceFromStart;
-          closestFromIndex = index;
-        }
-        if (distanceToEnd < minToDistance) {
-          minToDistance = distanceToEnd;
-          closestToIndex = index;
-        }
-
-        analysis.routePoints.push({
-          lat, lng, index,
-          distanceFromStart,
-          distanceToEnd
-        });
-      }
-    });
-
-    analysis.fromDistance = minFromDistance;
-    analysis.toDistance = minToDistance;
-    analysis.fromIndex = closestFromIndex;
-    analysis.toIndex = closestToIndex;
-
-    // Check if route passes through both points
-    const threshold = 2000; // 2km threshold
-    const nearFrom = minFromDistance <= threshold;
-    const nearTo = minToDistance <= threshold;
-    analysis.passesThrough = nearFrom && nearTo;
-
-    // Check direction
-    if (closestFromIndex >= 0 && closestToIndex >= 0) {
-      analysis.isCorrectDirection = closestToIndex > closestFromIndex;
-    }
-
-    // Calculate route relevance score
-    const maxDistance = 5000; // 5km max distance for scoring
-    const fromScore = Math.max(0, (maxDistance - minFromDistance) / maxDistance);
-    const toScore = Math.max(0, (maxDistance - minToDistance) / maxDistance);
-    
-    let baseScore = (fromScore + toScore) / 2;
-    
-    if (analysis.isCorrectDirection) baseScore *= 1.5;
-    if (analysis.passesThrough) baseScore *= 2.0;
-    if (closestFromIndex >= 0 && closestToIndex >= 0 && !analysis.isCorrectDirection) {
-      baseScore *= 0.4;
-    }
-
-    analysis.score = Math.max(0, Math.min(1, baseScore));
-  }
-
-  // If no route data, score based on proximity
-  if ((!bus.route || bus.route.length === 0) && analysis.fromDistance < Infinity) {
-    const maxDistance = 3000; // 3km for buses without route data
-    if (analysis.fromDistance <= maxDistance || analysis.toDistance <= maxDistance) {
-      const proximityScore = Math.max(
-        (maxDistance - analysis.fromDistance) / maxDistance,
-        (maxDistance - analysis.toDistance) / maxDistance
-      );
-      analysis.score = Math.max(0, proximityScore * 0.3);
-    }
- 
-  }
-
-  return analysis;
-}
- 
-//   });
-  
-//   const directionScore = toIndex > fromIndex ? 1 : -0.5;
-//   const maxDistance = 2000;
-//   const fromScore = Math.max(0, (maxDistance - minFromDistance) / maxDistance);
-//   const toScore = Math.max(0, (maxDistance - minToDistance) / maxDistance);
-//   const score = (fromScore + toScore) * directionScore;
-  
-//   return {
-//     score,
-//     fromDistance: minFromDistance,
-//     toDistance: minToDistance,
-//     fromIndex,
-//     toIndex,
-//     isCorrectDirection: directionScore > 0
-//   };
-// }
 export const getAllBusDetails = async (req, res) => {
   try {
-    const buses = await Bus.find({})
-      .populate("driver")
-      .populate("location"); // this brings full Location doc
+    const buses = await Bus.find({}).populate("driver").populate("location"); // this brings full Location doc
 
     if (!buses || buses.length === 0) {
       return res.status(404).json({
@@ -823,4 +508,441 @@ export const getAllBusDetails = async (req, res) => {
     res.status(500).json({ message: "Server error", success: false });
   }
 };
- 
+
+// Enhanced error logging
+const logError = (functionName, error, context = {}) => {
+  console.error(`[${functionName}] Error:`, {
+    message: error.message,
+    stack: error.stack,
+    context,
+    timestamp: new Date().toISOString(),
+  });
+};
+
+// Enhanced success logging
+const logSuccess = (functionName, result, context = {}) => {
+  console.log(`[${functionName}] Success:`, {
+    result: typeof result === "object" ? Object.keys(result) : result,
+    context,
+    timestamp: new Date().toISOString(),
+  });
+};
+
+/**
+ * FIXED: Enhanced route search with proper coordinate handling
+ */
+export const getBusesAlongRoute = async (req, res) => {
+  const { fromLat, fromLon, toLat, toLon, radius } = req.query;
+
+  console.log(`[getBusesAlongRoute] Query params:`, {
+    fromLat,
+    fromLon,
+    toLat,
+    toLon,
+    radius,
+  });
+
+  if (!fromLat || !fromLon || !toLat || !toLon) {
+    return res.status(400).json({
+      success: false,
+      message: "fromLat, fromLon, toLat, toLon are required",
+      received: { fromLat, fromLon, toLat, toLon, radius },
+    });
+  }
+
+  const searchRadius = radius ? parseInt(radius) : 15000; // INCREASED to 15km default
+  const fromLatitude = parseFloat(fromLat);
+  const fromLongitude = parseFloat(fromLon);
+  const toLatitude = parseFloat(toLat);
+  const toLongitude = parseFloat(toLon);
+
+  console.log(`[getBusesAlongRoute] Parsed coordinates:`, {
+    from: [fromLatitude, fromLongitude],
+    to: [toLatitude, toLongitude],
+    radius: searchRadius,
+  });
+
+  // Validate all coordinates
+  const coords = [
+    { name: "fromLat", value: fromLatitude },
+    { name: "fromLon", value: fromLongitude },
+    { name: "toLat", value: toLatitude },
+    { name: "toLon", value: toLongitude },
+  ];
+
+  const invalidCoords = coords.filter(
+    (coord) =>
+      isNaN(coord.value) ||
+      (coord.name.includes("Lat") && (coord.value < -90 || coord.value > 90)) ||
+      (coord.name.includes("Lon") && (coord.value < -180 || coord.value > 180))
+  );
+
+  if (invalidCoords.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid coordinates",
+      invalidCoords: invalidCoords.map((c) => ({ [c.name]: c.value })),
+    });
+  }
+
+  try {
+    console.log(
+      `[getBusesAlongRoute] Searching route: (${fromLat}, ${fromLon}) -> (${toLat}, ${toLon})`
+    );
+
+    // Debug: Check total buses
+    const totalBuses = await Location.countDocuments();
+    console.log(`[getBusesAlongRoute] Total buses in database: ${totalBuses}`);
+
+    // FIXED: Get ALL buses first, then analyze them
+    const allBuses = await Location.find({
+      location: { $exists: true, $ne: null },
+      "location.coordinates": { $exists: true, $ne: [] },
+    }).limit(1000); // Reasonable limit
+
+    console.log(
+      `[getBusesAlongRoute] Found ${allBuses.length} buses with valid locations`
+    );
+
+    if (allBuses.length === 0) {
+      return res.json({
+        success: true,
+        buses: [],
+        metadata: {
+          message: "No buses found in database with valid locations",
+          fromLocation: { lat: fromLatitude, lng: fromLongitude },
+          toLocation: { lat: toLatitude, lng: toLongitude },
+          radius: searchRadius,
+          totalInDatabase: totalBuses,
+          searchTime: new Date().toISOString(),
+        },
+      });
+    }
+
+    // FIXED: Analyze each bus for route relevance
+    const analyzedBuses = allBuses
+      .map((bus) => {
+        // Get bus coordinates
+        console.log("[getBusesAlongRoute] lat & lon : ", bus);
+        const busLat = bus.location?.coordinates?.[0];
+        const busLng = bus.location?.coordinates?.[1];
+
+        if (!busLat || !busLng) {
+          console.log(
+            `[getBusesAlongRoute] Bus ${bus.deviceID} has invalid coordinates:`,
+            bus.location?.coordinates
+          );
+          return null;
+        }
+
+        // Calculate distances to route points
+        const distanceFromStart = calculateDistance(
+          fromLatitude,
+          fromLongitude,
+          busLat,
+          busLng
+        );
+        const distanceToEnd = calculateDistance(
+          toLatitude,
+          toLongitude,
+          busLat,
+          busLng
+        );
+
+        // FIXED: Enhanced route analysis
+        const routeAnalysis = analyzeRouteForJourney(bus, {
+          from: { lat: fromLatitude, lng: fromLongitude },
+          to: { lat: toLatitude, lng: toLongitude },
+        });
+
+        // FIXED: Better relevance scoring
+        let relevanceScore = 0;
+        const maxRelevantDistance = 10000; // 10km
+
+        // Score based on proximity to route points
+        const startProximityScore = Math.max(
+          0,
+          (maxRelevantDistance - distanceFromStart) / maxRelevantDistance
+        );
+        const endProximityScore = Math.max(
+          0,
+          (maxRelevantDistance - distanceToEnd) / maxRelevantDistance
+        );
+
+        // FIXED: Score based on being between start and end points
+        const routeDistance = calculateDistance(
+          fromLatitude,
+          fromLongitude,
+          toLatitude,
+          toLongitude
+        );
+        const totalDistanceViaPoint = distanceFromStart + distanceToEnd;
+        const detourRatio = totalDistanceViaPoint / routeDistance;
+
+        if (detourRatio < 1.3) {
+          // Bus is roughly on the direct path
+          relevanceScore += 0.8;
+        } else if (detourRatio < 2.0) {
+          // Bus is somewhat on the path
+          relevanceScore += 0.4;
+        }
+
+        // Add proximity scores
+        relevanceScore +=
+          Math.max(startProximityScore, endProximityScore) * 0.5;
+
+        // Bonus for having route data
+        if (routeAnalysis.routePoints && routeAnalysis.routePoints.length > 0) {
+          relevanceScore += 0.2;
+        }
+
+        // Bonus for correct direction
+        if (routeAnalysis.isCorrectDirection) {
+          relevanceScore += 0.3;
+        }
+
+        // Bonus for passing through
+        if (routeAnalysis.passesThrough) {
+          relevanceScore += 0.5;
+        }
+
+        return {
+          ...bus.toJSON(),
+          routeAnalysis: {
+            ...routeAnalysis,
+            score: Math.min(1.0, relevanceScore),
+          },
+          routeMatch: {
+            ...routeAnalysis,
+            score: Math.min(1.0, relevanceScore),
+          },
+          distanceFromStart,
+          distanceToEnd,
+          distanceFromSearch: Math.min(distanceFromStart, distanceToEnd),
+          routeRelevanceScore: Math.min(1.0, relevanceScore),
+          detourRatio,
+          // Add mock data
+          driverName: bus.driverName || "Driver Available",
+          driverPhone: bus.driverPhone || "+91-9876543210",
+          startTime: bus.startTime || "06:00 AM",
+          expectedTime: bus.expectedTime || "Calculating...",
+          destinationTime: bus.destinationTime || "08:00 PM",
+          status: bus.status || "Active",
+        };
+      })
+      .filter((bus) => bus !== null);
+
+    console.log(`[getBusesAlongRoute] Analyzed ${analyzedBuses.length} buses`);
+
+    // FIXED: More lenient filtering for relevant buses
+    const relevantBuses = analyzedBuses.filter((bus) => {
+      const isNearStart = bus.distanceFromStart <= 8000; // 8km
+      const isNearEnd = bus.distanceToEnd <= 8000; // 8km
+      const hasDecentScore = bus.routeRelevanceScore > 0.1;
+      const isOnPath = bus.detourRatio < 3.0; // Very lenient detour ratio
+      const passesThrough = bus.routeAnalysis?.passesThrough;
+
+      return (
+        isNearStart || isNearEnd || hasDecentScore || isOnPath || passesThrough
+      );
+    });
+
+    console.log(
+      `[getBusesAlongRoute] Filtered to ${relevantBuses.length} relevant buses`
+    );
+
+    // Sort by relevance
+    relevantBuses.sort((a, b) => {
+      // Prioritize buses that pass through the route
+      if (a.routeAnalysis?.passesThrough && !b.routeAnalysis?.passesThrough)
+        return -1;
+      if (!a.routeAnalysis?.passesThrough && b.routeAnalysis?.passesThrough)
+        return 1;
+
+      // Then by relevance score
+      return b.routeRelevanceScore - a.routeRelevanceScore;
+    });
+
+    logSuccess(
+      "getBusesAlongRoute",
+      `Found ${relevantBuses.length} route buses`,
+      {
+        from: [fromLatitude, fromLongitude],
+        to: [toLatitude, toLongitude],
+      }
+    );
+
+    res.json({
+      success: true,
+      buses: relevantBuses.slice(0, 50), // Limit results
+      metadata: {
+        fromLocation: { lat: fromLatitude, lng: fromLongitude },
+        toLocation: { lat: toLatitude, lng: toLongitude },
+        radius: searchRadius,
+        totalScanned: allBuses.length,
+        routeBusesCount: relevantBuses.length,
+        totalInDatabase: totalBuses,
+        searchTime: new Date().toISOString(),
+        searchStrategy: "enhanced_route_analysis",
+      },
+      debug:
+        process.env.NODE_ENV === "development"
+          ? {
+              fromSearchCoords: [fromLongitude, fromLatitude],
+              toSearchCoords: [toLongitude, toLatitude],
+              routeDistance: calculateDistance(
+                fromLatitude,
+                fromLongitude,
+                toLatitude,
+                toLongitude
+              ),
+              analysisResults: analyzedBuses.slice(0, 3).map((bus) => ({
+                deviceID: bus.deviceID,
+                score: bus.routeRelevanceScore,
+                distanceFromStart: Math.round(bus.distanceFromStart),
+                distanceToEnd: Math.round(bus.distanceToEnd),
+                detourRatio: bus.detourRatio?.toFixed(2),
+                passesThrough: bus.routeAnalysis?.passesThrough,
+                isCorrectDirection: bus.routeAnalysis?.isCorrectDirection,
+              })),
+            }
+          : undefined,
+    });
+  } catch (err) {
+    logError("getBusesAlongRoute", err, {
+      fromLatitude,
+      fromLongitude,
+      toLatitude,
+      toLongitude,
+      searchRadius,
+    });
+    res.status(500).json({
+      success: false,
+      message: "Server error while searching for route buses",
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
+    });
+  }
+};
+
+/**
+ * FIXED: Enhanced route analysis function
+ */
+function analyzeRouteForJourney(bus, journey) {
+  const analysis = {
+    score: 0,
+    fromDistance: Infinity,
+    toDistance: Infinity,
+    fromIndex: -1,
+    toIndex: -1,
+    isCorrectDirection: false,
+    passesThrough: false,
+    routePoints: [],
+  };
+
+  // Get bus current location
+  const busLat = bus.location?.coordinates?.[0];
+  const busLng = bus.location?.coordinates?.[1];
+
+  if (busLat && busLng) {
+    analysis.fromDistance = calculateDistance(
+      journey.from.lat,
+      journey.from.lng,
+      busLat,
+      busLng
+    );
+    analysis.toDistance = calculateDistance(
+      journey.to.lat,
+      journey.to.lng,
+      busLat,
+      busLng
+    );
+  }
+
+  // Analyze route points if available
+  if (bus.route && Array.isArray(bus.route) && bus.route.length > 0) {
+    let minFromDistance = analysis.fromDistance;
+    let minToDistance = analysis.toDistance;
+    let closestFromIndex = -1;
+    let closestToIndex = -1;
+
+    bus.route.forEach((point, index) => {
+      if (
+        point.coordinates &&
+        Array.isArray(point.coordinates) &&
+        point.coordinates.length >= 2
+      ) {
+        const [lat, lng] = point.coordinates;
+
+        const distanceFromStart = calculateDistance(
+          journey.from.lat,
+          journey.from.lng,
+          lat,
+          lng
+        );
+        const distanceToEnd = calculateDistance(
+          journey.to.lat,
+          journey.to.lng,
+          lat,
+          lng
+        );
+
+        if (distanceFromStart < minFromDistance) {
+          minFromDistance = distanceFromStart;
+          closestFromIndex = index;
+        }
+        if (distanceToEnd < minToDistance) {
+          minToDistance = distanceToEnd;
+          closestToIndex = index;
+        }
+
+        analysis.routePoints.push({
+          lat,
+          lng,
+          index,
+          distanceFromStart,
+          distanceToEnd,
+        });
+      }
+    });
+
+    if (minFromDistance < analysis.fromDistance)
+      analysis.fromDistance = minFromDistance;
+    if (minToDistance < analysis.toDistance)
+      analysis.toDistance = minToDistance;
+    analysis.fromIndex = closestFromIndex;
+    analysis.toIndex = closestToIndex;
+
+    // FIXED: More lenient threshold for passing through
+    const threshold = 3000; // 3km threshold (increased)
+    const nearFrom = analysis.fromDistance <= threshold;
+    const nearTo = analysis.toDistance <= threshold;
+    analysis.passesThrough = nearFrom && nearTo;
+
+    // Check direction
+    if (closestFromIndex >= 0 && closestToIndex >= 0) {
+      analysis.isCorrectDirection = closestToIndex > closestFromIndex;
+    }
+  }
+
+  return analysis;
+}
+
+/**
+ * Calculate distance between two points using Haversine formula
+ */
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity;
+
+  const R = 6371e3; // Earth's radius in meters
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+}
