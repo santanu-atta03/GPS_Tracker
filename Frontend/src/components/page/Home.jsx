@@ -203,6 +203,49 @@ const Home = ({ onSearch, onBusSelect }) => {
     }
   };
 
+  // Add this method to your Home component
+const debugSearch = async () => {
+  console.log("🧪 Running debug tests...");
+  
+  try {
+    // Test endpoint connectivity
+    const healthCheck = await fetch(`${import.meta.env.VITE_BASE_URL}/`);
+    console.log("Health check:", healthCheck.status);
+    
+    // Test bus search service
+    const debugResult = await busSearchService.debugEndpoints();
+    console.log("Debug result:", debugResult);
+    
+    // Test with sample coordinates
+    const testFromCoords = { lat: 28.7041, lon: 77.1025 };
+    const testToCoords = { lat: 28.5355, lon: 77.3910 };
+    
+    const routeResult = await busSearchService.findBusesByRoute(
+      testFromCoords, 
+      testToCoords, 
+      { radius: 15000 }
+    );
+    
+    console.log("Route search result:", routeResult);
+    
+    setSearchResults(routeResult.buses || []);
+    
+  } catch (error) {
+    console.error("Debug error:", error);
+    setError("Debug test failed: " + error.message);
+  }
+};
+
+// Add debug button to your JSX (temporarily)
+{process.env.NODE_ENV === 'development' && (
+  <button 
+    onClick={debugSearch}
+    className="px-4 py-2 bg-purple-500 text-white rounded"
+  >
+    Debug Test
+  </button>
+)}
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
       <Navbar />
