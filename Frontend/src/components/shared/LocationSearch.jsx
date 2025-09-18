@@ -1,4 +1,4 @@
-// components/shared/LocationSearch.jsx
+// components/shared/LocationSearch.jsx - FIXED VERSION
 import { useState, useEffect } from "react";
 import { ArrowLeftRight, MapPin, Loader2, Navigation } from "lucide-react";
 
@@ -27,21 +27,19 @@ export default function LocationSearch({
     setIsLoadingSuggestions(true);
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/search?q=${encodeURIComponent(query)}`
+        `${import.meta.env.VITE_BASE_URL}/api/v1/search?q=${encodeURIComponent(query)}`
       );
       if (!res.ok) throw new Error("Failed to fetch suggestions");
       const data = await res.json();
       
-console.log("Fetched data:", data);
+      console.log("Fetched suggestions:", data);
 
-if (!Array.isArray(data)) {
-  console.warn("Expected array, got:", data);
-  throw new Error("Invalid API response");
-}
+      if (!Array.isArray(data)) {
+        console.warn("Expected array, got:", data);
+        throw new Error("Invalid API response");
+      }
 
-setFn(data.slice(0, 5));
-
-      // Limit to 5 suggestions
+      setFn(data.slice(0, 5));
     } catch (error) {
       console.error("Error fetching suggestions:", error);
       setFn([]);
@@ -83,9 +81,16 @@ setFn(data.slice(0, 5));
     }
   };
 
-  // Select from suggestion
+  // FIXED: Select from suggestion with proper coordinate handling
   const selectFrom = (place) => {
-    const coords = { lat: parseFloat(place.lat), lon: parseFloat(place.lon) };
+    // FIXED: Ensure coordinates are properly formatted as numbers with correct naming
+    const coords = { 
+      lat: parseFloat(place.lat), 
+      lon: parseFloat(place.lon) // Use 'lon' not 'lng' to match backend
+    };
+    
+    console.log("From coordinates selected:", coords);
+    
     setFromLocation(place.display_name);
     setFromCoords(coords);
     setFromSuggestions([]);
@@ -100,7 +105,7 @@ setFn(data.slice(0, 5));
       });
     }
 
-    // For route search, notify with both coordinates
+    // For route search, notify with both coordinates when both are available
     if (searchType === "route" && onCoordsSelect) {
       onCoordsSelect({
         from: coords,
@@ -109,11 +114,28 @@ setFn(data.slice(0, 5));
         toAddress: toLocation,
       });
     }
+    
+    // For location search, notify immediately
+    if (searchType === "location" && onCoordsSelect) {
+      onCoordsSelect({
+        from: coords,
+        to: null,
+        fromAddress: place.display_name,
+        toAddress: "",
+      });
+    }
   };
 
-  // Select to suggestion
+  // FIXED: Select to suggestion with proper coordinate handling
   const selectTo = (place) => {
-    const coords = { lat: parseFloat(place.lat), lon: parseFloat(place.lon) };
+    // FIXED: Ensure coordinates are properly formatted as numbers with correct naming
+    const coords = { 
+      lat: parseFloat(place.lat), 
+      lon: parseFloat(place.lon) // Use 'lon' not 'lng' to match backend
+    };
+    
+    console.log("To coordinates selected:", coords);
+    
     setToLocation(place.display_name);
     setToCoords(coords);
     setToSuggestions([]);
@@ -128,8 +150,8 @@ setFn(data.slice(0, 5));
       });
     }
 
-    // For route search, notify with both coordinates
-    if (searchType === "route" && onCoordsSelect) {
+    // For route search, notify with both coordinates when both are available
+    if (searchType === "route" && onCoordsSelect && fromCoords) {
       onCoordsSelect({
         from: fromCoords,
         to: coords,
@@ -139,7 +161,7 @@ setFn(data.slice(0, 5));
     }
   };
 
-  // Use current location
+  // FIXED: Use current location with proper coordinate handling
   const handleUseMyLocation = () => {
     if (!navigator.geolocation) {
       alert("Geolocation is not supported by this browser.");
@@ -150,19 +172,20 @@ setFn(data.slice(0, 5));
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
+        
+        console.log("Current location:", { latitude, longitude });
+        
         try {
           const res = await fetch(
-            `${
-              import.meta.env.VITE_BASE_URL
-            }/api/v1/reverse-geocode?lat=${latitude}&lon=${longitude}`
+            `${import.meta.env.VITE_BASE_URL}/api/v1/reverse-geocode?lat=${latitude}&lon=${longitude}`
           );
+
+          // FIXED: Use proper coordinate format
+          const coords = { lat: latitude, lon: longitude }; // Use 'lon' not 'lng'
 
           if (!res.ok) {
             // If reverse geocoding fails, still use coordinates
-            const coords = { lat: latitude, lon: longitude };
-            const locationName = `${latitude.toFixed(4)}, ${longitude.toFixed(
-              4
-            )}`;
+            const locationName = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
             setFromLocation(locationName);
             setFromCoords(coords);
 
@@ -172,7 +195,7 @@ setFn(data.slice(0, 5));
                 coords: coords,
                 place: {
                   lat: latitude,
-                  lon: longitude,
+                  lon: longitude, // Use 'lon' not 'lng'
                   display_name: locationName,
                 },
               });
@@ -195,7 +218,6 @@ setFn(data.slice(0, 5));
           const data = await res.json();
 
           if (data.display_name) {
-            const coords = { lat: latitude, lon: longitude };
             setFromLocation(data.display_name);
             setFromCoords(coords);
 
@@ -218,10 +240,7 @@ setFn(data.slice(0, 5));
             }
           } else {
             // Fallback to coordinates if no display name
-            const coords = { lat: latitude, lon: longitude };
-            const locationName = `${latitude.toFixed(4)}, ${longitude.toFixed(
-              4
-            )}`;
+            const locationName = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
             setFromLocation(locationName);
             setFromCoords(coords);
 
@@ -231,7 +250,7 @@ setFn(data.slice(0, 5));
                 coords: coords,
                 place: {
                   lat: latitude,
-                  lon: longitude,
+                  lon: longitude, // Use 'lon' not 'lng'
                   display_name: locationName,
                 },
               });
@@ -250,10 +269,8 @@ setFn(data.slice(0, 5));
         } catch (error) {
           console.error("Error fetching location:", error);
           // Still use coordinates even if reverse geocoding fails
-          const coords = { lat: latitude, lon: longitude };
-          const locationName = `${latitude.toFixed(4)}, ${longitude.toFixed(
-            4
-          )}`;
+          const coords = { lat: latitude, lon: longitude }; // Use 'lon' not 'lng'
+          const locationName = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
           setFromLocation(locationName);
           setFromCoords(coords);
 
@@ -263,7 +280,7 @@ setFn(data.slice(0, 5));
               coords: coords,
               place: {
                 lat: latitude,
-                lon: longitude,
+                lon: longitude, // Use 'lon' not 'lng'
                 display_name: locationName,
               },
             });
@@ -457,73 +474,85 @@ setFn(data.slice(0, 5));
           </div>
         )}
       </div>
-      <div className="flex justify-center my-2">
-        {/* Swap Button */}
-        <button
-          onClick={swapLocations}
-          className="mt-8 p-3 bg-green-100 hover:bg-green-200 rounded-full transition-all duration-300 hover:scale-110"
-          title="Swap locations"
-        >
-          <ArrowLeftRight className="w-5 h-5 text-green-600" />
-        </button>
-      </div>
 
-      <div className="relative">
-        {/* To Location Input & Suggestions */}
-        <div className="flex-1 relative">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            To
-          </label>
-          <input
-            type="text"
-            value={toLocation}
-            onChange={(e) => {
-              setToLocation(e.target.value);
-              debouncedFetchSuggestions(e.target.value, setToSuggestions, "to");
-            }}
-            className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-            placeholder="Select destination"
-          />
+      {/* Only show swap button and To field for route search */}
+      {searchType === "route" && (
+        <>
+          <div className="flex justify-center my-2">
+            {/* Swap Button */}
+            <button
+              onClick={swapLocations}
+              className="p-3 bg-green-100 hover:bg-green-200 rounded-full transition-all duration-300 hover:scale-110"
+              title="Swap locations"
+            >
+              <ArrowLeftRight className="w-5 h-5 text-green-600" />
+            </button>
+          </div>
 
-          {/* To Suggestions */}
-          {toSuggestions.length > 0 && (
-            <ul className="absolute z-20 w-full bg-white border border-gray-200 rounded-xl shadow-lg mt-1 max-h-48 overflow-y-auto">
-              {toSuggestions.map((place, idx) => (
-                <li
-                  key={idx}
-                  onClick={() => selectTo(place)}
-                  className="p-3 cursor-pointer hover:bg-green-50 border-b border-gray-100 last:border-b-0"
+          <div className="relative">
+            {/* To Location Input & Suggestions */}
+            <div className="flex-1 relative">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                To
+              </label>
+              <input
+                type="text"
+                value={toLocation}
+                onChange={(e) => handleToLocationChange(e.target.value)}
+                onFocus={() => setActiveInput("to")}
+                className="w-full p-4 pl-12 pr-10 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                placeholder="Select destination"
+              />
+              <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 mt-6" />
+              {toLocation && (
+                <button
+                  onClick={clearToLocation}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 mt-6"
                 >
-                  <div className="flex items-start space-x-2">
-                    <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 line-clamp-1">
-                        {place.display_name.split(",")[0]}
-                      </p>
-                      <p className="text-xs text-gray-500 line-clamp-1">
-                        {place.display_name}
-                      </p>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
+                  ×
+                </button>
+              )}
 
+              {/* To Suggestions */}
+              {toSuggestions.length > 0 && activeInput === "to" && (
+                <ul className="absolute z-20 w-full bg-white border border-gray-200 rounded-xl shadow-lg mt-1 max-h-48 overflow-y-auto">
+                  {toSuggestions.map((place, idx) => (
+                    <li
+                      key={idx}
+                      onClick={() => selectTo(place)}
+                      className="p-3 cursor-pointer hover:bg-green-50 border-b border-gray-100 last:border-b-0"
+                    >
+                      <div className="flex items-start space-x-2">
+                        <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 line-clamp-1">
+                            {place.display_name.split(",")[0]}
+                          </p>
+                          <p className="text-xs text-gray-500 line-clamp-1">
+                            {place.display_name}
+                          </p>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Debug Info - Show current coordinates */}
       {(fromCoords || toCoords) && (
         <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
           {fromCoords && (
             <p>
-              From: {fromLocation} → ({fromCoords.lat.toFixed(6)},{" "}
-              {fromCoords.lon.toFixed(6)})
+              From: {fromLocation} → ({fromCoords.lat.toFixed(6)}, {fromCoords.lon.toFixed(6)})
             </p>
           )}
           {toCoords && (
             <p>
-              To: {toLocation} → ({toCoords.lat.toFixed(6)},{" "}
-              {toCoords.lon.toFixed(6)})
+              To: {toLocation} → ({toCoords.lat.toFixed(6)}, {toCoords.lon.toFixed(6)})
             </p>
           )}
         </div>
