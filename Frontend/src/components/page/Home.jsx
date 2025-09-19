@@ -13,7 +13,8 @@ import {
 } from 'lucide-react';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from 'react-router-dom';
-
+import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
 // Import our components and services
 import Navbar from '../shared/Navbar';
 import LocationSearch from '../shared/LocationSearch';
@@ -25,6 +26,48 @@ import axios from 'axios';
 const Home = ({ onSearch, onBusSelect }) => {
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
+   const {t, i18n} = useTranslation();
+  const [selectedLang, setSelectedLang] = useState(
+      localStorage.getItem('selectedLanguage') || 'en'
+    );
+  
+    const LANGUAGES = {
+      en: { name: 'English', flag: '🇺🇸' },
+      hi: { name: 'हिंदी', flag: '🇮🇳' },
+      ta: { name: 'தமிழ்', flag: '🇮🇳' },
+      te: { name: 'తెలుగు', flag: '🇮🇳' },
+      kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
+      ml: { name: 'മലയാളം', flag: '🇮🇳' },
+      bn: { name: 'বাংলা', flag: '🇧🇩' },
+      gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
+      mr: { name: 'मराठी', flag: '🇮🇳' },
+      pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+      ur: { name: 'اردو', flag: '🇵🇰' }
+    };
+  
+    // Handle language change with i18next
+    const handleLanguageChange = (langCode) => {
+      if (!langCode) return;
+  
+      const currentLang = localStorage.getItem('selectedLanguage');
+      if (currentLang === langCode) return;
+  
+      setSelectedLang(langCode);
+      localStorage.setItem('selectedLanguage', langCode);
+      
+      // Change language using i18next
+      i18n.changeLanguage(langCode);
+    };
+  
+    // Initialize language on component mount
+    useEffect(() => {
+      const savedLang = localStorage.getItem('selectedLanguage');
+      if (savedLang && savedLang !== i18n.language) {
+        i18n.changeLanguage(savedLang);
+        setSelectedLang(savedLang);
+      }
+    }, [i18n]);
+
   
   // Search state
   const [searchType, setSearchType] = useState('route'); // 'route', 'busId', 'location', 'busName'
@@ -328,17 +371,20 @@ console.log("my reasult ayan" ,searchResults)
         {/* Hero Section */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            Find Your Perfect Bus Route
+            {t('home.title')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Search for buses by route, location, bus ID, or bus name. Get real-time information 
-            and track your journey with ease.
+ 
+            {t('home.subtitle')}
+ 
+            
+ 
           </p>
         </div>
 
         {/* Search Section */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-green-100">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Find Your Bus</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">{t('home.searchTitle')}</h2>
           
           {/* Search Type Toggle */}
           <div className="flex justify-center mb-6">
@@ -356,7 +402,7 @@ console.log("my reasult ayan" ,searchResults)
                 }`}
               >
                 <Route className="w-4 h-4 inline mr-2" />
-                By Route
+                {t('home.byRoute')}
               </button>
               <button
                 onClick={() => {
@@ -371,7 +417,7 @@ console.log("my reasult ayan" ,searchResults)
                 }`}
               >
                 <MapPin className="w-4 h-4 inline mr-2" />
-                Nearby
+                {t('home.nearby')}
               </button>
               <button
                 onClick={() => {
@@ -386,7 +432,7 @@ console.log("my reasult ayan" ,searchResults)
                 }`}
               >
                 <Navigation className="w-4 h-4 inline mr-2" />
-                By Bus ID
+                {t('home.byBusId')}
               </button>
               <button
                 onClick={() => {
@@ -416,14 +462,14 @@ console.log("my reasult ayan" ,searchResults)
           ) : searchType === 'busId' ? (
             <div className="max-w-md mx-auto">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Bus ID
+                {t('home.busIdLabel')}
               </label>
               <input
                 type="text"
                 value={deviceID}
                 onChange={(e) => setDeviceID(e.target.value)}
                 onKeyPress={handleBusIdKeyPress}
-                placeholder="Enter Bus ID (e.g., BUS-1234)"
+                placeholder={t('home.busIdPlaceholder')}
                 className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               />
             </div>
@@ -455,17 +501,21 @@ console.log("my reasult ayan" ,searchResults)
               }`}
             >
               <Search className="w-5 h-5 mr-2" />
-              {isLoading ? 'Searching...' : 'Search Buses'}
+              {isLoading ? t('home.searching') : t('home.searchBuses')}
             </button>
           </div>
 
           {/* Search Tips */}
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-500">
-              {searchType === 'route' && "Select starting point and destination to find buses along your route"}
-              {searchType === 'location' && "Choose a location to find nearby buses"}
-              {searchType === 'busId' && "Enter the specific bus ID to track a particular bus"}
+ 
+              {searchType === 'route' && t('home.searchTips.route')}
+              {searchType === 'location' && t('home.searchTips.location')}
+              {searchType === 'busId' && t('home.searchTips.busId')}
+
+              
               {searchType === 'busName' && "Enter the bus name to find all buses with that name"}
+ 
             </p>
           </div>
         </div>
@@ -477,9 +527,9 @@ console.log("my reasult ayan" ,searchResults)
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-6 h-6 text-green-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Real-Time Tracking</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('home.features.realTime.title')}</h3>
               <p className="text-gray-600 text-sm">
-                Get live updates on bus locations and arrival times
+                {t('home.features.realTime.description')}
               </p>
             </div>
             
@@ -487,9 +537,9 @@ console.log("my reasult ayan" ,searchResults)
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Clock className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Accurate ETAs</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('home.features.accurateEta.description')}</h3>
               <p className="text-gray-600 text-sm">
-                Plan your journey with precise arrival predictions
+                {t('home.features.accurateEta.description')}
               </p>
             </div>
             
@@ -497,9 +547,9 @@ console.log("my reasult ayan" ,searchResults)
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Route className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Route Optimization</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('home.features.routeOptimization.description')}</h3>
               <p className="text-gray-600 text-sm">
-                Find the best routes for your daily commute
+                {t('home.features.routeOptimization.description')}
               </p>
             </div>
           </div>
@@ -521,7 +571,7 @@ console.log("my reasult ayan" ,searchResults)
             <div className="flex items-start">
               <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
               <div>
-                <h3 className="text-red-800 font-medium mb-1">Search Error</h3>
+                <h3 className="text-red-800 font-medium mb-1">{t('home.errors.searchError')}</h3>
                 <p className="text-red-700 text-sm">{error}</p>
               </div>
             </div>
@@ -530,8 +580,12 @@ console.log("my reasult ayan" ,searchResults)
 
         {/* Footer */}
         <footer className="mt-16 text-center text-gray-500 text-sm">
+ 
+          <p>&copy; {t('home.footer')}</p>
+ 
           <p>&copy; 2024 Bus Tracker. All rights reserved.</p>
           <Button onClick={updateProfile}></Button>
+ 
         </footer>
       </main>
     </div>

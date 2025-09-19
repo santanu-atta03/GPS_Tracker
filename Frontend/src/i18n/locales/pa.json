@@ -1,0 +1,160 @@
+{
+  "navbar": {
+    "appName": "ਬੱਸਟ੍ਰੈਕਰ ਪ੍ਰੋ",
+    "tagline": "ਰੀਅਲ-ਟਾਈਮ ਬੱਸ ਟ੍ਰੈਕਿੰਗ ਸਿਸਟਮ",
+    "home": "ਘਰ",
+    "busDetails": "ਬੱਸ ਵੇਰਵਾ",
+    "map": "ਨਕਸ਼ਾ",
+    "liveTracking": "ਲਾਈਵ ਟ੍ਰੈਕਿੰਗ ਸਰਗਰਮ",
+    "viewProfile": "ਪ੍ਰੋਫਾਈਲ ਵੇਖੋ",
+    "logout": "ਲਾਗਆਉਟ",
+    "login": "ਲਾਗਇਨ"
+  },
+  "home": {
+    "title": "ਆਪਣਾ ਸੰਪੂਰਨ ਬੱਸ ਰੂਟ ਲੱਭੋ",
+    "subtitle": "ਰੂਟ, ਸਥਾਨ ਜਾਂ ਬੱਸ ID ਨਾਲ ਬੱਸ ਖੋਜੋ। ਰੀਅਲ-ਟਾਈਮ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰੋ ਅਤੇ ਆਪਣੀ ਯਾਤਰਾ ਨੂੰ ਆਸਾਨੀ ਨਾਲ ਟ੍ਰੈਕ ਕਰੋ।",
+    "searchTitle": "ਆਪਣੀ ਬੱਸ ਖੋਜੋ",
+    "byRoute": "ਰੂਟ ਦੁਆਰਾ",
+    "nearby": "ਨੇੜੇ",
+    "byBusId": "ਬੱਸ ID ਦੁਆਰਾ",
+    "busIdLabel": "ਬੱਸ ID",
+    "busIdPlaceholder": "ਬੱਸ ID ਦਾਖਲ ਕਰੋ (ਜਿਵੇਂ, BUS-1234)",
+    "searchBuses": "ਬੱਸਾਂ ਖੋਜੋ",
+    "searching": "ਖੋਜ ਰਹੇ ਹਾਂ...",
+    "loading": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ",
+    "searchTips": {
+      "route": "ਆਪਣੇ ਰੂਟ 'ਤੇ ਬੱਸ ਖੋਜਣ ਲਈ ਸ਼ੁਰੂਆਤੀ ਬਿੰਦੂ ਅਤੇ ਮੰਜ਼ਿਲ ਚੁਣੋ",
+      "location": "ਨੇੜੇ ਦੀਆਂ ਬੱਸਾਂ ਖੋਜਣ ਲਈ ਇੱਕ ਸਥਾਨ ਚੁਣੋ",
+      "busId": "ਕਿਸੇ ਖਾਸ ਬੱਸ ਨੂੰ ਟ੍ਰੈਕ ਕਰਨ ਲਈ ਬੱਸ ID ਦਾਖਲ ਕਰੋ"
+    },
+    "features": {
+      "realTime": {
+        "title": "ਰੀਅਲ-ਟਾਈਮ ਟ੍ਰੈਕਿੰਗ",
+        "description": "ਬੱਸ ਦਾ ਸਥਾਨ ਅਤੇ ਪਹੁੰਚਣ ਦਾ ਸਮਾਂ ਲਾਈਵ ਅਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰੋ"
+      },
+      "accurateEta": {
+        "title": "ਸਟੀਕ ETA",
+        "description": "ਸਟੀਕ ਆਗਮਨ ਭਵਿੱਖਬਾਣੀ ਨਾਲ ਆਪਣੀ ਯਾਤਰਾ ਦੀ ਯੋਜਨਾ ਬਣਾਓ"
+      },
+      "routeOptimization": {
+        "title": "ਰੂਟ ਅਨੁਕੂਲਤਾ",
+        "description": "ਆਪਣੇ ਰੋਜ਼ਾਨਾ ਸਫ਼ਰ ਲਈ ਸਭ ਤੋਂ ਵਧੀਆ ਰੂਟ ਖੋਜੋ"
+      }
+    },
+    "footer": "© 2024 ਬੱਸ ਟ੍ਰੈਕਰ। ਸਭ ਅਧਿਕਾਰ ਸੁਰੱਖਿਤ।",
+    "errors": {
+      "noBusesRoute": "ਇਸ ਰੂਟ 'ਤੇ ਕੋਈ ਬੱਸ ਨਹੀਂ ਮਿਲੀ। ਬੱਸਾਂ ਇਸ ਮਾਰਗ 'ਤੇ ਫਿਲਹਾਲ ਸੰਚਾਲਿਤ ਨਹੀਂ ਹੋ ਰਹੀਆਂ ਜਾਂ ਨੇੜੇ ਦੇ ਸਥਾਨਾਂ ਨਾਲ ਖੋਜਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+      "noBusesLocation": "ਇਸ ਖੇਤਰ ਵਿੱਚ ਕੋਈ ਬੱਸ ਨਹੀਂ ਮਿਲੀ। ਵੱਖਰੀ ਜਗ੍ਹਾ ਖੋਜਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਬਾਅਦ ਵਿੱਚ ਵਾਪਸ ਜਾਂਚੋ।",
+      "busNotFound": "ID \"{{deviceId}}\" ਵਾਲੀ ਬੱਸ ਨਹੀਂ ਮਿਲੀ। ਕਿਰਪਾ ਕਰਕੇ ਬੱਸ ID ਜਾਂਚੋ ਅਤੇ ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+      "invalidParams": "ਕਿਰਪਾ ਕਰਕੇ ਵੈਧ ਖੋਜ ਪੈਰਾਮੀਟਰ ਪ੍ਰਦਾਨ ਕਰੋ: ",
+      "routeParams": "ਸ਼ੁਰੂਆਤੀ ਬਿੰਦੂ ਅਤੇ ਮੰਜ਼ਿਲ ਦੋਵੇਂ ਚੁਣੋ।",
+      "locationParams": "ਨੇੜੇ ਦੀਆਂ ਬੱਸਾਂ ਦੀ ਖੋਜ ਲਈ ਸਥਾਨ ਚੁਣੋ।",
+      "busIdParams": "ਇੱਕ ਵੈਧ ਬੱਸ ID ਦਾਖਲ ਕਰੋ।",
+      "searchError": "ਖੋਜ ਕਰਦੇ ਸਮੇਂ ਤਰੁਟੀ ਹੋਈ। ਕਿਰਪਾ ਕਰਕੇ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ।"
+    }
+  },
+  "locationSearch": {
+    "from": "ਤੋਂ",
+    "to": "ਤੱਕ",
+    "searchLocation": "ਸਥਾਨ ਖੋਜੋ",
+    "enterStarting": "ਸ਼ੁਰੂਆਤੀ ਬਿੰਦੂ ਦਾਖਲ ਕਰੋ",
+    "enterLocation": "ਸਥਾਨ ਦਾਖਲ ਕਰੋ",
+    "selectDestination": "ਮੰਜ਼ਿਲ ਚੁਣੋ",
+    "useCurrentLocation": "ਆਪਣੀ ਮੌਜੂਦਾ ਸਥਿਤੀ ਦੀ ਵਰਤੋਂ ਕਰੋ",
+    "gettingLocation": "ਸਥਾਨ ਪ੍ਰਾਪਤ ਕਰ ਰਹੇ ਹਾਂ...",
+    "searching": "ਖੋਜ ਰਹੇ ਹਾਂ...",
+    "swapLocations": "ਸਥਾਨ ਬਦਲੋ"
+  },
+  "busResults": {
+    "searchError": "ਖੋਜ ਤਰੁਟੀ",
+    "tryAgain": "ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+    "refreshSearch": "ਖੋਜ ਰਿਫਰੈਸ਼ ਕਰੋ",
+    "noBusesFound": "ਕੋਈ ਬੱਸ ਨਹੀਂ ਮਿਲੀ",
+    "noBusesRoute": "ਇਸ ਰੂਟ 'ਤੇ ਕੋਈ ਬੱਸ ਨਹੀਂ ਮਿਲੀ। ਇਸਦਾ ਮਤਲਬ ਇਹ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਬੱਸਾਂ ਇਸ ਮਾਰਗ 'ਤੇ ਵਰਤਮਾਨ ਵਿੱਚ ਸੰਚਾਲਿਤ ਨਹੀਂ ਹਨ, ਜਾਂ ਵਧੇਰੇ ਬੱਸ ਕਵਰੇਜ ਵਾਲੇ ਸਥਾਨਾਂ ਨਾਲ ਖੋਜਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    "noBusesBusId": "ਇਸ ID ਦੀ ਕੋਈ ਬੱਸ ਨਹੀਂ ਮਿਲੀ। ਕਿਰਪਾ ਕਰਕੇ ਬੱਸ ID ਜਾਂਚੋ ਅਤੇ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    "noBusesLocation": "ਇਸ ਖੇਤਰ ਵਿੱਚ ਕੋਈ ਬੱਸ ਨਹੀਂ ਮਿਲੀ। ਆਪਣੀ ਖੋਜ ਰੇਡੀਅਸ ਵਧਾਉਣ ਜਾਂ ਵੱਖਰੇ ਸਥਾਨ 'ਤੇ ਖੋਜਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+    "searchTips": {
+      "title": "ਖੋਜ ਸੁਝਾਅ:",
+      "tip1": "ਬੱਸ ਸਟਾਪ ਜਾਂ ਮੁੱਖ ਸਥਾਨਾਂ ਤੋਂ ਖੋਜਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+      "tip2": "ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਤੁਹਾਡੇ ਸਥਾਨਾਂ ਵਿੱਚ ਚੰਗੀ ਬੱਸ ਕਵਰੇਜ ਹੈ",
+      "tip3": "ਨੇੜੇ ਦੇ ਵਿਕਲਪਿਕ ਰੂਟ 'ਤੇ ਵਿਚਾਰ ਕਰੋ",
+      "tip4": "ਜਾਂਚੋ ਕਿ ਕੀ ਬੱਸਾਂ ਮੌਜੂਦਾ ਸਮੇਂ 'ਤੇ ਸੰਚਾਲਿਤ ਹੁੰਦੀਆਂ ਹਨ"
+    },
+    "busesFound": " ਬੱਸ ਮਿਲੀ",
+    "busesFound_plural": "{{count}} ਬੱਸਾਂ ਮਿਲੀਆਂ",
+    "alongRoute": "(ਤੁਹਾਡੇ ਰੂਟ 'ਤੇ ਜਾਂ ਨੇੜੇ)",
+    "passesThrough": "{{count}} ਬੱਸ(ਾਂ) ਤੁਹਾਡੇ ਰੂਟ ਤੋਂ ਲੰਘਦੀ ਹੈ/ਹਨ",
+    "correctDirection": "{{count}} ਬੱਸ(ਾਂ) ਤੁਹਾਡੀ ਦਿਸ਼ਾ ਵਿੱਚ ਜਾਂਦੀ ਹੈ/ਹਨ",
+    "nearbyBuses": "{{count}} ਨੇੜੇ ਦੀ ਬੱਸ(ਾਂ)",
+    "routeMatch": {
+      "passesThrough": "ਤੁਹਾਡੇ ਰੂਟ ਤੋਂ ਲੰਘਦੀ ਹੈ",
+      "goodDirection": "ਤੁਹਾਡੀ ਦਿਸ਼ਾ ਵਿੱਚ ਜਾਂਦੀ ਹੈ",
+      "nearby": "ਨੇੜੇ ਦਾ ਰੂਟ"
+    },
+    "routeInfo": "ਰੂਟ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਨਹੀਂ",
+    "distanceAway": "{{distance}}ਮੀ ਦੂਰ",
+    "distanceAwayKm": "{{distance}}ਕਿਮੀ ਦੂਰ",
+    "routePoints": "{{count}} ਰੂਟ ਪੁਆਇੰਟਸ",
+    "hasRouteData": "ਰੂਟ ਡਾਟਾ ਹੈ",
+    "points": " ਪੁਆਇੰਟਸ",
+    "lastUpdated": "ਅੰਤਿਮ ਅਪਡੇਟ: ",
+    "startTime": "ਸ਼ੁਰੂਆਤ: ",
+    "expectedTime": "ਅਪੇਖਿਤ: {{time}}",
+    "endTime": "ਸਮਾਪਤੀ: {{time}}",
+    "distanceFromStart": "ਸ਼ੁਰੂਆਤ ਤੋਂ ਦੂਰੀ:",
+    "distanceToDestination": "ਮੰਜ਼ਿਲ ਤੱਕ ਦੂਰੀ:",
+    "direction": "ਦਿਸ਼ਾ:",
+    "correct": "ਸਹੀ",
+    "opposite": "ਉਲਟ"
+  },
+  "busDetails": {
+    "title": "ਬੱਸ ਵੇਰਵਾ",
+    "loadingBusDetails": "ਬੱਸ ਵੇਰਵਾ ਲੋਡ ਕਰ ਰਹੇ ਹਾਂ...",
+    "tryAgain": "ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+    "errorLoading": "ਬੱਸ ਵੇਰਵਾ ਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁਟੀ",
+    "busNotFound": "ਬੱਸ ਨਹੀਂ ਮਿਲੀ",
+    "noBusWithId": "ID ਨਾਲ ਕੋਈ ਬੱਸ ਨਹੀਂ ਮਿਲੀ: {{deviceId}}",
+    "searchForBuses": "ਬੱਸਾਂ ਦੀ ਖੋਜ ਕਰੋ",
+    "goBack": "ਵਾਪਸ ਜਾਓ",
+    "scheduleInfo": "ਸਮਾਂ ਸਾਰਣੀ ਜਾਣਕਾਰੀ",
+    "startTime": "ਸ਼ੁਰੂਆਤੀ ਸਮਾਂ",
+    "expectedArrival": "ਅਪੇਖਿਤ ਆਗਮਨ",
+    "destinationTime": "ਮੰਜ਼ਿਲ ਸਮਾਂ",
+    "currentTime": "ਮੌਜੂਦਾ ਸਮਾਂ",
+    "driverDetails": "ਡਰਾਈਵਰ ਵੇਰਵਾ",
+    "licensedDriver": "ਲਾਇਸੈਂਸ ਪ੍ਰਾਪਤ ਡਰਾਈਵਰ",
+    "phone": "ਫੋਨ: ",
+    "experience": "ਅਨੁਭਵ: ਪੇਸ਼ੇਵਰ",
+    "routeInfo": "ਰੂਟ ਜਾਣਕਾਰੀ",
+    "routeNotAvailable": "ਰੂਟ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਨਹੀਂ",
+    "moreStops": " ਹੋਰ ਸਟਾਪ",
+    "status": "ਸਥਿਤੀ",
+    "lastUpdated": "ਅੰਤਿਮ ਅਪਡੇਟ",
+    "location": "ਸਥਾਨ",
+    "unknown": "ਅਗਿਆਤ",
+    "liveRouteTracking": "ਲਾਈਵ ਰੂਟ ਟ੍ਰੈਕਿੰਗ",
+    "live": "ਲਾਈਵ",
+    "locationNotAvailable": "ਸਥਾਨ ਡਾਟਾ ਉਪਲਬਧ ਨਹੀਂ",
+    "stats": {
+      "speed": "ਗਤੀ",
+      "eta": "ETA",
+      "distance": "ਦੂਰੀ",
+      "remaining": "ਬਚੇ ਹੋਏ",
+      "kmh": "ਕਿਮੀ/ਘੰਟਾ",
+      "min": "ਮਿੰਟ",
+      "km": "ਕਿਮੀ",
+      "stops": "ਸਟਾਪ"
+    }
+  },
+  "common": {
+    "active": "ਸਰਗਰਮ",
+    "onRoute": "ਰੂਟ 'ਤੇ",
+    "atStop": "ਸਟਾਪ 'ਤੇ",
+    "stopped": "ਰੁਕੀ ਹੋਈ",
+    "delayed": "ਵਿਲੰਬਿਤ",
+    "offline": "ਔਫਲਾਈਨ",
+    "inactive": "ਨਿਸ਼ਕਰਿਆ",
+    "unknown": "ਅਗਿਆਤ",
+    "contactSupport": "ਸਹਾਇਤਾ ਨਾਲ ਸੰਪਰਕ ਕਰੋ"
+  }
+}

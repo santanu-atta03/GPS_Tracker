@@ -1,7 +1,7 @@
 // components/shared/LocationSearch.jsx - FIXED VERSION
 import { useState, useEffect } from "react";
 import { ArrowLeftRight, MapPin, Loader2, Navigation } from "lucide-react";
-
+import { useTranslation } from 'react-i18next';
 export default function LocationSearch({
   onCoordsSelect,
   onLocationChange,
@@ -396,12 +396,55 @@ export default function LocationSearch({
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
+
+  const {t, i18n} = useTranslation();
+    const [selectedLang, setSelectedLang] = useState(
+        localStorage.getItem('selectedLanguage') || 'en'
+      );
+    
+      const LANGUAGES = {
+        en: { name: 'English', flag: '🇺🇸' },
+        hi: { name: 'हिंदी', flag: '🇮🇳' },
+        ta: { name: 'தமிழ்', flag: '🇮🇳' },
+        te: { name: 'తెలుగు', flag: '🇮🇳' },
+        kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
+        ml: { name: 'മലയാളം', flag: '🇮🇳' },
+        bn: { name: 'বাংলা', flag: '🇧🇩' },
+        gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
+        mr: { name: 'मराठी', flag: '🇮🇳' },
+        pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+        ur: { name: 'اردو', flag: '🇵🇰' }
+      };
+    
+      // Handle language change with i18next
+      const handleLanguageChange = (langCode) => {
+        if (!langCode) return;
+    
+        const currentLang = localStorage.getItem('selectedLanguage');
+        if (currentLang === langCode) return;
+    
+        setSelectedLang(langCode);
+        localStorage.setItem('selectedLanguage', langCode);
+        
+        // Change language using i18next
+        i18n.changeLanguage(langCode);
+      };
+    
+      // Initialize language on component mount
+      useEffect(() => {
+        const savedLang = localStorage.getItem('selectedLanguage');
+        if (savedLang && savedLang !== i18n.language) {
+          i18n.changeLanguage(savedLang);
+          setSelectedLang(savedLang);
+        }
+      }, [i18n]);
+
   return (
     <div className="space-y-4">
       {/* From Location */}
       <div className="relative">
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          {searchType === "location" ? "Search Location" : "From"}
+          {searchType === "location" ? t('locationSearch.searchLocation'):t('locationSearch.from')}
         </label>
         <div className="relative">
           <input
@@ -411,8 +454,8 @@ export default function LocationSearch({
             onFocus={() => setActiveInput("from")}
             placeholder={
               searchType === "location"
-                ? "Enter a location"
-                : "Enter starting point"
+                ? t('locationSearch.enterLocation')
+                : t('locationSearch.enterStarting')
             }
             className="w-full p-4 pl-12 pr-10 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
           />
@@ -439,8 +482,8 @@ export default function LocationSearch({
             <Navigation className="w-4 h-4 mr-1" />
           )}
           {isLoadingLocation
-            ? "Getting location..."
-            : "Use my current location"}
+            ? t('locationSearch.gettingLocation')
+            : t('locationSearch.useCurrentLocation')}
         </button>
 
         {/* From Location Suggestions */}
@@ -449,7 +492,7 @@ export default function LocationSearch({
             {isLoadingSuggestions && (
               <div className="p-3 text-center text-gray-500 text-sm">
                 <Loader2 className="w-4 h-4 animate-spin mx-auto mb-1" />
-                Searching...
+                {t('locationSearch.searching')}
               </div>
             )}
             {fromSuggestions.map((place, index) => (
@@ -493,7 +536,7 @@ export default function LocationSearch({
             {/* To Location Input & Suggestions */}
             <div className="flex-1 relative">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                To
+                {t('locationSearch.to')}
               </label>
               <input
                 type="text"
@@ -501,9 +544,9 @@ export default function LocationSearch({
                 onChange={(e) => handleToLocationChange(e.target.value)}
                 onFocus={() => setActiveInput("to")}
                 className="w-full p-4 pl-12 pr-10 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                placeholder="Select destination"
+                placeholder={t('locationSearch.selectDestination')}
               />
-              <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 mt-6" />
+              <MapPin className="absolute left-4 top-8 transform -translate-y-1/2 text-gray-400 w-5 h-5 mt-6" />
               {toLocation && (
                 <button
                   onClick={clearToLocation}

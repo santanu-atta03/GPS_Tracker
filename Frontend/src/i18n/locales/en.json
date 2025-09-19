@@ -1,0 +1,158 @@
+{
+  "navbar": {
+    "appName": "BusTracker Pro",
+    "tagline": "Real-time bus tracking system",
+    "home": "Home",
+    "busDetails": "Bus Details",
+    "map": "Map",
+    "liveTracking": "Live Tracking Active",
+    "viewProfile": "View Profile",
+    "logout": "Logout",
+    "login": "Login"
+  },
+  "home": {
+    "title": "Find Your Perfect Bus Route",
+    "subtitle": "Search for buses by route, location, or bus ID. Get real-time information and track your journey with ease.",
+    "searchTitle": "Find Your Bus",
+    "byRoute": "By Route",
+    "nearby": "Nearby",
+    "byBusId": "By Bus ID",
+    "busIdLabel": "Bus ID",
+    "busIdPlaceholder": "Enter Bus ID (e.g., BUS-1234)",
+    "searchBuses": "Search Buses",
+    "searching": "Searching...",
+    "searchTips": {
+      "route": "Select starting point and destination to find buses along your route",
+      "location": "Choose a location to find nearby buses",
+      "busId": "Enter the specific bus ID to track a particular bus"
+    },
+    "features": {
+      "realTime": {
+        "title": "Real-Time Tracking",
+        "description": "Get live updates on bus locations and arrival times"
+      },
+      "accurateEta": {
+        "title": "Accurate ETAs",
+        "description": "Plan your journey with precise arrival predictions"
+      },
+      "routeOptimization": {
+        "title": "Route Optimization",
+        "description": "Find the best routes for your daily commute"
+      }
+    },
+    "footer": "© 2024 Bus Tracker. All rights reserved.",
+    "errors": {
+      "noBusesRoute": "No buses found for this route. The buses might not be currently operating on this path or try searching with nearby locations.",
+      "noBusesLocation": "No buses found in this area. Try searching in a different location or check back later.",
+      "busNotFound": "Bus with ID \"{{deviceId}}\" not found. Please check the bus ID and try again.",
+      "invalidParams": "Please provide valid search parameters: ",
+      "routeParams": "Select both starting point and destination.",
+      "locationParams": "Select a location to search nearby buses.",
+      "busIdParams": "Enter a valid bus ID.",
+      "searchError": "An error occurred while searching. Please try again."
+    }
+  },
+  "locationSearch": {
+    "from": "From",
+    "to": "To",
+    "searchLocation": "Search Location",
+    "enterStarting": "Enter starting point",
+    "enterLocation": "Enter a location",
+    "selectDestination": "Select destination",
+    "useCurrentLocation": "Use my current location",
+    "gettingLocation": "Getting location...",
+    "searching": "Searching...",
+    "swapLocations": "Swap locations"
+  },
+  "busResults": {
+    "searchError": "Search Error",
+    "tryAgain": "Try Again",
+    "refreshSearch": "Refresh Search",
+    "noBusesFound": "No buses found",
+    "noBusesRoute": "No buses found along this route. This could mean buses aren't currently operating on this path, or try searching with locations that have more bus coverage.",
+    "noBusesBusId": "No bus found with this ID. Please check the bus ID and try again.",
+    "noBusesLocation": "No buses found in this area. Try expanding your search radius or searching in a different location.",
+    "searchTips": {
+      "title": "Search Tips:",
+      "tip1": "Try searching from bus stops or major landmarks",
+      "tip2": "Make sure your locations have good bus coverage",
+      "tip3": "Consider nearby alternative routes",
+      "tip4": "Check if buses operate at the current time"
+    },
+    "busesFound": "{{count}} bus found",
+    "busesFound_plural": "{{count}} buses found",
+    "alongRoute": "(along or near your route)",
+    "passesThrough": "{{count}} bus(es) pass through your route",
+    "correctDirection": "{{count}} bus(es) go in your direction",
+    "nearbyBuses": "{{count}} nearby bus(es)",
+    "routeMatch": {
+      "passesThrough": "Passes through your route",
+      "goodDirection": "Goes in your direction",
+      "nearby": "Nearby route"
+    },
+    "routeInfo": "Route information unavailable",
+    "distanceAway": "{{distance}}m away",
+    "distanceAwayKm": "{{distance}}km away",
+    "routePoints": "{{count}} route points",
+    "hasRouteData": "Has Route Data",
+    "points": "{{count}} Points",
+    "lastUpdated": "Last updated: {{time}}",
+    "startTime": "Start: {{time}}",
+    "expectedTime": "Expected: {{time}}",
+    "endTime": "End: {{time}}",
+    "distanceFromStart": "Distance from start:",
+    "distanceToDestination": "Distance to destination:",
+    "direction": "Direction:",
+    "correct": "Correct",
+    "opposite": "Opposite"
+  },
+  "busDetails": {
+    "title": "Bus Details",
+    "loadingBusDetails": "Loading bus details...",
+    "errorLoading": "Error Loading Bus Details",
+    "busNotFound": "Bus Not Found",
+    "noBusWithId": "No bus found with ID: {{deviceId}}",
+    "searchForBuses": "Search for Buses",
+    "goBack": "Go Back",
+    "scheduleInfo": "Schedule Information",
+    "startTime": "Start Time",
+    "expectedArrival": "Expected Arrival",
+    "destinationTime": "Destination Time",
+    "currentTime": "Current Time",
+    "driverDetails": "Driver Details",
+    "licensedDriver": "Licensed Driver",
+    "phone": "Phone: {{phone}}",
+    "experience": "Experience: Professional",
+    "routeInfo": "Route Information",
+    "routeNotAvailable": "Route information not available",
+    "moreStops": "+{{count}} more stops",
+    "status": "Status",
+    "lastUpdated": "Last Updated",
+    "location": "Location",
+    "unknown": "Unknown",
+    "liveRouteTracking": "Live Route Tracking",
+    "live": "Live",
+    "locationNotAvailable": "Location data not available",
+    "stats": {
+      "speed": "Speed",
+      "eta": "ETA",
+      "distance": "Distance",
+      "remaining": "Remaining",
+      "kmh": "km/h",
+      "min": "min",
+      "km": "km",
+      "stops": "stops"
+    }
+  },
+  "common": {
+    "active": "Active",
+    "onRoute": "On Route",
+    "atStop": "At Stop",
+    "stopped": "Stopped",
+    "delayed": "Delayed",
+    "offline": "Offline",
+    "inactive": "Inactive",
+    "unknown": "Unknown",
+    "contactSupport": "Contact Support"
+  }
+}

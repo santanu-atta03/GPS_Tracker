@@ -11,27 +11,6 @@ import BusMap from "./components/page/BusMap";
 import { useEffect } from "react";
 
 function App() {
-  useEffect(() => {
-    // Simple Google Translate initialization
-    window.googleTranslateElementInit = () => {
-      if (window.google && window.google.translate) {
-        new window.google.translate.TranslateElement({
-          pageLanguage: 'en',
-          includedLanguages: 'en,hi,ta,te,kn,ml,bn,gu,mr,pa,ur',
-          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-          autoDisplay: false
-        }, 'google_translate_element');
-      }
-    };
-
-    // Load script only once
-    if (!document.querySelector('script[src*="translate.google.com"]')) {
-      const script = document.createElement('script');
-      script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  }, []);
 
   const approute = createBrowserRouter([
     {
@@ -67,13 +46,6 @@ function App() {
   return (
     <>
       <RouterProvider router={approute} />
-      {/* Simple Google Translate Element */}
-      <div id="google_translate_element" style={{
-        position: 'absolute',
-        top: '10px',
-        right: '10px',
-        zIndex: 1000
-      }}></div>
     </>
   );
 }

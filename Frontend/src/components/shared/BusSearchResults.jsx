@@ -15,7 +15,9 @@ import {
   Activity 
 } from 'lucide-react';
 import BusSearchDebug from './BusSearchDebug';
-
+import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
+import { useState } from 'react';
 const BusCard = ({ bus, onBusSelect, searchType, searchMetadata }) => {
   const handleClick = () => {
     if (onBusSelect) {
@@ -124,6 +126,50 @@ const BusCard = ({ bus, onBusSelect, searchType, searchMetadata }) => {
   const routeMatchInfo = getRouteMatchInfo();
   const relevanceScore = getRelevanceScore();
 
+
+
+    const {t, i18n} = useTranslation();
+    const [selectedLang, setSelectedLang] = useState(
+        localStorage.getItem('selectedLanguage') || 'en'
+      );
+    
+      const LANGUAGES = {
+        en: { name: 'English', flag: '🇺🇸' },
+        hi: { name: 'हिंदी', flag: '🇮🇳' },
+        ta: { name: 'தமிழ்', flag: '🇮🇳' },
+        te: { name: 'తెలుగు', flag: '🇮🇳' },
+        kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
+        ml: { name: 'മലയാളം', flag: '🇮🇳' },
+        bn: { name: 'বাংলা', flag: '🇧🇩' },
+        gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
+        mr: { name: 'मराठी', flag: '🇮🇳' },
+        pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+        ur: { name: 'اردو', flag: '🇵🇰' }
+      };
+    
+      // Handle language change with i18next
+      const handleLanguageChange = (langCode) => {
+        if (!langCode) return;
+    
+        const currentLang = localStorage.getItem('selectedLanguage');
+        if (currentLang === langCode) return;
+    
+        setSelectedLang(langCode);
+        localStorage.setItem('selectedLanguage', langCode);
+        
+        // Change language using i18next
+        i18n.changeLanguage(langCode);
+      };
+    
+      // Initialize language on component mount
+      useEffect(() => {
+        const savedLang = localStorage.getItem('selectedLanguage');
+        if (savedLang && savedLang !== i18n.language) {
+          i18n.changeLanguage(savedLang);
+          setSelectedLang(savedLang);
+        }
+      }, [i18n]);
+
   return (
     <div
       onClick={handleClick}
@@ -177,19 +223,19 @@ const BusCard = ({ bus, onBusSelect, searchType, searchMetadata }) => {
           {bus.startTime && (
             <div className="flex items-center">
               <Clock className="w-3 h-3 mr-2 text-green-500 flex-shrink-0" />
-              <span>Start: {bus.startTime}</span>
+              <span>{t('busResults.startTime')} {bus.startTime}</span>
             </div>
           )}
           {bus.expectedTime && (
             <div className="flex items-center">
               <Activity className="w-3 h-3 mr-2 text-blue-500 flex-shrink-0" />
-              <span>Expected: {bus.expectedTime}</span>
+              <span>{t('busResults.expectedTime')} {bus.expectedTime}</span>
             </div>
           )}
           {bus.destinationTime && (
             <div className="flex items-center">
               <Clock className="w-3 h-3 mr-2 text-orange-500 flex-shrink-0" />
-              <span>End: {bus.destinationTime}</span>
+              <span>{t('busResults.endTime')} {bus.destinationTime}</span>
             </div>
           )}
         </div>
@@ -226,21 +272,21 @@ const BusCard = ({ bus, onBusSelect, searchType, searchMetadata }) => {
             <div className="text-xs text-gray-600 space-y-1">
               {(bus.routeMatch || bus.routeAnalysis).fromDistance < Infinity && (
                 <div className="flex justify-between">
-                  <span>Distance from start:</span>
+                  <span>{t('busResults.distanceFromStart')}</span>
                   <span className="font-medium">{formatDistance((bus.routeMatch || bus.routeAnalysis).fromDistance)}</span>
                 </div>
               )}
               {(bus.routeMatch || bus.routeAnalysis).toDistance < Infinity && (
                 <div className="flex justify-between">
-                  <span>Distance to destination:</span>
+                  <span>{t('busResults.distanceToDestination')}</span>
                   <span className="font-medium">{formatDistance((bus.routeMatch || bus.routeAnalysis).toDistance)}</span>
                 </div>
               )}
               {(bus.routeMatch || bus.routeAnalysis).isCorrectDirection !== undefined && (
                 <div className="flex justify-between">
-                  <span>Direction:</span>
+                  <span>{t('busResults.direction')}</span>
                   <span className={`font-medium ${(bus.routeMatch || bus.routeAnalysis).isCorrectDirection ? 'text-green-600' : 'text-orange-600'}`}>
-                    {(bus.routeMatch || bus.routeAnalysis).isCorrectDirection ? 'Correct' : 'Opposite'}
+                    {(bus.routeMatch || bus.routeAnalysis).isCorrectDirection ? t('busResults.correct') : t('busResults.opposite') }
                   </span>
                 </div>
               )}
@@ -253,12 +299,12 @@ const BusCard = ({ bus, onBusSelect, searchType, searchMetadata }) => {
           <div className="border-t pt-2 mt-2 text-xs text-gray-500">
             {bus.hasRoute && (
               <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">
-                Has Route Data
+                {t('busResults.hasRouteData')}
               </span>
             )}
             {bus.routePoints > 0 && (
               <span className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded">
-                {bus.routePoints} Points
+                {bus.routePoints} {t('busResults.points')}
               </span>
             )}
           </div>
@@ -278,7 +324,7 @@ const BusCard = ({ bus, onBusSelect, searchType, searchMetadata }) => {
         {/* Last Updated */}
         {lastUpdated && (
           <div className="text-xs text-gray-500 border-t pt-2 mt-3">
-            Last updated: {new Date(lastUpdated).toLocaleString()}
+            {t('busResults.lastUpdated')} {new Date(lastUpdated).toLocaleString()}
           </div>
         )}
       </div>
@@ -294,6 +340,48 @@ const BusSearchResults = ({
   onBusSelect,
   error = null 
 }) => {
+
+  const {t, i18n} = useTranslation();
+    const [selectedLang, setSelectedLang] = useState(
+        localStorage.getItem('selectedLanguage') || 'en'
+      );
+    
+      const LANGUAGES = {
+        en: { name: 'English', flag: '🇺🇸' },
+        hi: { name: 'हिंदी', flag: '🇮🇳' },
+        ta: { name: 'தமிழ்', flag: '🇮🇳' },
+        te: { name: 'తెలుగు', flag: '🇮🇳' },
+        kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
+        ml: { name: 'മലയാളം', flag: '🇮🇳' },
+        bn: { name: 'বাংলা', flag: '🇧🇩' },
+        gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
+        mr: { name: 'मराठी', flag: '🇮🇳' },
+        pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+        ur: { name: 'اردو', flag: '🇵🇰' }
+      };
+    
+      // Handle language change with i18next
+      const handleLanguageChange = (langCode) => {
+        if (!langCode) return;
+    
+        const currentLang = localStorage.getItem('selectedLanguage');
+        if (currentLang === langCode) return;
+    
+        setSelectedLang(langCode);
+        localStorage.setItem('selectedLanguage', langCode);
+        
+        // Change language using i18next
+        i18n.changeLanguage(langCode);
+      };
+    
+      // Initialize language on component mount
+      useEffect(() => {
+        const savedLang = localStorage.getItem('selectedLanguage');
+        if (savedLang && savedLang !== i18n.language) {
+          i18n.changeLanguage(savedLang);
+          setSelectedLang(savedLang);
+        }
+      }, [i18n]);
   console.log("BusSearchResults - Error:", error);
   console.log("BusSearchResults - Results:", searchResults);
   console.log("BusSearchResults - Loading:", isLoading);
@@ -314,14 +402,14 @@ const BusSearchResults = ({
     return (
       <div className="text-center py-12">
         <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-        <h3 className="text-xl font-medium text-gray-600 mb-2">Search Error</h3>
+        <h3 className="text-xl font-medium text-gray-600 mb-2">{t('busResults.searchError')}</h3>
         <p className="text-gray-500 mb-4">{error}</p>
         <div className="flex justify-center space-x-4">
           <button
             onClick={() => window.location.reload()}
             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
           >
-            Try Again
+            {t('busResults.tryAgain')}
           </button>
         </div>
       </div>
@@ -335,13 +423,13 @@ const BusSearchResults = ({
     return (
       <div className="text-center py-12">
         <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-xl font-medium text-gray-600 mb-2">No buses found</h3>
+        <h3 className="text-xl font-medium text-gray-600 mb-2">{t('busResults.noBusesFound')}</h3>
         <p className="text-gray-500 mb-4">
           {searchType === 'route' 
-            ? "No buses found along this route. This could mean buses aren't currently operating on this path, or try searching with locations that have more bus coverage."
+            ? t('busResults.noBusesRoute')
             : searchType === 'busId'
-            ? "No bus found with this ID. Please check the bus ID and try again."
-            : "No buses found in this area. Try expanding your search radius or searching in a different location."
+            ? t('busResults.noBusesBusId')
+            : t('busResults.noBusesLocation')
           }
         </p>
         
@@ -350,18 +438,18 @@ const BusSearchResults = ({
             onClick={() => window.location.reload()}
             className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
           >
-            Refresh Search
+            {t('busResults.refreshSearch')}
           </button>
         </div>
         
         {searchType === 'route' && (
           <div className="mt-6 p-4 bg-blue-50 rounded-lg text-left max-w-md mx-auto">
-            <h4 className="font-medium text-blue-800 mb-2">Search Tips:</h4>
+            <h4 className="font-medium text-blue-800 mb-2">{t('busResults.searchTips.title')}</h4>
             <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Try searching from bus stops or major landmarks</li>
-              <li>• Make sure your locations have good bus coverage</li>
-              <li>• Consider nearby alternative routes</li>
-              <li>• Check if buses operate at the current time</li>
+              <li>• {t('busResults.searchTips.tip1')}</li>
+              <li>• {t('busResults.searchTips.tip2')}</li>
+              <li>• {t('busResults.searchTips.tip3')}</li>
+              <li>• {t('busResults.searchTips.tip4')}</li>
             </ul>
           </div>
         )}
@@ -394,11 +482,11 @@ const BusSearchResults = ({
         <div className="flex items-center">
           <Zap className="w-5 h-5 text-green-500 mr-2" />
           <span className="text-lg font-semibold text-gray-800">
-            {resultsArray.length} bus{resultsArray.length === 1 ? '' : 'es'} found
+            {resultsArray.length} bus{resultsArray.length === 1 ? '' : 'es'} {t('busResults.busesFound')}
           </span>
           {searchType === 'route' && (
             <span className="text-sm text-gray-500 ml-2">
-              (along or near your route)
+              ({t('busResults.alongRoute')})
             </span>
           )}
         </div>
@@ -421,7 +509,7 @@ const BusSearchResults = ({
             <div className="flex items-center text-green-600">
               <CheckCircle className="w-4 h-4 mr-2" />
               <span>
-                {resultsArray.filter(bus => (bus.routeMatch || bus.routeAnalysis)?.passesThrough).length} bus(es) pass through your route
+                {resultsArray.filter(bus => (bus.routeMatch || bus.routeAnalysis)?.passesThrough).length} {t('busResults.routeMatch.passesThrough')}
               </span>
             </div>
           )}
@@ -429,7 +517,7 @@ const BusSearchResults = ({
             <div className="flex items-center text-blue-600">
               <ArrowRight className="w-4 h-4 mr-2" />
               <span>
-                {resultsArray.filter(bus => (bus.routeMatch || bus.routeAnalysis)?.isCorrectDirection && !(bus.routeMatch || bus.routeAnalysis)?.passesThrough).length} bus(es) go in your direction
+                {resultsArray.filter(bus => (bus.routeMatch || bus.routeAnalysis)?.isCorrectDirection && !(bus.routeMatch || bus.routeAnalysis)?.passesThrough).length} {t('busResults.routeMatch.goodDirection')}
               </span>
             </div>
           )}
@@ -437,7 +525,7 @@ const BusSearchResults = ({
             <div className="flex items-center text-orange-600">
               <TrendingUp className="w-4 h-4 mr-2" />
               <span>
-                {resultsArray.filter(bus => !(bus.routeMatch || bus.routeAnalysis)?.passesThrough && !(bus.routeMatch || bus.routeAnalysis)?.isCorrectDirection).length} nearby bus(es)
+                {resultsArray.filter(bus => !(bus.routeMatch || bus.routeAnalysis)?.passesThrough && !(bus.routeMatch || bus.routeAnalysis)?.isCorrectDirection).length} {t('busResults.routeMatch.nearby')}
               </span>
             </div>
           )}
