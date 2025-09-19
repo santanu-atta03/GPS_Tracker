@@ -12,7 +12,8 @@ import {
 } from 'lucide-react';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from 'react-router-dom';
-
+import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
 // Import our components and services
 import Navbar from '../shared/Navbar';
 import LocationSearch from '../shared/LocationSearch';
@@ -23,6 +24,48 @@ import { getBusLocationByDeviceId } from '../../services/operations/busAPI';
 const Home = ({ onSearch, onBusSelect }) => {
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
+   const {t, i18n} = useTranslation();
+  const [selectedLang, setSelectedLang] = useState(
+      localStorage.getItem('selectedLanguage') || 'en'
+    );
+  
+    const LANGUAGES = {
+      en: { name: 'English', flag: '🇺🇸' },
+      hi: { name: 'हिंदी', flag: '🇮🇳' },
+      ta: { name: 'தமிழ்', flag: '🇮🇳' },
+      te: { name: 'తెలుగు', flag: '🇮🇳' },
+      kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
+      ml: { name: 'മലയാളം', flag: '🇮🇳' },
+      bn: { name: 'বাংলা', flag: '🇧🇩' },
+      gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
+      mr: { name: 'मराठी', flag: '🇮🇳' },
+      pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+      ur: { name: 'اردو', flag: '🇵🇰' }
+    };
+  
+    // Handle language change with i18next
+    const handleLanguageChange = (langCode) => {
+      if (!langCode) return;
+  
+      const currentLang = localStorage.getItem('selectedLanguage');
+      if (currentLang === langCode) return;
+  
+      setSelectedLang(langCode);
+      localStorage.setItem('selectedLanguage', langCode);
+      
+      // Change language using i18next
+      i18n.changeLanguage(langCode);
+    };
+  
+    // Initialize language on component mount
+    useEffect(() => {
+      const savedLang = localStorage.getItem('selectedLanguage');
+      if (savedLang && savedLang !== i18n.language) {
+        i18n.changeLanguage(savedLang);
+        setSelectedLang(savedLang);
+      }
+    }, [i18n]);
+
   
   // Search state
   const [searchType, setSearchType] = useState('route'); // 'route', 'busId', 'location'
@@ -254,17 +297,16 @@ const debugSearch = async () => {
         {/* Hero Section */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
-            Find Your Perfect Bus Route
+            {t('home.title')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Search for buses by route, location, or bus ID. Get real-time information 
-            and track your journey with ease.
+            {t('home.subtitle')}
           </p>
         </div>
 
         {/* Search Section */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-green-100">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Find Your Bus</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">{t('home.searchTitle')}</h2>
           
           {/* Search Type Toggle */}
           <div className="flex justify-center mb-6">
@@ -282,7 +324,7 @@ const debugSearch = async () => {
                 }`}
               >
                 <Route className="w-4 h-4 inline mr-2" />
-                By Route
+                {t('home.byRoute')}
               </button>
               <button
                 onClick={() => {
@@ -297,7 +339,7 @@ const debugSearch = async () => {
                 }`}
               >
                 <MapPin className="w-4 h-4 inline mr-2" />
-                Nearby
+                {t('home.nearby')}
               </button>
               <button
                 onClick={() => {
@@ -312,7 +354,7 @@ const debugSearch = async () => {
                 }`}
               >
                 <Navigation className="w-4 h-4 inline mr-2" />
-                By Bus ID
+                {t('home.byBusId')}
               </button>
             </div>
           </div>
@@ -327,14 +369,14 @@ const debugSearch = async () => {
           ) : (
             <div className="max-w-md mx-auto">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Bus ID
+                {t('home.busIdLabel')}
               </label>
               <input
                 type="text"
                 value={deviceID}
                 onChange={(e) => setDeviceID(e.target.value)}
                 onKeyPress={handleBusIdKeyPress}
-                placeholder="Enter Bus ID (e.g., BUS-1234)"
+                placeholder={t('home.busIdPlaceholder')}
                 className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               />
             </div>
@@ -352,16 +394,16 @@ const debugSearch = async () => {
               }`}
             >
               <Search className="w-5 h-5 mr-2" />
-              {isLoading ? 'Searching...' : 'Search Buses'}
+              {isLoading ? t('home.searching') : t('home.searchBuses')}
             </button>
           </div>
 
           {/* Search Tips */}
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-500">
-              {searchType === 'route' && "Select starting point and destination to find buses along your route"}
-              {searchType === 'location' && "Choose a location to find nearby buses"}
-              {searchType === 'busId' && "Enter the specific bus ID to track a particular bus"}
+              {searchType === 'route' && t('home.searchTips.route')}
+              {searchType === 'location' && t('home.searchTips.location')}
+              {searchType === 'busId' && t('home.searchTips.busId')}
             </p>
           </div>
         </div>
@@ -373,9 +415,9 @@ const debugSearch = async () => {
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-6 h-6 text-green-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Real-Time Tracking</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('home.features.realTime.title')}</h3>
               <p className="text-gray-600 text-sm">
-                Get live updates on bus locations and arrival times
+                {t('home.features.realTime.description')}
               </p>
             </div>
             
@@ -383,9 +425,9 @@ const debugSearch = async () => {
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Clock className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Accurate ETAs</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('home.features.accurateEta.description')}</h3>
               <p className="text-gray-600 text-sm">
-                Plan your journey with precise arrival predictions
+                {t('home.features.accurateEta.description')}
               </p>
             </div>
             
@@ -393,9 +435,9 @@ const debugSearch = async () => {
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Route className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Route Optimization</h3>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('home.features.routeOptimization.description')}</h3>
               <p className="text-gray-600 text-sm">
-                Find the best routes for your daily commute
+                {t('home.features.routeOptimization.description')}
               </p>
             </div>
           </div>
@@ -417,7 +459,7 @@ const debugSearch = async () => {
             <div className="flex items-start">
               <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
               <div>
-                <h3 className="text-red-800 font-medium mb-1">Search Error</h3>
+                <h3 className="text-red-800 font-medium mb-1">{t('home.errors.searchError')}</h3>
                 <p className="text-red-700 text-sm">{error}</p>
               </div>
             </div>
@@ -426,7 +468,7 @@ const debugSearch = async () => {
 
         {/* Footer */}
         <footer className="mt-16 text-center text-gray-500 text-sm">
-          <p>&copy; 2024 Bus Tracker. All rights reserved.</p>
+          <p>&copy; {t('home.footer')}</p>
         </footer>
       </main>
     </div>
@@ -434,3 +476,401 @@ const debugSearch = async () => {
 };
 
 export default Home;
+
+// components/Home.jsx
+// components/Home.jsx
+// import React, { useState } from 'react';
+// import { Button } from "@/components/ui/button";
+// import { 
+//   Search, 
+//   Route, 
+//   Navigation, 
+//   Clock, 
+//   Zap,
+//   MapPin,
+//   AlertTriangle,
+//   Bus,
+//   Smartphone,
+//   Bell,
+//   Globe
+// } from 'lucide-react';
+// import { useAuth0 } from "@auth0/auth0-react";
+// import { useNavigate } from 'react-router-dom';
+// import { useTranslation } from 'react-i18next';
+// // Import our components and services
+// import { useEffect } from 'react';
+// import Navbar from '../shared/Navbar';
+// import LocationSearch from '../shared/LocationSearch';
+// import BusSearchResults from '../shared/BusSearchResults';
+// import { busSearchService } from '../../services/busSearchService';
+// import { getBusLocationByDeviceId } from '../../services/operations/busAPI';
+
+// const Home = ({ onSearch, onBusSelect }) => {
+//   const { getAccessTokenSilently } = useAuth0();
+//   const navigate = useNavigate();
+//   const {t, i18n} = useTranslation();
+//   const [selectedLang, setSelectedLang] = useState(
+//       localStorage.getItem('selectedLanguage') || 'en'
+//     );
+  
+//     const LANGUAGES = {
+//       en: { name: 'English', flag: '🇺🇸' },
+//       hi: { name: 'हिंदी', flag: '🇮🇳' },
+//       ta: { name: 'தமிழ்', flag: '🇮🇳' },
+//       te: { name: 'తెలుగు', flag: '🇮🇳' },
+//       kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
+//       ml: { name: 'മലയാളം', flag: '🇮🇳' },
+//       bn: { name: 'বাংলা', flag: '🇧🇩' },
+//       gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
+//       mr: { name: 'मराठी', flag: '🇮🇳' },
+//       pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+//       ur: { name: 'اردو', flag: '🇵🇰' }
+//     };
+  
+//     // Handle language change with i18next
+//     const handleLanguageChange = (langCode) => {
+//       if (!langCode) return;
+  
+//       const currentLang = localStorage.getItem('selectedLanguage');
+//       if (currentLang === langCode) return;
+  
+//       setSelectedLang(langCode);
+//       localStorage.setItem('selectedLanguage', langCode);
+      
+//       // Change language using i18next
+//       i18n.changeLanguage(langCode);
+//     };
+  
+//     // Initialize language on component mount
+//     useEffect(() => {
+//       const savedLang = localStorage.getItem('selectedLanguage');
+//       if (savedLang && savedLang !== i18n.language) {
+//         i18n.changeLanguage(savedLang);
+//         setSelectedLang(savedLang);
+//       }
+//     }, [i18n]);
+  
+  
+//   // Search state
+//   const [searchType, setSearchType] = useState('route'); // 'route', 'busId', 'location'
+//   const [deviceID, setDeviceID] = useState('');
+//   const [searchResults, setSearchResults] = useState([]);
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [error, setError] = useState(null);
+//   const [searchMetadata, setSearchMetadata] = useState(null);
+  
+//   // Location state
+//   const [fromCoords, setFromCoords] = useState(null);
+//   const [toCoords, setToCoords] = useState(null);
+//   const [fromAddress, setFromAddress] = useState('');
+//   const [toAddress, setToAddress] = useState('');
+
+//   // Auth0 test function
+//   const updateProfile = async () => {
+//     try {
+//       const token = await getAccessTokenSilently({
+//         audience: "http://localhost:5000/api/v3",
+//       });
+//       console.log(token);
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
+
+//   // Handle coordinates selection from LocationSearch
+//   const handleCoordsSelect = ({ from, to, fromAddress, toAddress }) => {
+//     setFromCoords(from);
+//     setToCoords(to);
+//     setFromAddress(fromAddress || '');
+//     setToAddress(toAddress || '');
+//   };
+
+//   const handleBusIdKeyPress = (e) => {
+//     if (e.key === 'Enter' && canSearch()) {
+//       handleSearch();
+//     }
+//   };
+//   // Handle location changes from LocationSearch
+//   const handleLocationChange = (type, locationData) => {
+//     if (type === 'from') {
+//       setFromCoords(locationData.coords);
+//       setFromAddress(locationData.address);
+//     } else if (type === 'to') {
+//       setToCoords(locationData.coords);
+//       setToAddress(locationData.address);
+//     }
+//   };
+
+//   // Handle bus selection
+//   const handleBusSelect = (bus) => {
+//     if (onBusSelect) {
+//       onBusSelect(bus);
+//     }
+//     // Navigate to bus details page using the correct device ID property
+//     const deviceId = bus.deviceID || bus.deviceId || bus.id;
+//     navigate(`/bus/${deviceId}`);
+//   };
+
+//   // Main search function
+//   const handleSearch = async () => {
+//     setIsLoading(true);
+//     setError(null);
+//     setSearchResults([]);
+//     setSearchMetadata(null);
+
+//     try {
+//       if (searchType === 'route' && fromCoords && toCoords) {
+//         // Search for buses along a route
+//         console.log("Printing fromcor : ", fromCoords);
+//         console.log("Printing tiocoords : ", toCoords);
+//         const result = await busSearchService.findBusesByRoute(fromCoords, toCoords, {
+//           radius: 1000, // 1km radius
+//           maxResults: 20
+//         });
+        
+//         console.log("Search result:", result);
+//         setSearchResults(result.buses || []);
+//         setSearchMetadata(result.metadata);
+        
+//         if (onSearch) {
+//           onSearch(result.buses || []);
+//         }
+//       } else if (searchType === 'busId' && deviceID.trim()) {
+//         // Search by device ID
+//         const result = await getBusLocationByDeviceId(deviceID.trim());
+//         if (result) {
+//           setSearchResults([result]);
+//           setSearchMetadata({ total: 1, searchType: 'busId' });
+//         } else {
+//           setSearchResults([]);
+//           setSearchMetadata({ total: 0, searchType: 'busId' });
+//         }
+//       } else if (searchType === 'location' && fromCoords) {
+//         // Search by location (nearby buses)
+//         const result = await busSearchService.findNearbyBuses(fromCoords, {
+//           radius: 2000, // 2km radius
+//           maxResults: 20
+//         });
+        
+//         setSearchResults(result.buses || []);
+//         setSearchMetadata(result.metadata);
+        
+//         if (onSearch) {
+//           onSearch(result.buses || []);
+//         }
+//       } else {
+//         setError(t('home.searchResults.error'));
+//       }
+//     } catch (err) {
+//       console.error('Search error:', err);
+//       setError(err.message || t('home.searchResults.error'));
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   // Handle search type change
+//   const handleSearchTypeChange = (type) => {
+//     setSearchType(type);
+//     setSearchResults([]);
+//     setError(null);
+//     setSearchMetadata(null);
+//     setDeviceID('');
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
+//       <Navbar />
+      
+//       {/* Hero Section */}
+//       <div className="max-w-7xl mx-auto px-6 pt-12 pb-8">
+//         <div className="text-center mb-12">
+//           <h1 className="text-5xl font-bold bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent mb-4">
+//             {t('home.title')}
+//           </h1>
+//           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+//             {t('home.subtitle')}
+//           </p>
+//         </div>
+
+//         {/* Search Section */}
+//         <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl border border-green-100 p-8 mb-12">
+//           {/* Search Type Selector */}
+//           <div className="flex flex-wrap justify-center gap-4 mb-8">
+//             {[
+//               { type: 'route', label: 'home.byRoute' },
+//               { type: 'busId', label: 'home.byBusId' },
+//               { type: 'location', label: 'home.nearby' }
+//             ].map(({ type, label }) => (
+//               <button
+//                 key={type}
+//                 onClick={() => handleSearchTypeChange(type)}
+//                 className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-300 ${
+//                   searchType === type
+//                     ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg scale-105'
+//                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+//                 }`}
+//               >
+//                 {searchType === type && <Search className="w-4 h-4 inline-block mr-2" />}
+//                 {t(label)}
+//               </button>
+//             ))}
+//           </div>
+
+//           {/* Search Content */}
+//           <div className="space-y-6">
+//             {(searchType === 'route' || searchType === 'location') ? (
+//             <LocationSearch
+//               onCoordsSelect={handleCoordsSelect}
+//               onLocationChange={handleLocationChange}
+//               searchType={searchType}
+//             />
+//           ) : (
+//             <div className="max-w-md mx-auto">
+//               <label className="block text-sm font-medium text-gray-700 mb-2">
+//                 Bus ID
+//               </label>
+//               <input
+//                 type="text"
+//                 value={deviceID}
+//                 onChange={(e) => setDeviceID(e.target.value)}
+//                 onKeyPress={handleBusIdKeyPress}
+//                 placeholder="Enter Bus ID (e.g., BUS-1234)"
+//                 className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+//               />
+//             </div>
+//           )}
+
+
+//             {/* Search Button */}
+//             <div className="flex justify-center">
+//               <Button
+//                 onClick={handleSearch}
+//                 disabled={isLoading || (searchType === 'route' && (!fromCoords || !toCoords)) || 
+//                          (searchType === 'busId' && !deviceID.trim()) ||
+//                          (searchType === 'location' && !fromCoords)}
+//                 className="px-12 py-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+//               >
+//                 {isLoading ? (
+//                   <>
+//                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+//                     {t('home.loading')}
+//                   </>
+//                 ) : (
+//                   <>
+//                     <Search className="w-5 h-5 mr-2" />
+//                     {t('home.searchBuses')}
+//                   </>
+//                 )}
+//               </Button>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Search Results */}
+//         {(searchResults.length > 0 || error || (isLoading && searchResults.length === 0)) && (
+//           <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl border border-green-100 p-8 mb-12">
+//             <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+//               <Bus className="w-6 h-6 mr-2 text-green-600" />
+//               Search Results
+//             </h2>
+            
+//             {error && (
+//               <div className="bg-red-50 border border-red-200 rounded-2xl p-6 mb-6">
+//                 <div className="flex items-center text-red-800">
+//                   <AlertTriangle className="w-5 h-5 mr-2" />
+//                   {error}
+//                 </div>
+//               </div>
+//             )}
+
+//             <BusSearchResults
+//               results={searchResults}
+//               isLoading={isLoading}
+//               onBusSelect={handleBusSelect}
+//               metadata={searchMetadata}
+//             />
+//           </div>
+//         )}
+
+//         {/* Features Section */}
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+//           {[
+//             { icon: Zap, title: 'Real-Time Tracking', description: 'Track buses live with GPS precision', color: 'from-blue-500 to-blue-600' },
+//             { icon: Route, title: 'Smart Route Planning', description: 'Find the best routes to your destination', color: 'from-green-500 to-green-600' },
+//             { icon: Bell, title: 'Smart Notifications', description: 'Get alerts when your bus approaches', color: 'from-yellow-500 to-yellow-600' },
+//             { icon: Globe, title: 'Multi-Language Support', description: 'Use in your preferred language', color: 'from-purple-500 to-purple-600' }
+//           ].map(({ icon: Icon, title, description, color }, index) => (
+//             <div key={index} className="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-green-100 hover:border-green-200">
+//               <div className={`w-12 h-12 bg-gradient-to-r ${color} rounded-xl flex items-center justify-center mb-4`}>
+//                 <Icon className="w-6 h-6 text-white" />
+//               </div>
+//               <h3 className="text-lg font-semibold text-gray-800 mb-2">
+//                 {title}
+//               </h3>
+//               <p className="text-gray-600">
+//                 {description}
+//               </p>
+//             </div>
+//           ))}
+//         </div>
+
+//         {/* Quick Actions */}
+//         <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl border border-green-100 p-8">
+//           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+//             Quick Actions
+//           </h2>
+          
+//           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+//             {[
+//               { label: 'Find Nearby Buses', icon: MapPin, action: () => handleSearchTypeChange('location') },
+//               { label: 'Popular Routes', icon: Route, action: () => navigate('/Bus') },
+//               { label: 'Bus Stops', icon: Navigation, action: () => navigate('/view/map') },
+//               { label: 'Schedules', icon: Clock, action: () => navigate('/Bus') }
+//             ].map(({ label, icon: Icon, action }, index) => (
+//               <button
+//                 key={index}
+//                 onClick={action}
+//                 className="flex items-center justify-center space-x-2 p-4 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-green-50 hover:to-green-100 rounded-2xl transition-all duration-300 hover:shadow-lg border border-gray-200 hover:border-green-200"
+//               >
+//                 <Icon className="w-5 h-5 text-green-600" />
+//                 <span className="font-medium text-gray-700">
+//                   {label}
+//                 </span>
+//               </button>
+//             ))}
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Footer */}
+//       <footer className="bg-gradient-to-r from-green-800 to-green-900 text-white py-12 mt-16">
+//         <div className="max-w-7xl mx-auto px-6 text-center">
+//           <div className="flex items-center justify-center space-x-3 mb-4">
+//             <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+//               <Navigation className="w-5 h-5 text-white" />
+//             </div>
+//             <h3 className="text-2xl font-bold">BusTracker</h3>
+//           </div>
+//           <p className="text-green-100 mb-6">Smart Public Transit</p>
+//           <div className="flex flex-wrap justify-center gap-6 text-sm">
+//             <span className="flex items-center">
+//               <Clock className="w-4 h-4 mr-1" />
+//               Live Tracking
+//             </span>
+//             <span className="flex items-center">
+//               <Globe className="w-4 h-4 mr-1" />
+//               Multi-language Support
+//             </span>
+//             <span className="flex items-center">
+//               <Smartphone className="w-4 h-4 mr-1" />
+//               Mobile Friendly
+//             </span>
+//           </div>
+//         </div>
+//       </footer>
+//     </div>
+//   );
+// };
+
+// export default Home;
