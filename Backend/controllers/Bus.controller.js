@@ -4,8 +4,8 @@ import Location from "../models/Location.model.js";
 
 export const CreateDriver = async (req, res) => {
   try {
-    const { deviceID, to, from } = req.body;
-    if (!deviceID || !to || !from) {
+    const {name, deviceID, to, from } = req.body;
+    if (!name || !deviceID || !to || !from) {
       return res.status(400).json({
         message: " all fild are required",
         success: false,
@@ -31,6 +31,7 @@ export const CreateDriver = async (req, res) => {
     const newBusdetails = await Location.create({ deviceID });
 
     const busDetails = {
+      name:name,
       deviceID: deviceID,
       to: to,
       from: from,

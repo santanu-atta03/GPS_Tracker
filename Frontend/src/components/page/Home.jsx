@@ -427,6 +427,7 @@ const debugSearch = async () => {
         {/* Footer */}
         <footer className="mt-16 text-center text-gray-500 text-sm">
           <p>&copy; 2024 Bus Tracker. All rights reserved.</p>
+          <Button onClick={updateProfile}></Button>
         </footer>
       </main>
     </div>
