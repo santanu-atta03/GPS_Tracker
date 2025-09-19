@@ -18,7 +18,7 @@ const Complete = () => {
       if (!user) return; // Wait for Auth0 user to load
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/v1/driver/veryfi/email/${user.email}`
+          `https://gps-tracker-kq2q.vercel.app/api/v1/driver/veryfi/email/${user.email}`
         );
         if (res.data.success) {
           navigate("/"); // already registered driver
@@ -43,7 +43,7 @@ const Complete = () => {
       });
       console.log(token)
       const res = await axios.post(
-        "http://localhost:5000/api/v1/driver/createUser",
+        "https://gps-tracker-kq2q.vercel.app/api/v1/driver/createUser",
         {
           fullname: user.name,
           email: user.email,
