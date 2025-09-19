@@ -60,3 +60,31 @@ body{
 .end-marker {
   filter: hue-rotate(340deg) brightness(1.1);
 }
+
+
+/* Hide the Google top bar */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+/* Push page content back to top */
+body {
+  top: 0px !important;
+}
+
+/* Optional: hide iframe */
+iframe.goog-te-banner-frame {
+  display: none !important;
+}
+
+/* Optional: hide Google tooltip popup */
+.goog-tooltip {
+  display: none !important;
+}
+.goog-tooltip:hover {
+  display: none !important;
+}
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
+}
