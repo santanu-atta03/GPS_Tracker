@@ -50,7 +50,7 @@ export const updatelocation = async (req, res) => {
         console.log(`[updatelocation] Distance from previous location: ${distance}m`);
         
         // Only add to route if moved more than 10 meters
-        shouldAddToRoute = distance > 10;
+        shouldAddToRoute = distance > 1;
       }
       
       if (shouldAddToRoute) {
