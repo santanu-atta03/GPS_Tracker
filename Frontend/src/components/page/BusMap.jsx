@@ -92,7 +92,7 @@ const BusMap = () => {
     const fetchBusLocations = async () => {
       try {
         setError(null);
-        const res = await axios.get("http://localhost:5000/api/v1/AllLocation");
+        const res = await axios.get("https://gps-tracker-kq2q.vercel.app/api/v1/AllLocation");
         setBusLocations(res.data.buses || []);
         setLastUpdated(new Date());
         setIsLoading(false);
@@ -117,7 +117,7 @@ const BusMap = () => {
   const handleRefresh = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/v1/AllLocation");
+      const res = await axios.get("https://gps-tracker-kq2q.vercel.app/api/v1/AllLocation");
       setBusLocations(res.data.buses || []);
       setLastUpdated(new Date());
       setError(null);
