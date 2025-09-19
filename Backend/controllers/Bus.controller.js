@@ -49,12 +49,9 @@ export const CreateDriver = async (req, res) => {
     console.log(error);
   }
 };
- 
 export const getAllBUs = async (req, res) => {
   try {
-    const allBus = await Bus.find({})
-      .populate("driver")
-      .populate("location");
+    const allBus = await Bus.find({}).populate("driver").populate("location");
 
     if (!allBus || allBus.length === 0) {
       return res.status(404).json({
@@ -63,34 +60,46 @@ export const getAllBUs = async (req, res) => {
       });
     }
 
-    // Transform response
-    const formattedBuses = allBus.map((bus) => {
-      const latitude = bus.location?.coordinates?.[1] || 0;
-      const longitude = bus.location?.coordinates?.[0] || 0;
-
+    // Transform each bus to match UI expectations
+    const formattedBuses = allBus.map((busData) => {
       return {
-        id: bus.deviceID,
-        deviceID: bus.deviceID,
-        deviceId: bus.deviceID, // both keys as you showed
-        busName: bus.name || `Bus ${bus.deviceID}`,
-        name: bus.name || `Bus ${bus.deviceID}`,
-        status: "Active", // static for now, can be dynamic
-        currentLocation: "Live tracking available",
-        destinationTime: "08:00 PM", // placeholder
-        expectedTime: "Calculating...", // placeholder
-        startTime: "06:00 AM", // placeholder
-        driver: bus.driver ? "Driver Available" : "Driver Not Assigned",
-        driverName: bus.driver?.name || "Driver Available",
-        driverPhone: bus.driver?.phone || "Contact Support",
-        lat: latitude,
-        latitude,
-        lng: longitude,
-        longitude,
-        location: bus.location || { type: "Point", coordinates: [0, 0] },
-        route: bus.route || [],
-        lastUpdated: bus.lastUpdated,
-        updatedAt: bus.lastUpdated,
-        timestamp: bus.lastUpdated,
+        // Core identifiers
+        deviceID: busData.deviceID,
+        id: busData.deviceID,
+        deviceId: busData.deviceID,
+
+        // Basic info (with defaults for missing data)
+        name: busData.name || `Bus ${busData.deviceID}`,
+        busName: busData.busName || `Bus ${busData.deviceID}`,
+        status: busData.status || "Active",
+
+        // Location data
+        location: busData.location,
+        currentLocation: busData.currentLocation || "Live tracking available",
+        lat: busData.location?.coordinates?.[1] || 0, // GeoJSON format is [lng, lat]
+        lng: busData.location?.coordinates?.[0] || 0,
+        latitude: busData.location?.coordinates?.[1] || 0,
+        longitude: busData.location?.coordinates?.[0] || 0,
+
+        // Route data
+        route: busData.route || [],
+
+        // Time data (with defaults)
+        lastUpdated: busData.lastUpdated,
+        timestamp: busData.lastUpdated,
+        updatedAt: busData.lastUpdated,
+        startTime: busData.startTime || "06:00 AM",
+        expectedTime: busData.expectedTime || "Calculating...",
+        destinationTime: busData.destinationTime || "08:00 PM",
+
+        // Driver data (with defaults)
+        driverName: busData.driver?.name || "Driver Available",
+        driver: busData.driver?.name || "Driver Available",
+        driverPhone: busData.driver?.phone || "Contact Support",
+
+        // Additional metadata
+        _id: busData._id,
+        __v: busData.__v,
       };
     });
 
