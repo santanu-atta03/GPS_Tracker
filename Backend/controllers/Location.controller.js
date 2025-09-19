@@ -151,7 +151,7 @@ export const updatelocation = async (req, res) => {
         const distance = calculateDistance(
 
           prevCoords[0], prevCoords[1], 
-          lat, lng
+          lat, lng,
           prevCoords[1],
           prevCoords[0],
           lat,
@@ -222,7 +222,7 @@ export const updatelocation = async (req, res) => {
           timestamp: currentTime
         }],
         lastUpdated: currentTime
-
+      })
       
       await newBus.save();
       logSuccess("updatelocation", "New bus created", {
