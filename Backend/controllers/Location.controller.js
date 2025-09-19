@@ -1,6 +1,97 @@
 import Bus from "../models/Bus.model.js";
 import Location from "../models/Location.model.js";
 
+
+
+// export const updatelocation = async (req, res) => {
+//   try {
+//     const { deviceID, latitude, longitude } = req.body;
+    
+//     console.log(`[updatelocation] Received request:`, { deviceID, latitude, longitude });
+
+//     if (!deviceID || !latitude || !longitude) {
+//       return res.status(400).json({ 
+//         success: false, 
+//         message: "Missing required fields: deviceID, latitude, longitude",
+//         received: { deviceID: !!deviceID, latitude: !!latitude, longitude: !!longitude }
+//       });
+//     }
+
+//     // Validate coordinates
+//     const lat = parseFloat(latitude);
+//     const lng = parseFloat(longitude);
+    
+//     if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid coordinates",
+//         details: { latitude: lat, longitude: lng, valid: false }
+//       });
+//     }
+
+//     const coordinates = [lng, lat]; // GeoJSON format [lng, lat]
+//     console.log(`[updatelocation] Parsed coordinates:`, coordinates);
+
+//     // Find bus by deviceID
+//     let bus = await Location.findOne({ deviceID });
+//     console.log(`[updatelocation] Existing bus found:`, !!bus);
+
+//     if (bus) {
+//       // Push previous location into route if it exists and is different
+//       if (bus.location && bus.location.coordinates.length > 0) {
+//         const prevCoords = bus.location.coordinates;
+//         const distance = calculateDistance(
+//           prevCoords[1], prevCoords[0], 
+//           lat, lng
+//         );
+        
+//         console.log(`[updatelocation] Distance from previous location: ${distance}m`);
+        
+//         // Only add to route if moved more than 10 meters
+//         if (distance > 10) {
+//           bus.route.push({
+//             type: "Point",
+//             coordinates: prevCoords,
+//             timestamp: bus.lastUpdated || new Date()
+//           });
+//           console.log(`[updatelocation] Added route point, total route points: ${bus.route.length}`);
+//         }
+//       }
+
+//       // Update current location
+//       bus.location = { type: "Point", coordinates };
+//       bus.lastUpdated = new Date();
+
+//       // Keep route history manageable (last 50 points)
+//       if (bus.route.length > 50) {
+//         bus.route = bus.route.slice(-50);
+//         console.log(`[updatelocation] Trimmed route to 50 points`);
+//       }
+
+//       await bus.save();
+//       logSuccess('updatelocation', 'Location updated', { deviceID, coordinates });
+//       return res.json({ success: true, message: "Location updated", bus });
+//     } else {
+//       // If new bus → create new document
+//       const newBus = new Location({
+//         deviceID,
+//         location: { type: "Point", coordinates },
+//         route: []
+//       });
+//       await newBus.save();
+//       logSuccess('updatelocation', 'New bus created', { deviceID, coordinates });
+//       return res.json({
+//         success: true,
+//         message: "New bus created",
+//         bus: newBus,
+//       });
+//     }
+//   } catch (error) {
+//     logError('updatelocation', error, req.body);
+//     res.status(500).json({ success: false, error: error.message });
+//   }
+// };
+ 
 export const updatelocation = async (req, res) => {
   try {
     const { deviceID, latitude, longitude } = req.body;
@@ -11,6 +102,7 @@ export const updatelocation = async (req, res) => {
       longitude,
     });
 
+ 
     if (!deviceID || !latitude || !longitude) {
       return res.status(400).json({
         success: false,
@@ -22,7 +114,7 @@ export const updatelocation = async (req, res) => {
         },
       });
     }
-
+    
     // Validate coordinates
     const lat = parseFloat(latitude);
     const lng = parseFloat(longitude);
@@ -41,19 +133,25 @@ export const updatelocation = async (req, res) => {
         details: { latitude: lat, longitude: lng, valid: false },
       });
     }
-
-    const coordinates = [lng, lat]; // GeoJSON format [lng, lat]
+    
+    const coordinates = [lat, lng]; // [latitude, longitude] format
+    const currentTime = new Date();
     console.log(`[updatelocation] Parsed coordinates:`, coordinates);
-
+    
     // Find bus by deviceID
     let bus = await Location.findOne({ deviceID });
     console.log(`[updatelocation] Existing bus found:`, !!bus);
-
+    
     if (bus) {
-      // Push previous location into route if it exists and is different
+      // Check if there's a significant movement (only if bus has previous location)
+      let shouldAddToRoute = true;
+      
       if (bus.location && bus.location.coordinates.length > 0) {
         const prevCoords = bus.location.coordinates;
         const distance = calculateDistance(
+
+          prevCoords[0], prevCoords[1], 
+          lat, lng
           prevCoords[1],
           prevCoords[0],
           lat,
@@ -64,7 +162,9 @@ export const updatelocation = async (req, res) => {
           `[updatelocation] Distance from previous location: ${distance}m`
         );
 
-        // Only add to route if moved more than 10 meters
+
+        shouldAddToRoute = distance > 10;
+
         if (distance > 10) {
           bus.route.push({
             type: "Point",
@@ -75,18 +175,32 @@ export const updatelocation = async (req, res) => {
             `[updatelocation] Added route point, total route points: ${bus.route.length}`
           );
         }
+
       }
-
-      // Update current location
-      bus.location = { type: "Point", coordinates };
-      bus.lastUpdated = new Date();
-
-      // Keep route history manageable (last 50 points)
-      if (bus.route.length > 50) {
-        bus.route = bus.route.slice(-50);
-        console.log(`[updatelocation] Trimmed route to 50 points`);
+      
+      if (shouldAddToRoute) {
+        // Add NEW incoming location to route
+        bus.route.push({
+          type: "Point",
+          coordinates: coordinates,
+          timestamp: currentTime
+        });
+        console.log(`[updatelocation] Added new location to route, total route points: ${bus.route.length}`);
+        
+        // Keep route history manageable (last 50 points)
+        if (bus.route.length > 50) {
+          bus.route = bus.route.slice(-50);
+          console.log(`[updatelocation] Trimmed route to 50 points`);
+        }
       }
-
+      
+      // Update current location with NEW coordinates
+      bus.location = { 
+        type: "Point", 
+        coordinates: coordinates 
+      };
+      bus.lastUpdated = currentTime;
+      
       await bus.save();
       logSuccess("updatelocation", "Location updated", {
         deviceID,
@@ -97,9 +211,19 @@ export const updatelocation = async (req, res) => {
       // If new bus → create new document
       const newBus = new Location({
         deviceID,
-        location: { type: "Point", coordinates },
-        route: [],
-      });
+
+        location: { 
+          type: "Point", 
+          coordinates: coordinates 
+        },
+        route: [{
+          type: "Point",
+          coordinates: coordinates,
+          timestamp: currentTime
+        }],
+        lastUpdated: currentTime
+
+      
       await newBus.save();
       logSuccess("updatelocation", "New bus created", {
         deviceID,
