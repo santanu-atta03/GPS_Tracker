@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const journeyController = require('../controllers/Journey.controller.js');
-
+const JourneyRoute = express.Router()
 // Journey planning endpoint
-router.post('/journey-planner', journeyController.planJourney);
+JourneyRoute.post('/journey-planner', journeyController.planJourney);
 
 // Transfer points endpoint
-router.get('/transfer-points', journeyController.getTransferPoints);
+JourneyRoute.get('/transfer-points', journeyController.getTransferPoints);
 
 // Walking route endpoint
-router.post('/walking-route', journeyController.getWalkingRoute);
+JourneyRoute.post('/walking-route', journeyController.getWalkingRoute);
 
-module.exports = router;
+export default  JourneyRoute
