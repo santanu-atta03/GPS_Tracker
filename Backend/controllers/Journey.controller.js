@@ -1,8 +1,8 @@
-const Bus = require('../models/Bus.model.js');
-const Location = require('../models/Location.model.js');
+import Bus from '../models/Bus.model.js';
+import Location from '../models/Location.model.js';
 
 // Helper function to calculate distance between two points (Haversine formula)
-const calculateDistance = (lat1, lon1, lat2, lon2) => {
+export const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const R = 6371e3; // Earth's radius in meters
   const φ1 = (lat1 * Math.PI) / 180;
   const φ2 = (lat2 * Math.PI) / 180;
@@ -18,7 +18,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 // Find buses within radius of a point
-const findBusesNearPoint = async (lat, lon, radius = 1000) => {
+export const findBusesNearPoint = async (lat, lon, radius = 1000) => {
   try {
     const buses = await Bus.find({
       location: {
@@ -37,7 +37,7 @@ const findBusesNearPoint = async (lat, lon, radius = 1000) => {
 };
 
 // Find potential transfer points between two locations
-const findTransferPoints = async (fromLat, fromLon, toLat, toLon, maxDistance = 2000) => {
+export const findTransferPoints = async (fromLat, fromLon, toLat, toLon, maxDistance = 2000) => {
   const transferPoints = [];
   
   try {
@@ -95,7 +95,7 @@ const findTransferPoints = async (fromLat, fromLon, toLat, toLon, maxDistance = 
 };
 
 // Plan multi-leg journey
-const planJourney = async (req, res) => {
+export const planJourney = async (req, res) => {
   try {
     const { from, to, options = {} } = req.body;
     
@@ -258,7 +258,7 @@ const planJourney = async (req, res) => {
 };
 
 // Get transfer points near a location
-const getTransferPoints = async (req, res) => {
+export const getTransferPoints = async (req, res) => {
   try {
     const { lat, lon, radius = 500 } = req.query;
     
@@ -298,7 +298,7 @@ const getTransferPoints = async (req, res) => {
 };
 
 // Get walking route between two points
-const getWalkingRoute = async (req, res) => {
+export const getWalkingRoute = async (req, res) => {
   try {
     const { from, to } = req.body;
     
@@ -337,10 +337,4 @@ const getWalkingRoute = async (req, res) => {
       error: 'Failed to get walking route'
     });
   }
-};
-
-module.exports = {
-  planJourney,
-  getTransferPoints,
-  getWalkingRoute
 };
