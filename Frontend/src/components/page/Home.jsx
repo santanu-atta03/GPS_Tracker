@@ -21,6 +21,7 @@ import LocationSearch from '../shared/LocationSearch';
 import BusSearchResults from '../shared/BusSearchResults';
 import { busSearchService } from '../../services/busSearchService';
 import { getBusLocationByDeviceId } from '../../services/operations/busAPI';
+import axios  from 'axios';
 
 const Home = ({ onSearch, onBusSelect }) => {
   const { getAccessTokenSilently } = useAuth0();
