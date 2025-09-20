@@ -8,7 +8,8 @@ import {
   Clock, 
   Zap,
   MapPin,
-  AlertTriangle 
+  AlertTriangle,
+  Bus
 } from 'lucide-react';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from 'react-router-dom';
@@ -20,8 +21,6 @@ import LocationSearch from '../shared/LocationSearch';
 import BusSearchResults from '../shared/BusSearchResults';
 import { busSearchService } from '../../services/busSearchService';
 import { getBusLocationByDeviceId } from '../../services/operations/busAPI';
-import EnhancedSearchResults from '../search/EnhancedSearchResults';
-import { journeyIntegrationService } from '../../services/journeyIntegrationService';
 
 const Home = ({ onSearch, onBusSelect }) => {
   const { getAccessTokenSilently } = useAuth0();
@@ -70,8 +69,9 @@ const Home = ({ onSearch, onBusSelect }) => {
 
   
   // Search state
-  const [searchType, setSearchType] = useState('route'); // 'route', 'busId', 'location'
+  const [searchType, setSearchType] = useState('route'); // 'route', 'busId', 'location', 'busName'
   const [deviceID, setDeviceID] = useState('');
+  const [busName, setBusName] = useState(''); // New state for bus name
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -93,6 +93,38 @@ const Home = ({ onSearch, onBusSelect }) => {
       console.log(token);
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  // New function to fetch all buses and filter by name
+  const searchBusByName = async (name) => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/v1/Bus/get/allBus");
+      const data = await response.data;
+      console.log( "ayan",data.data)
+      if (data.success && data.data) {
+        // Filter buses by name (case-insensitive)
+        const filteredBuses = data.data.filter(bus => 
+          bus.name.toLowerCase().includes(name.toLowerCase())
+        );
+        
+        return {
+          success: true,
+          buses: filteredBuses,
+          totalFound: filteredBuses.length
+        };
+      } else {
+        return {
+          success: false,
+          error: "Failed to fetch buses from server"
+        };
+      }
+    } catch (error) {
+      console.error("Bus name search error:", error);
+      return {
+        success: false,
+        error: "Error connecting to server"
+      };
     }
   };
 
@@ -246,6 +278,33 @@ const Home = ({ onSearch, onBusSelect }) => {
           setSearchResults([]);
         }
 
+      } else if (searchType === 'busName' && busName.trim()) {
+        // Search for buses by name
+        try {
+          const result = await searchBusByName(busName.trim());
+          console.log("Bus name search result:", result);
+
+          if (result.success) {
+            setSearchResults(result.buses || []);
+            setSearchMetadata({
+              searchType: 'busName',
+              busName: busName.trim(),
+              totalFound: result.totalFound
+            });
+
+            if (result.buses.length === 0) {
+              setError(`No buses found with name "${busName}". Please try a different bus name.`);
+            }
+          } else {
+            setError(result.error || "Failed to search for buses by name.");
+            setSearchResults([]);
+          }
+        } catch (err) {
+          console.error("Bus name search error:", err);
+          setError("Error searching for buses by name. Please try again.");
+          setSearchResults([]);
+        }
+
       } else {
         // Invalid search parameters
         let errorMessage = "Please provide valid search parameters: ";
@@ -255,6 +314,8 @@ const Home = ({ onSearch, onBusSelect }) => {
           errorMessage += "Select a location to search nearby buses.";
         } else if (searchType === 'busId') {
           errorMessage += "Enter a valid bus ID.";
+        } else if (searchType === 'busName') {
+          errorMessage += "Enter a valid bus name.";
         }
         setError(errorMessage);
       }
@@ -276,12 +337,21 @@ const Home = ({ onSearch, onBusSelect }) => {
       return fromCoords;
     } else if (searchType === 'busId') {
       return deviceID.trim().length > 0;
+    } else if (searchType === 'busName') {
+      return busName.trim().length > 0;
     }
     return false;
   };
 
   // Handle Enter key press in bus ID input
   const handleBusIdKeyPress = (e) => {
+    if (e.key === 'Enter' && canSearch()) {
+      handleSearch();
+    }
+  };
+
+  // Handle Enter key press in bus name input
+  const handleBusNameKeyPress = (e) => {
     if (e.key === 'Enter' && canSearch()) {
       handleSearch();
     }
@@ -330,6 +400,7 @@ const debugSearch = async () => {
   </button>
 )}
 
+console.log("my reasult ayan" ,searchResults)
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
       <Navbar />
@@ -341,7 +412,11 @@ const debugSearch = async () => {
             {t('home.title')}
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+ 
             {t('home.subtitle')}
+ 
+            
+ 
           </p>
         </div>
 
@@ -397,6 +472,21 @@ const debugSearch = async () => {
                 <Navigation className="w-4 h-4 inline mr-2" />
                 {t('home.byBusId')}
               </button>
+              <button
+                onClick={() => {
+                  setSearchType('busName');
+                  setError(null);
+                  setSearchResults([]);
+                }}
+                className={`px-6 py-2 rounded-full transition-all duration-300 ${
+                  searchType === 'busName'
+                    ? 'bg-green-500 text-white shadow-lg'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                <Bus className="w-4 h-4 inline mr-2" />
+                By Bus Name
+              </button>
             </div>
           </div>
 
@@ -407,7 +497,7 @@ const debugSearch = async () => {
               onLocationChange={handleLocationChange}
               searchType={searchType}
             />
-          ) : (
+          ) : searchType === 'busId' ? (
             <div className="max-w-md mx-auto">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {t('home.busIdLabel')}
@@ -418,6 +508,20 @@ const debugSearch = async () => {
                 onChange={(e) => setDeviceID(e.target.value)}
                 onKeyPress={handleBusIdKeyPress}
                 placeholder={t('home.busIdPlaceholder')}
+                className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+              />
+            </div>
+          ) : (
+            <div className="max-w-md mx-auto">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Bus Name
+              </label>
+              <input
+                type="text"
+                value={busName}
+                onChange={(e) => setBusName(e.target.value)}
+                onKeyPress={handleBusNameKeyPress}
+                placeholder="Enter Bus Name (e.g., L238, 44)"
                 className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               />
             </div>
@@ -442,9 +546,14 @@ const debugSearch = async () => {
           {/* Search Tips */}
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-500">
+ 
               {searchType === 'route' && t('home.searchTips.route')}
               {searchType === 'location' && t('home.searchTips.location')}
               {searchType === 'busId' && t('home.searchTips.busId')}
+
+              
+              {searchType === 'busName' && "Enter the bus name to find all buses with that name"}
+ 
             </p>
           </div>
         </div>
@@ -517,7 +626,12 @@ const debugSearch = async () => {
 
         {/* Footer */}
         <footer className="mt-16 text-center text-gray-500 text-sm">
+ 
           <p>&copy; {t('home.footer')}</p>
+ 
+          <p>&copy; 2024 Bus Tracker. All rights reserved.</p>
+          <Button onClick={updateProfile}></Button>
+ 
         </footer>
       </main>
     </div>

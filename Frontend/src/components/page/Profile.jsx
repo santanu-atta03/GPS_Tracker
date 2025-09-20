@@ -55,7 +55,7 @@ const Profile = () => {
       });
 
       const res = await axios.put(
-        "http://localhost:5000/api/v1/driver/update/profile",
+        "https://gps-tracker-kq2q.vercel.app/api/v1/driver/update/profile",
         { name, licenceId, driverExp },
         { headers: { Authorization: `Bearer ${token}` } }
       );
