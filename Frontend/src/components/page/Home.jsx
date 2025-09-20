@@ -20,6 +20,8 @@ import LocationSearch from '../shared/LocationSearch';
 import BusSearchResults from '../shared/BusSearchResults';
 import { busSearchService } from '../../services/busSearchService';
 import { getBusLocationByDeviceId } from '../../services/operations/busAPI';
+import EnhancedSearchResults from '../search/EnhancedSearchResults';
+import { journeyIntegrationService } from '../../services/journeyIntegrationService';
 
 const Home = ({ onSearch, onBusSelect }) => {
   const { getAccessTokenSilently } = useAuth0();
@@ -74,6 +76,7 @@ const Home = ({ onSearch, onBusSelect }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchMetadata, setSearchMetadata] = useState(null);
+  const [enhancedSearchResults, setEnhancedSearchResults] = useState(null);
   
   // Location state
   const [fromCoords, setFromCoords] = useState(null);
@@ -122,6 +125,44 @@ const Home = ({ onSearch, onBusSelect }) => {
     navigate(`/bus/${deviceId}`);
   };
 
+  const handleSearchEnhanced = async () => {
+  setIsLoading(true);
+  setError(null);
+  
+  try {
+    let enhancedResults;
+    
+    if (searchType === 'route' && fromCoords && toCoords) {
+      enhancedResults = await journeyIntegrationService.searchWithFallback(
+        fromCoords, 
+        toCoords, 
+        { radius: 1000, maxResults: 20 }
+      );
+    } else if (searchType === 'location' && fromCoords) {
+      enhancedResults = await journeyIntegrationService.searchNearbyBuses(
+        fromCoords, 
+        { radius: 1000 }
+      );
+    } else if (searchType === 'busId' && deviceID.trim()) {
+      enhancedResults = await journeyIntegrationService.searchBusById(deviceID.trim());
+    }
+    
+    if (enhancedResults) {
+      const formattedResults = journeyIntegrationService.formatResultsForDisplay(enhancedResults);
+      setEnhancedSearchResults(formattedResults);
+      
+      if (!formattedResults.hasResults) {
+        setError("No buses or journey options found for your search.");
+      }
+    }
+    
+  } catch (err) {
+    console.error("Enhanced search error:", err);
+    setError("An error occurred while searching. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
   // Main search function
   const handleSearch = async () => {
     setIsLoading(true);
@@ -444,11 +485,19 @@ const debugSearch = async () => {
         )}
 
         {/* Search Results */}
-        <BusSearchResults
+        {/* <BusSearchResults
           searchResults={searchResults}
           isLoading={isLoading}
           searchType={searchType}
           searchMetadata={searchMetadata}
+          onBusSelect={handleBusSelect}
+          error={error}
+        /> */}
+
+        <EnhancedSearchResults
+          enhancedResults={enhancedSearchResults}
+          isLoading={isLoading}
+          searchType={searchType}
           onBusSelect={handleBusSelect}
           error={error}
         />

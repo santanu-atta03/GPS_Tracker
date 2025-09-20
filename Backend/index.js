@@ -7,7 +7,7 @@ import { auth } from "express-oauth2-jwt-bearer";
 import cookieParser from "cookie-parser";
 import driverRoute from "./routes/Driver.route.js";
 import BusRoute from "./routes/bus.route.js";
-
+import JourneyRoute from "./routes/journey.route.js"
 dotenv.config();
 connectToMongo();
 
@@ -40,7 +40,8 @@ app.use(cookieParser());
 
 app.use("/api/v1", locationRoute);
 app.use("/api/v1/driver", driverRoute);
-app.use("/api/v1/Bus",BusRoute)
+app.use("/api/v1/Bus",BusRoute);
+app.use("/api/v1/",JourneyRoute)
 app.get("/api/v1/search", async (req, res) => {
   try {
     const query = req.query.q;
