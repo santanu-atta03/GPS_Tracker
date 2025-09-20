@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express'
 const router = express.Router();
-const journeyController = require('../controllers/Journey.controller.js');
+import journeyController from '../controllers/Journey.controller.js';
 const JourneyRoute = express.Router()
 // Journey planning endpoint
 JourneyRoute.post('/journey-planner', journeyController.planJourney);
