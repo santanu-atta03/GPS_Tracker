@@ -628,59 +628,59 @@ export const createBusId = async (req, res) => {
 //   }
 // };
  
-export const getBusByDeviceId = async (req, res) => {
-  const { deviceId } = req.params;
-  console.log(`[getBusByDeviceId] Looking for device: ${deviceId}`);
+// export const getBusByDeviceId = async (req, res) => {
+//   const { deviceId } = req.params;
+//   console.log(`[getBusByDeviceId] Looking for device: ${deviceId}`);
 
-  if (!deviceId) {
-    return res.status(400).json({
-      success: false,
-      message: "Device ID is required",
-    });
-  }
+//   if (!deviceId) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Device ID is required",
+//     });
+//   }
 
-  try {
-    const bus = await Location.findOne({ deviceID: deviceId }).sort({
-      lastUpdated: -1,
-    });
+//   try {
+//     const bus = await Location.findOne({ deviceID: deviceId }).sort({
+//       lastUpdated: -1,
+//     });
 
-    if (!bus) {
-      console.log(`[getBusByDeviceId] Bus not found: ${deviceId}`);
-      return res.status(404).json({
-        success: false,
-        message: `Bus with device ID ${deviceId} not found`,
-      });
-    }
+//     if (!bus) {
+//       console.log(`[getBusByDeviceId] Bus not found: ${deviceId}`);
+//       return res.status(404).json({
+//         success: false,
+//         message: `Bus with device ID ${deviceId} not found`,
+//       });
+//     }
 
-    // Add mock data for better display
-    const busWithMockData = {
-      ...bus.toJSON(),
-      driverName: bus.driverName || "Driver Available",
-      driverPhone: bus.driverPhone || "+91-9876543210",
-      startTime: bus.startTime || "06:00 AM",
-      expectedTime: bus.expectedTime || "Calculating...",
-      destinationTime: bus.destinationTime || "08:00 PM",
-      status: bus.status || "Active",
-    };
+//     // Add mock data for better display
+//     const busWithMockData = {
+//       ...bus.toJSON(),
+//       driverName: bus.driverName || "Driver Available",
+//       driverPhone: bus.driverPhone || "+91-9876543210",
+//       startTime: bus.startTime || "06:00 AM",
+//       expectedTime: bus.expectedTime || "Calculating...",
+//       destinationTime: bus.destinationTime || "08:00 PM",
+//       status: bus.status || "Active",
+//     };
 
-    logSuccess("getBusByDeviceId", "Bus found", { deviceId });
-    res.json({
-      success: true,
-      latestLocations: busWithMockData,
-      metadata: {
-        deviceId,
-        searchTime: new Date().toISOString(),
-      },
-    });
-  } catch (err) {
-    logError("getBusByDeviceId", err, { deviceId });
-    res.status(500).json({
-      success: false,
-      message: "Server error while fetching bus details",
-      error: process.env.NODE_ENV === "development" ? err.message : undefined,
-    });
-  }
-};
+//     logSuccess("getBusByDeviceId", "Bus found", { deviceId });
+//     res.json({
+//       success: true,
+//       latestLocations: busWithMockData,
+//       metadata: {
+//         deviceId,
+//         searchTime: new Date().toISOString(),
+//       },
+//     });
+//   } catch (err) {
+//     logError("getBusByDeviceId", err, { deviceId });
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error while fetching bus details",
+//       error: process.env.NODE_ENV === "development" ? err.message : undefined,
+//     });
+//   }
+// };
  
 
 // Helper Functions
@@ -1171,171 +1171,171 @@ function analyzeRouteForJourney(bus, journey) {
 // }
 
 // Enhanced updatelocation function with better route management
-export const updatelocation = async (req, res) => {
-  try {
-    const { deviceID, latitude, longitude, accuracy, timestamp } = req.body;
+// export const updatelocation = async (req, res) => {
+//   try {
+//     const { deviceID, latitude, longitude, accuracy, timestamp } = req.body;
     
-    console.log(`[updatelocation] Received request:`, { deviceID, latitude, longitude, accuracy });
+//     console.log(`[updatelocation] Received request:`, { deviceID, latitude, longitude, accuracy });
     
-    if (!deviceID || !latitude || !longitude) {
-      return res.status(400).json({
-        success: false,
-        message: "Missing required fields: deviceID, latitude, longitude",
-        received: { deviceID: !!deviceID, latitude: !!latitude, longitude: !!longitude }
-      });
-    }
+//     if (!deviceID || !latitude || !longitude) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Missing required fields: deviceID, latitude, longitude",
+//         received: { deviceID: !!deviceID, latitude: !!latitude, longitude: !!longitude }
+//       });
+//     }
     
-    // Validate coordinates
-    const lat = parseFloat(latitude);
-    const lng = parseFloat(longitude);
+//     // Validate coordinates
+//     const lat = parseFloat(latitude);
+//     const lng = parseFloat(longitude);
     
-    if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid coordinates",
-        details: { latitude: lat, longitude: lng, valid: false }
-      });
-    }
+//     if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid coordinates",
+//         details: { latitude: lat, longitude: lng, valid: false }
+//       });
+//     }
     
-    const coordinates = [lat, lng];
-    const currentTime = new Date(timestamp || Date.now());
-    const gpsAccuracy = parseFloat(accuracy) || 0;
+//     const coordinates = [lat, lng];
+//     const currentTime = new Date(timestamp || Date.now());
+//     const gpsAccuracy = parseFloat(accuracy) || 0;
     
-    console.log(`[updatelocation] Parsed coordinates:`, coordinates);
+//     console.log(`[updatelocation] Parsed coordinates:`, coordinates);
     
-    // Find bus by deviceID
-    let bus = await Location.findOne({ deviceID });
-    console.log(`[updatelocation] Existing bus found:`, !!bus);
+//     // Find bus by deviceID
+//     let bus = await Location.findOne({ deviceID });
+//     console.log(`[updatelocation] Existing bus found:`, !!bus);
     
-    if (bus) {
-      // Calculate distance from last known location
-      let shouldAddToRoute = true;
-      let currentSpeed = 0;
-      let distanceTraveled = 0;
+//     if (bus) {
+//       // Calculate distance from last known location
+//       let shouldAddToRoute = true;
+//       let currentSpeed = 0;
+//       let distanceTraveled = 0;
       
-      if (bus.location && bus.location.coordinates.length > 0) {
-        const prevCoords = bus.location.coordinates;
-        distanceTraveled = calculateDistance(
-          prevCoords[0], prevCoords[1], 
-          lat, lng
-        );
+//       if (bus.location && bus.location.coordinates.length > 0) {
+//         const prevCoords = bus.location.coordinates;
+//         distanceTraveled = calculateDistance(
+//           prevCoords[0], prevCoords[1], 
+//           lat, lng
+//         );
         
-        console.log(`[updatelocation] Distance from previous location: ${distanceTraveled}m`);
+//         console.log(`[updatelocation] Distance from previous location: ${distanceTraveled}m`);
         
-        // More intelligent filtering to reduce unnecessary points
-        const MIN_DISTANCE = 10; // 20 meters minimum movement
-        const MIN_TIME_DIFF = 5; // 30 seconds minimum time difference
+//         // More intelligent filtering to reduce unnecessary points
+//         const MIN_DISTANCE = 10; // 20 meters minimum movement
+//         const MIN_TIME_DIFF = 5; // 30 seconds minimum time difference
         
-        shouldAddToRoute = distanceTraveled > MIN_DISTANCE;
+//         shouldAddToRoute = distanceTraveled > MIN_DISTANCE;
         
-        // Check time difference if we have route points
-        if (shouldAddToRoute && bus.route.length > 0) {
-          const lastRoutePoint = bus.route[bus.route.length - 1];
-          if (lastRoutePoint.timestamp) {
-            const timeDiff = (currentTime - new Date(lastRoutePoint.timestamp)) / 1000;
-            shouldAddToRoute = timeDiff > MIN_TIME_DIFF;
+//         // Check time difference if we have route points
+//         if (shouldAddToRoute && bus.route.length > 0) {
+//           const lastRoutePoint = bus.route[bus.route.length - 1];
+//           if (lastRoutePoint.timestamp) {
+//             const timeDiff = (currentTime - new Date(lastRoutePoint.timestamp)) / 1000;
+//             shouldAddToRoute = timeDiff > MIN_TIME_DIFF;
             
-            // Calculate speed more carefully
-            if (timeDiff > 0 && distanceTraveled > 10) {
-              const speedMs = distanceTraveled / timeDiff;
-              currentSpeed = Math.round(speedMs * 3.6); // m/s to km/h
+//             // Calculate speed more carefully
+//             if (timeDiff > 0 && distanceTraveled > 10) {
+//               const speedMs = distanceTraveled / timeDiff;
+//               currentSpeed = Math.round(speedMs * 3.6); // m/s to km/h
               
-              // Cap unrealistic speeds
-              if (currentSpeed > 120) {
-                currentSpeed = Math.min(currentSpeed, 120);
-                console.log(`[updatelocation] Capped speed at 120 km/h (was ${Math.round(speedMs * 3.6)})`);
-              }
-            }
-          }
-        }
-      }
+//               // Cap unrealistic speeds
+//               if (currentSpeed > 120) {
+//                 currentSpeed = Math.min(currentSpeed, 120);
+//                 console.log(`[updatelocation] Capped speed at 120 km/h (was ${Math.round(speedMs * 3.6)})`);
+//               }
+//             }
+//           }
+//         }
+//       }
       
-      if (shouldAddToRoute) {
-        // Smart route management - keep important points, remove redundant ones
-        const newRoutePoint = {
-          type: "Point",
-          coordinates: coordinates,
-          timestamp: currentTime,
-          speed: currentSpeed,
-          accuracy: gpsAccuracy
-        };
+//       if (shouldAddToRoute) {
+//         // Smart route management - keep important points, remove redundant ones
+//         const newRoutePoint = {
+//           type: "Point",
+//           coordinates: coordinates,
+//           timestamp: currentTime,
+//           speed: currentSpeed,
+//           accuracy: gpsAccuracy
+//         };
         
-        // Add new point
-        bus.route.push(newRoutePoint);
+//         // Add new point
+//         bus.route.push(newRoutePoint);
         
-        // Intelligent route compression when approaching limit
-        if (bus.route.length >= 45) { // Start compression before hitting 50
-          bus.route = compressRoute(bus.route, 40); // Compress to 40 points
-          console.log(`[updatelocation] Compressed route to ${bus.route.length} points`);
-        }
+//         // Intelligent route compression when approaching limit
+//         if (bus.route.length >= 45) { // Start compression before hitting 50
+//           bus.route = compressRoute(bus.route, 40); // Compress to 40 points
+//           console.log(`[updatelocation] Compressed route to ${bus.route.length} points`);
+//         }
         
-        console.log(`[updatelocation] Added new location to route, total points: ${bus.route.length}`);
-      }
+//         console.log(`[updatelocation] Added new location to route, total points: ${bus.route.length}`);
+//       }
       
-      // Always update current location and metadata
-      bus.location = { 
-        type: "Point", 
-        coordinates: coordinates 
-      };
-      bus.currentSpeed = currentSpeed;
-      bus.lastUpdated = currentTime;
+//       // Always update current location and metadata
+//       bus.location = { 
+//         type: "Point", 
+//         coordinates: coordinates 
+//       };
+//       bus.currentSpeed = currentSpeed;
+//       bus.lastUpdated = currentTime;
       
-      // Update total distance traveled
-      if (distanceTraveled > 0) {
-        bus.totalDistance = (bus.totalDistance || 0) + (distanceTraveled / 1000);
-      }
+//       // Update total distance traveled
+//       if (distanceTraveled > 0) {
+//         bus.totalDistance = (bus.totalDistance || 0) + (distanceTraveled / 1000);
+//       }
       
-      await bus.save();
-      logSuccess('updatelocation', 'Location updated', { 
-        deviceID, 
-        coordinates, 
-        currentSpeed,
-        routePoints: bus.route.length,
-        distanceTraveled: Math.round(distanceTraveled)
-      });
+//       await bus.save();
+//       logSuccess('updatelocation', 'Location updated', { 
+//         deviceID, 
+//         coordinates, 
+//         currentSpeed,
+//         routePoints: bus.route.length,
+//         distanceTraveled: Math.round(distanceTraveled)
+//       });
       
-      return res.json({ 
-        success: true, 
-        message: "Location updated", 
-        bus: {
-          ...bus.toJSON(),
-          currentSpeed,
-          distanceTraveled: Math.round(distanceTraveled)
-        }
-      });
-    } else {
-      // Create new bus
-      const newBus = new Location({
-        deviceID,
-        location: { 
-          type: "Point", 
-          coordinates: coordinates 
-        },
-        route: [{
-          type: "Point",
-          coordinates: coordinates,
-          timestamp: currentTime,
-          speed: 0,
-          accuracy: gpsAccuracy
-        }],
-        currentSpeed: 0,
-        totalDistance: 0,
-        lastUpdated: currentTime
-      });
+//       return res.json({ 
+//         success: true, 
+//         message: "Location updated", 
+//         bus: {
+//           ...bus.toJSON(),
+//           currentSpeed,
+//           distanceTraveled: Math.round(distanceTraveled)
+//         }
+//       });
+//     } else {
+//       // Create new bus
+//       const newBus = new Location({
+//         deviceID,
+//         location: { 
+//           type: "Point", 
+//           coordinates: coordinates 
+//         },
+//         route: [{
+//           type: "Point",
+//           coordinates: coordinates,
+//           timestamp: currentTime,
+//           speed: 0,
+//           accuracy: gpsAccuracy
+//         }],
+//         currentSpeed: 0,
+//         totalDistance: 0,
+//         lastUpdated: currentTime
+//       });
       
-      await newBus.save();
-      logSuccess('updatelocation', 'New bus created', { deviceID, coordinates });
-      return res.json({
-        success: true,
-        message: "New bus created",
-        bus: newBus,
-      });
-    }
-  } catch (error) {
-    logError('updatelocation', error, req.body);
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
+//       await newBus.save();
+//       logSuccess('updatelocation', 'New bus created', { deviceID, coordinates });
+//       return res.json({
+//         success: true,
+//         message: "New bus created",
+//         bus: newBus,
+//       });
+//     }
+//   } catch (error) {
+//     logError('updatelocation', error, req.body);
+//     res.status(500).json({ success: false, error: error.message });
+//   }
+// };
 
 /**
  * Intelligent route compression function
@@ -1643,6 +1643,5 @@ function formatTime(date) {
 
 // Enhanced distance calculation function (same as befo
  
-  return R * c;
-}
+ 
  

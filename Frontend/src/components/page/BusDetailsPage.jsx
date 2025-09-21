@@ -709,7 +709,7 @@ const BusDetailsPage = () => {
       try {
       
         const response = await getBusLocationByDeviceId(deviceID);
-        // console.log("Bus details response:", response);
+        console.log("Bus details response:", response);
         // console.log("ayan bus route" , busDetails.location.route)
         if (!response) {
           setError(`Bus with ID "${deviceID}" not found`);
@@ -1092,8 +1092,8 @@ const BusDetailsPage = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">{t('busDetails.lastUpdated')}</span>
                     <span className="text-sm text-gray-800">
-                      {busDetails.lastUpdated
-                        ? new Date(busDetails.lastUpdated).toLocaleString()
+                      {busDetails.location.lastUpdated
+                        ? new Date(busDetails.location.lastUpdated).toLocaleString()
                         : t('busDetails.unknown')}
                     </span>
                   </div>
