@@ -424,18 +424,23 @@ export const updatelocation = async (req, res) => {
 
 export const getAllBus = async (req, res) => {
   const { lat, lng, radius } = req.query;
+  
+  console.log(`[getAllBus] Query params:`, { lat, lng, radius });
 
   // Validation
   if (!lat || !lng) {
     return res.status(400).json({
       success: false,
       message: "lat & lng are required parameters",
+      received: { lat, lng, radius }
     });
   }
 
   const latitude = parseFloat(lat);
   const longitude = parseFloat(lng);
-  const searchRadius = radius ? parseInt(radius) : 10000; // Increased default to 10km
+  const searchRadius = radius ? parseInt(radius) : 10000; // Default 10km
+
+  console.log(`[getAllBus] Parsed values:`, { latitude, longitude, searchRadius });
 
   // Validate coordinates
   if (
@@ -449,13 +454,33 @@ export const getAllBus = async (req, res) => {
     return res.status(400).json({
       success: false,
       message: "Invalid coordinates provided",
+      details: { 
+        latitude, 
+        longitude, 
+        validLat: !isNaN(latitude) && latitude >= -90 && latitude <= 90,
+        validLng: !isNaN(longitude) && longitude >= -180 && longitude <= 180
+      }
     });
   }
 
   try {
-    console.log(`Searching for buses near ${latitude}, ${longitude} within ${searchRadius}m`);
+    console.log(`[getAllBus] Searching near ${latitude}, ${longitude} within ${searchRadius}m`);
     
-    const pipeline = [
+    // Debug: Check if there are any buses in the database
+    const totalBusCount = await Location.countDocuments();
+    console.log(`[getAllBus] Total buses in database: ${totalBusCount}`);
+    
+    // Debug: Get a sample of buses to check their coordinates
+    const sampleBuses = await Location.find({}).limit(3);
+    console.log(`[getAllBus] Sample bus locations:`, 
+      sampleBuses.map(bus => ({
+        deviceID: bus.deviceID,
+        coordinates: bus.location?.coordinates,
+        hasLocation: !!bus.location
+      }))
+    );
+    
+     const pipeline = [
       {
         $geoNear: {
           near: {
@@ -480,32 +505,41 @@ export const getAllBus = async (req, res) => {
               },
               else: {
                 $concat: [
-                  { $toString: { $round: { $divide: ["$distanceFromSearch", 100] } } },
-                  "0m"
+                  {
+                    $toString: {
+                      $round: [
+                        { $divide: ["$distanceFromSearch", 1000] },
+                        1
+                      ]
+                    }
+                  },
+                  "km"
                 ]
               }
             }
           }
         }
       },
-      {
-        $sort: { distanceFromSearch: 1 },
-      },
-      {
-        $limit: 100 // Limit results to prevent overload
-      }
+      { $sort: { distanceFromSearch: 1 } },
+      { $limit: 100 }
     ];
 
+    console.log(`[getAllBus] Running aggregation pipeline...`);
     const buses = await Location.aggregate(pipeline);
+    console.log(`[getAllBus] Aggregation returned ${buses.length} buses`);
+
+    // Debug: Log distances of found buses
+    buses.slice(0, 5).forEach(bus => {
+      console.log(`[getAllBus] Bus ${bus.deviceID}: ${Math.round(bus.distanceFromSearch)}m away`);
+    });
 
     // Format the results
     const busesWithDistance = buses.map((bus) => ({
       ...bus,
       distanceFromSearch: Math.round(bus.distanceFromSearch),
-      // Add additional metadata for route analysis
       hasRoute: bus.route && bus.route.length > 0,
       routePoints: bus.route ? bus.route.length : 0,
-      // Add mock driver and timing data (replace with real data when available)
+      // Add mock driver and timing data
       driverName: bus.driverName || "Driver Available",
       driverPhone: bus.driverPhone || "+91-9876543210",
       startTime: bus.startTime || "06:00 AM",
@@ -514,7 +548,7 @@ export const getAllBus = async (req, res) => {
       status: bus.status || "Active"
     }));
 
-    console.log(`Found ${busesWithDistance.length} buses`);
+    logSuccess('getAllBus', `Found ${busesWithDistance.length} buses`, { latitude, longitude, searchRadius });
 
     res.json({
       success: true,
@@ -523,18 +557,31 @@ export const getAllBus = async (req, res) => {
         searchLocation: { latitude, longitude },
         radius: searchRadius,
         totalFound: busesWithDistance.length,
+        totalInDatabase: totalBusCount,
         searchTime: new Date().toISOString(),
       },
+      debug: {
+        coordinates: [longitude, latitude],
+        sampleLocations: sampleBuses.map(b => b.location?.coordinates).filter(Boolean)
+      }
     });
   } catch (err) {
-    console.error("Error in getAllBus:", err);
+    logError('getAllBus', err, { latitude, longitude, searchRadius });
+    
+    // Enhanced error response
     res.status(500).json({
       success: false,
       message: "Server error while searching for buses",
       error: process.env.NODE_ENV === "development" ? err.message : undefined,
+      debug: process.env.NODE_ENV === "development" ? {
+        searchParams: { latitude, longitude, searchRadius },
+        errorType: err.name,
+        mongoError: err.code
+      } : undefined
     });
   }
 };
+
 
 export const debugDatabase = async (req, res) => {
   try {
