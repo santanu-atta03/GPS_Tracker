@@ -16,10 +16,9 @@ const busSchema = new mongoose.Schema({
         type: [Number], 
         required: true,
       },
-      timestamp: {
-        type: Date,
-        default: Date.now,  
-      },
+      timestamp: { type: Date, default: Date.now },
+    speed: { type: Number, default: 0 }, // km/h
+    accuracy: { type: Number, default: 0 }
     },
   ],
   location: {
