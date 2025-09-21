@@ -11,7 +11,7 @@ export const getBusLocationByDeviceId = async (deviceID) => {
   try {
     const response = await apiConnector(
       "GET",
-      `http://localhost:5000/api/v1/get/location/${deviceID}`
+      `https://gps-tracker-kq2q.vercel.app/api/v1/get/location/${deviceID}`
     );
 
     if (!response?.data?.success) {

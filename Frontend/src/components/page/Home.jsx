@@ -98,7 +98,7 @@ const Home = ({ onSearch, onBusSelect }) => {
   // New function to fetch all buses and filter by name
   const searchBusByName = async (name) => {
     try {
-      const response = await axios.get(` http://localhost:5000/api/v1/Bus/get/allBus`);
+      const response = await axios.get(`https://gps-tracker-kq2q.vercel.app/api/v1/Bus/get/allBus`);
       const data = await response.data;
       // console.log( "ayan",data.data)
       if (data.success && data.data) {
