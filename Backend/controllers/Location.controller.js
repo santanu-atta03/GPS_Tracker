@@ -191,11 +191,6 @@ export const updatelocation = async (req, res) => {
           `[updatelocation] Added new location to route, total route points: ${bus.route.length}`
         );
 
-        // Keep route history manageable (last 50 points)
-        if (bus.route.length > 50) {
-          bus.route = bus.route.slice(-50);
-          console.log(`[updatelocation] Trimmed route to 50 points`);
-        }
       }
 
       // Update current location with NEW coordinates
