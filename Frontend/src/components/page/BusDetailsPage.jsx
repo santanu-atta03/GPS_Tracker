@@ -24,7 +24,7 @@ const BusDetailsPage = () => {
   const { deviceID } = useParams();
   const navigate = useNavigate();
 
-  console.log("Device id:", deviceID);
+ 
 
   useEffect(() => {
     if (!deviceID) {
@@ -35,10 +35,10 @@ const BusDetailsPage = () => {
 
     const fetchBusDetails = async () => {
       try {
-        console.log("Fetching bus details for:", deviceID);
+      
         const response = await getBusLocationByDeviceId(deviceID);
-        console.log("Bus details response:", response);
-
+        // console.log("Bus details response:", response);
+        // console.log("ayan bus route" , busDetails.location.route)
         if (!response) {
           setError(`Bus with ID "${deviceID}" not found`);
           setIsLoading(false);
@@ -46,7 +46,7 @@ const BusDetailsPage = () => {
         }
 
         // Handle the transformed data structure
-        const newLocation = response.location?.coordinates;
+        const newLocation = response.location?.location?.coordinates;
 
         // Compare previous location with new location (both arrays)
         const prev = previousLocationRef.current;
@@ -369,14 +369,14 @@ const BusDetailsPage = () => {
                   {t('busDetails.routeInfo')}
                 </h3>
                 <div className="space-y-3">
-                  {busDetails.route && busDetails.route.length > 0 ? (
+                  {busDetails.location.route && busDetails.location.route.length > 0 ? (
                     busDetails.route.slice(0, 5).map((stop, index) => (
                       <div key={index} className="flex items-center space-x-3">
                         <div
                           className={`w-4 h-4 rounded-full ${
                             index === 0
                               ? "bg-green-500"
-                              : index === busDetails.route.length - 1
+                              : index === busDetails.location.route.length - 1
                               ? "bg-red-500"
                               : "bg-blue-500"
                           }`}
@@ -391,9 +391,9 @@ const BusDetailsPage = () => {
                       {t('busDetails.routeNotAvailable')}
                     </div>
                   )}
-                  {busDetails.route && busDetails.route.length > 5 && (
+                  {busDetails.location.route && busDetails.location.route.length > 5 && (
                     <div className="text-gray-500 text-sm">
-                      +{busDetails.route.length - 5} {t('busDetails.moreStops')}
+                      +{busDetails.location.route.length - 5} {t('busDetails.moreStops')}
                     </div>
                   )}
                 </div>
@@ -414,10 +414,10 @@ const BusDetailsPage = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">{t('busDetails.location')}</span>
                     <span className="text-sm text-gray-800">
-                      {busDetails.location?.coordinates
-                        ? `${busDetails.location.coordinates[1].toFixed(
+                      {busDetails.location?.location.coordinates
+                        ? `${busDetails.location.location.coordinates[1].toFixed(
                             4
-                          )}, ${busDetails.location.coordinates[0].toFixed(4)}`
+                          )}, ${busDetails.location.location.coordinates[0].toFixed(4)}`
                         : t('busDetails.unknown')}
                     </span>
                   </div>
@@ -440,10 +440,10 @@ const BusDetailsPage = () => {
                   </div>
                 </div>
 
-                {busDetails.location?.coordinates ? (
+                {busDetails.location?.location.coordinates ? (
                   <MapComponent
                     routeCoords={busDetails.route || []}
-                    currentLocation={busDetails.location.coordinates}
+                    currentLocation={busDetails.location.location.coordinates}
                     busId={busDetails.deviceID}
                   />
                 ) : (

@@ -49,6 +49,7 @@ export const CreateDriver = async (req, res) => {
     console.log(error);
   }
 };
+
 export const getAllBUs = async (req, res) => {
   try {
     const allBus = await Bus.find({}).populate("driver").populate("location");

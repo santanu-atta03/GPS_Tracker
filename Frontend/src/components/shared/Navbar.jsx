@@ -112,13 +112,18 @@ const Navbar = () => {
                 {t("navbar.home")}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
-              <div
-                onClick={() => handleNavigation("/Bus")}
-                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
-              >
-                {t("navbar.busDetails")}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
-              </div>
+              {isAuthenticated ? (
+                <div
+                  onClick={() => handleNavigation("/Bus")}
+                  className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                >
+                  {t("navbar.busDetails")}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+                </div>
+              ) : (
+                <div></div>
+              )}
+
               <div
                 onClick={() => handleNavigation("/view/map")}
                 className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
@@ -231,7 +236,10 @@ const Navbar = () => {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-white backdrop-blur-md shadow-xl border-b border-green-100 z-50 mobile-menu-container">
+        <div
+          className="lg:hidden w-full bg-white backdrop-blur-md shadow-xl
+                  border-b border-green-100 z-50 mobile-menu-container"
+        >
           <div className="px-4 py-4 space-y-4">
             {/* Links */}
             <div className="space-y-3">
@@ -241,12 +249,17 @@ const Navbar = () => {
               >
                 {t("navbar.home")}
               </div>
-              <div
-                onClick={() => handleNavigation("/Bus")}
-                className="block cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-green-50"
-              >
-                {t("navbar.busDetails")}
-              </div>
+              {isAuthenticated ? (
+                <div
+                  onClick={() => handleNavigation("/Bus")}
+                  className="block cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-green-50"
+                >
+                  {t("navbar.busDetails")}
+                </div>
+              ) : (
+                <div></div>
+              )}
+
               <div
                 onClick={() => handleNavigation("/view/map")}
                 className="block cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-green-50"
