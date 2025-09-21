@@ -305,38 +305,7 @@ export const debugDatabase = async (req, res) => {
 };
 
 // Rest of the existing functions remain the same...
-export const getLocation = async (req, res) => {
-  try {
-    const { deviceID } = req.params;
-    console.log(`[getLocation] Looking for device: ${deviceID}`);
-    
-    if (!deviceID) {
-      return res.status(404).json({
-        message: "deviceID not found",
-        success: false,
-      });
-    }
-    const latestLocations = await Location.findOne({ deviceID: deviceID });
 
-    if (!latestLocations) {
-      console.log(`[getLocation] No device found for ID: ${deviceID}`);
-      return res.status(400).json({
-        message: "no device found",
-        success: false,
-      });
-    }
-    
-    logSuccess('getLocation', 'Device found', { deviceID });
-    return res.status(200).json({
-      message: "device location get successfully",
-      latestLocations,
-      success: true,
-    });
-  } catch (error) {
-    logError('getLocation', error, { deviceID: req.params.deviceID });
-    res.status(500).json({ error: error.message });
-  }
-};
 
 export const createBusId = async (req, res) => {
   try {
@@ -884,8 +853,8 @@ export const updatelocation = async (req, res) => {
         console.log(`[updatelocation] Distance from previous location: ${distanceTraveled}m`);
         
         // More intelligent filtering to reduce unnecessary points
-        const MIN_DISTANCE = 20; // 20 meters minimum movement
-        const MIN_TIME_DIFF = 30; // 30 seconds minimum time difference
+        const MIN_DISTANCE = 10; // 20 meters minimum movement
+        const MIN_TIME_DIFF = 5; // 30 seconds minimum time difference
         
         shouldAddToRoute = distanceTraveled > MIN_DISTANCE;
         
