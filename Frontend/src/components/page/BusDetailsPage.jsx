@@ -1092,8 +1092,8 @@ const BusDetailsPage = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">{t('busDetails.lastUpdated')}</span>
                     <span className="text-sm text-gray-800">
-                      {busDetails.lastUpdated
-                        ? new Date(busDetails.lastUpdated).toLocaleString()
+                      {busDetails.location.lastUpdated
+                        ? new Date(busDetails.location.lastUpdated).toLocaleString()
                         : t('busDetails.unknown')}
                     </span>
                   </div>

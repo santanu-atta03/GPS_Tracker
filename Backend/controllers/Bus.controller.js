@@ -60,6 +60,7 @@ export const getAllBUs = async (req, res) => {
         success: false,
       });
     }
+    console.log(allBus)
 
     // Transform each bus to match UI expectations
     const formattedBuses = allBus.map((busData) => {
@@ -77,10 +78,10 @@ export const getAllBUs = async (req, res) => {
         // Location data
         location: busData.location,
         currentLocation: busData.currentLocation || "Live tracking available",
-        lat: busData.location?.coordinates?.[1] || 0, // GeoJSON format is [lng, lat]
-        lng: busData.location?.coordinates?.[0] || 0,
-        latitude: busData.location?.coordinates?.[1] || 0,
-        longitude: busData.location?.coordinates?.[0] || 0,
+        lat: busData.location?.location.coordinates?.[0] || 0, // GeoJSON format is [lng, lat]
+        lng: busData.location?.location.coordinates?.[1] || 0,
+        latitude: busData.location?.location.coordinates?.[0] || 0,
+        longitude: busData.location?.location.coordinates?.[1] || 0,
 
         // Route data
         route: busData.route || [],
