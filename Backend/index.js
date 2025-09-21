@@ -7,7 +7,8 @@ import { auth } from "express-oauth2-jwt-bearer";
 import cookieParser from "cookie-parser";
 import driverRoute from "./routes/Driver.route.js";
 import BusRoute from "./routes/bus.route.js";
-import JourneyRoute from "./routes/journey.route.js"
+import JourneyRoute from "./routes/journey.route.js";
+import UserRoute from "./routes/User.route.js";
 dotenv.config();
 connectToMongo();
 
@@ -16,7 +17,7 @@ const port = process.env.PORT || 8000;
 
 // ✅ CORS Options
 const corsOptions = {
-  origin: ["http://localhost:5173","https://gps-map-nine.vercel.app"],
+  origin: ["http://localhost:5173", "https://gps-map-nine.vercel.app"],
   credentials: true,
 };
 
@@ -40,13 +41,16 @@ app.use(cookieParser());
 
 app.use("/api/v1", locationRoute);
 app.use("/api/v1/driver", driverRoute);
-app.use("/api/v1/Bus",BusRoute);
-app.use("/api/v1/",JourneyRoute)
+app.use("/api/v1/Bus", BusRoute);
+app.use("/api/v1/", JourneyRoute);
+app.use("/api/v1/user", UserRoute);
 app.get("/api/v1/search", async (req, res) => {
   try {
     const query = req.query.q;
     const response = await fetch(
-      `https://us1.locationiq.com/v1/search?key=pk.769b04a589221b0a3c78f5a7509d19ba&q=${encodeURIComponent(query)}&format=json`,
+      `https://us1.locationiq.com/v1/search?key=pk.769b04a589221b0a3c78f5a7509d19ba&q=${encodeURIComponent(
+        query
+      )}&format=json`,
       {
         headers: {
           "User-Agent": "myapp/1.0", // Nominatim requires this
@@ -60,12 +64,13 @@ app.get("/api/v1/search", async (req, res) => {
   }
 });
 
-
 app.get("/api/v1/reverse-geocode", async (req, res) => {
   try {
     const { lat, lon } = req.query;
     if (!lat || !lon) {
-      return res.status(400).json({ error: "Missing 'lat' or 'lon' parameter" });
+      return res
+        .status(400)
+        .json({ error: "Missing 'lat' or 'lon' parameter" });
     }
 
     const url = `https://us1.locationiq.com/v1/reverse?key=pk.769b04a589221b0a3c78f5a7509d19ba&lat=${lat}&lon=${lon}&format=json`;

@@ -9,9 +9,10 @@ import CreateBus from "./components/page/CreateBus";
 import Profile from "./components/page/Profile";
 import BusMap from "./components/page/BusMap";
 import { useEffect } from "react";
+import DriverLogin from "./components/page/DriverLogin";
+import UserLogin from "./components/page/UserLogin";
 
 function App() {
-
   const approute = createBrowserRouter([
     {
       path: "/",
@@ -35,12 +36,20 @@ function App() {
     },
     {
       path: "/profile",
-      element: <Profile />
+      element: <Profile />,
     },
     {
       path: "/view/map",
-      element: <BusMap />
-    }
+      element: <BusMap />,
+    },
+    {
+      path: "/Login/driver",
+      element: <DriverLogin />,
+    },
+    {
+      path: "/Login/User",
+      element: <UserLogin />,
+    },
   ]);
 
   return (
