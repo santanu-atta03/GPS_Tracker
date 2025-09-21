@@ -46,6 +46,12 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
+   const handleLogout = () => {
+    localStorage.removeItem("loginShown");
+    logout({
+      logoutParams: { returnTo: window.location.origin },
+    });
+  };
   // Init Language on Mount
   useEffect(() => {
     const savedLang = localStorage.getItem("selectedLanguage");
@@ -193,9 +199,7 @@ const Navbar = () => {
                   <Button
                     variant="destructive"
                     className="w-full bg-red-500 hover:bg-red-600"
-                    onClick={() =>
-                      logout({ returnTo:"https://gps-map-nine.vercel.app/" })
-                    }
+                    onClick={handleLogout}
                   >
                     {t("navbar.logout")}
                   </Button>
@@ -327,10 +331,7 @@ const Navbar = () => {
                   <Button
                     variant="destructive"
                     className="w-full bg-red-500 hover:bg-red-600"
-                    onClick={() => {
-                      logout({ returnTo: "https://gps-map-nine.vercel.app" });
-                      setIsMobileMenuOpen(false);
-                    }}
+                    onClick={handleLogout}
                   >
                     {t("navbar.logout")}
                   </Button>
