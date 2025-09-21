@@ -1,7 +1,6 @@
 // components/search/EnhancedSearchResults.jsx
 import React, { useState } from 'react';
-import { 
-  Tabs, 
+import {  
   Route, 
   Navigation, 
   TrendingUp, 

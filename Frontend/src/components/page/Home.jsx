@@ -22,6 +22,7 @@ import BusSearchResults from '../shared/BusSearchResults';
 import { busSearchService } from '../../services/busSearchService';
 import { getBusLocationByDeviceId } from '../../services/operations/busAPI';
 import axios  from 'axios';
+import EnhancedSearchResults from '../search/EnhancedSearchResults';
 
 const Home = ({ onSearch, onBusSelect }) => {
   const { getAccessTokenSilently } = useAuth0();
@@ -595,14 +596,14 @@ console.log("my reasult ayan" ,searchResults)
         )}
 
         {/* Search Results */}
-        {/* <BusSearchResults
+        <BusSearchResults
           searchResults={searchResults}
           isLoading={isLoading}
           searchType={searchType}
           searchMetadata={searchMetadata}
           onBusSelect={handleBusSelect}
           error={error}
-        /> */}
+        />
 
         <EnhancedSearchResults
           enhancedResults={enhancedSearchResults}

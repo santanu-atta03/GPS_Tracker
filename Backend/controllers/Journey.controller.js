@@ -115,6 +115,7 @@ export const planJourney = async (req, res) => {
     
     const journeys = [];
     const searchStartTime = Date.now();
+    const transferPoints = [];
     
     // Step 1: Try to find direct routes first
     const directBuses = await findBusesNearPoint(from.lat, from.lon, 1000);
