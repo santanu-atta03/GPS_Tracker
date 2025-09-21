@@ -36,14 +36,11 @@ const Home = ({ onSearch, onBusSelect }) => {
       en: { name: 'English', flag: '🇺🇸' },
       hi: { name: 'हिंदी', flag: '🇮🇳' },
       ta: { name: 'தமிழ்', flag: '🇮🇳' },
-      te: { name: 'తెలుగు', flag: '🇮🇳' },
-      kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
-      ml: { name: 'മലയാളം', flag: '🇮🇳' },
+      
       bn: { name: 'বাংলা', flag: '🇧🇩' },
-      gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
-      mr: { name: 'मराठी', flag: '🇮🇳' },
+       
       pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
-      ur: { name: 'اردو', flag: '🇵🇰' }
+      
     };
   
     // Handle language change with i18next
@@ -103,7 +100,7 @@ const Home = ({ onSearch, onBusSelect }) => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/Bus/get/allBus`);
       const data = await response.data;
-      console.log( "ayan",data.data)
+      // console.log( "ayan",data.data)
       if (data.success && data.data) {
         // Filter buses by name (case-insensitive)
         const filteredBuses = data.data.filter(bus => 
@@ -207,13 +204,13 @@ const Home = ({ onSearch, onBusSelect }) => {
     try {
       if (searchType === 'route' && fromCoords && toCoords) {
         // Search for buses along a route
-        console.log("Printing fromcor : ",fromCoords);
-        console.log("Printing tiocoords : ",toCoords);
+        // console.log("Printing fromcor : ",fromCoords);
+        // console.log("Printing tiocoords : ",toCoords);
         const result = await busSearchService.findBusesByRoute(fromCoords, toCoords, {
           radius: 1000, // 1km radius
           maxResults: 20
         });
-        console.log("Printing result in home : ",result)
+        // console.log("Printing result in home : ",result)
         if (result.success) {
           setSearchResults(result.buses || []);
           setSearchMetadata(result.metadata);
@@ -251,7 +248,7 @@ const Home = ({ onSearch, onBusSelect }) => {
         // Search for a specific bus by ID
         try {
           const busData = await getBusLocationByDeviceId(deviceID.trim());
-          console.log("Bus details response:", busData);
+          // console.log("Bus details response:", busData);
 
           // Handle the API response structure
           if (busData && busData !== null) {
@@ -265,7 +262,7 @@ const Home = ({ onSearch, onBusSelect }) => {
               totalFound: busArray.length
             });
             
-            console.log("Setting bus results:", busArray);
+            // console.log("Setting bus results:", busArray);
           } else {
             setError(`Bus with ID "${deviceID}" not found. Please check the bus ID and try again.`);
             setSearchResults([]);
@@ -284,7 +281,7 @@ const Home = ({ onSearch, onBusSelect }) => {
         // Search for buses by name
         try {
           const result = await searchBusByName(busName.trim());
-          console.log("Bus name search result:", result);
+          // console.log("Bus name search result:", result);
 
           if (result.success) {
             setSearchResults(result.buses || []);
@@ -361,16 +358,16 @@ const Home = ({ onSearch, onBusSelect }) => {
 
   // Add this method to your Home component
 const debugSearch = async () => {
-  console.log("🧪 Running debug tests...");
+  // console.log("🧪 Running debug tests...");
   
   try {
     // Test endpoint connectivity
     const healthCheck = await fetch(`${import.meta.env.VITE_BASE_URL}/`);
-    console.log("Health check:", healthCheck.status);
+    // console.log("Health check:", healthCheck.status);
     
     // Test bus search service
     const debugResult = await busSearchService.debugEndpoints();
-    console.log("Debug result:", debugResult);
+    // console.log("Debug result:", debugResult);
     
     // Test with sample coordinates
     const testFromCoords = { lat: 28.7041, lon: 77.1025 };
@@ -382,7 +379,7 @@ const debugSearch = async () => {
       { radius: 15000 }
     );
     
-    console.log("Route search result:", routeResult);
+    // console.log("Route search result:", routeResult);
     
     setSearchResults(routeResult.buses || []);
     

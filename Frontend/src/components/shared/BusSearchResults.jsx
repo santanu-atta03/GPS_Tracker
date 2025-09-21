@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 import { useState } from 'react';
 const BusCard = ({ bus, onBusSelect, searchType, searchMetadata }) => {
+ 
   const handleClick = () => {
     if (onBusSelect) {
       onBusSelect(bus);
@@ -382,10 +383,10 @@ const BusSearchResults = ({
           setSelectedLang(savedLang);
         }
       }, [i18n]);
-  console.log("BusSearchResults - Error:", error);
-  console.log("BusSearchResults - Results:", searchResults);
-  console.log("BusSearchResults - Loading:", isLoading);
-  console.log("BusSearchResults - Results type:", typeof searchResults, Array.isArray(searchResults));
+  // console.log("BusSearchResults - Error:", error);
+  // console.log("BusSearchResults - Results:", searchResults);
+  // console.log("BusSearchResults - Loading:", isLoading);
+  // console.log("BusSearchResults - Results type:", typeof searchResults, Array.isArray(searchResults));
   
   if (isLoading) {
     return (

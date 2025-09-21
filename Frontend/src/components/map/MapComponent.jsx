@@ -159,7 +159,7 @@ const MapComponent = ({ routeCoords, currentLocation, busId, busData }) => {
             // Your coordinates are already in [lat, lng] format, so use them directly
             const [lat, lng] = point.coordinates;
             
-            console.log(`Route Point ${index + 1} - Lat: ${lat}, Lng: ${lng}`);
+            // console.log(`Route Point ${index + 1} - Lat: ${lat}, Lng: ${lng}`);
             
             if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
               console.warn('Invalid coordinates:', { lat, lng });
@@ -176,7 +176,7 @@ const MapComponent = ({ routeCoords, currentLocation, busId, busData }) => {
           .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
         setRouteHistory(processedRoute);
-        console.log("Processed Route History:", processedRoute);
+        // console.log("Processed Route History:", processedRoute);
       } else {
         setRouteHistory([]);
       }
@@ -223,7 +223,7 @@ const MapComponent = ({ routeCoords, currentLocation, busId, busData }) => {
     
     // Your coordinates are in [lat, lng] format
     const [lat, lng] = location;
-    console.log("Current Location - Lat:", lat, "Lng:", lng);
+    // console.log("Current Location - Lat:", lat, "Lng:", lng);
     
     if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
       console.warn('Invalid current location:', { lat, lng });
@@ -257,7 +257,7 @@ const MapComponent = ({ routeCoords, currentLocation, busId, busData }) => {
       }
     }
     
-    console.log("All Positions for Route:", positions);
+    // console.log("All Positions for Route:", positions);
     return positions;
   }, [routePositions, convertedCurrentLocation]);
 
