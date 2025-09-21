@@ -531,7 +531,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 // Calculate speed based on route history
 const calculateSpeed = (route) => {
   if (!route || route.length < 2) return 0;
-  
+  console.log("Route in home page : ",route)
   // Get last 3-5 points to calculate average speed (fewer points for more stable calculation)
   const recentPoints = route.slice(-Math.min(5, route.length));
   let totalDistance = 0;
@@ -670,8 +670,8 @@ const BusDetailsPage = () => {
   // Calculate real-time statistics
   const calculateRealTimeStats = (busData) => {
     if (!busData) return;
-    
-    const currentLocation = busData.location?.coordinates;
+    console.log("Bus data in home page : ",busData)
+    const currentLocation = busData.location?.location?.coordinates;
     const route = busData.route || [];
     
     const currentSpeed = calculateSpeed(route);

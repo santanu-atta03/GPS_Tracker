@@ -628,7 +628,6 @@ console.log("my reasult ayan" ,searchResults)
  
           <p>&copy; {t('home.footer')}</p>
  
-          <p>&copy; 2024 Bus Tracker. All rights reserved.</p>
           <Button onClick={updateProfile}></Button>
  
         </footer>

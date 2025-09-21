@@ -191,11 +191,6 @@ export const updatelocation = async (req, res) => {
           `[updatelocation] Added new location to route, total route points: ${bus.route.length}`
         );
 
-        // Keep route history manageable (last 50 points)
-        if (bus.route.length > 50) {
-          bus.route = bus.route.slice(-50);
-          console.log(`[updatelocation] Trimmed route to 50 points`);
-        }
       }
 
       // Update current location with NEW coordinates
@@ -497,10 +492,10 @@ export const getLocation = async (req, res) => {
       // Location data
       location: allBus.location,
       currentLocation: allBus.currentLocation || "Live tracking available",
-      lat: allBus.location?.coordinates?.[1] || 0, // GeoJSON format is [lng, lat]
-      lng: allBus.location?.coordinates?.[0] || 0,
-      latitude: allBus.location?.coordinates?.[1] || 0,
-      longitude: allBus.location?.coordinates?.[0] || 0,
+      lat: allBus.location?.coordinates?.[0] || 0, // GeoJSON format is [lng, lat]
+      lng: allBus.location?.coordinates?.[1] || 0,
+      latitude: allBus.location?.coordinates?.[0] || 0,
+      longitude: allBus.location?.coordinates?.[1] || 0,
 
       // Route data
       route: allBus.location.route || [],
@@ -1641,7 +1636,5 @@ function formatTime(date) {
   return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-// Enhanced distance calculation function (same as befo
- 
  
  
