@@ -112,7 +112,7 @@ const Navbar = () => {
                 {t("navbar.home")}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
-              { usere?.status==='driver' ? (
+              {usere?.status === "driver" ? (
                 <div
                   onClick={() => handleNavigation("/Bus")}
                   className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
@@ -193,7 +193,9 @@ const Navbar = () => {
                   <Button
                     variant="destructive"
                     className="w-full bg-red-500 hover:bg-red-600"
-                    onClick={() => logout({ returnTo: window.location.origin })}
+                    onClick={() =>
+                      logout({ returnTo:"https://gps-map-nine.vercel.app/" })
+                    }
                   >
                     {t("navbar.logout")}
                   </Button>
@@ -249,7 +251,7 @@ const Navbar = () => {
               >
                 {t("navbar.home")}
               </div>
-              { usere?.status==='driver' ? (
+              {usere?.status === "driver" ? (
                 <div
                   onClick={() => handleNavigation("/Bus")}
                   className="block cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-green-50"
@@ -326,7 +328,7 @@ const Navbar = () => {
                     variant="destructive"
                     className="w-full bg-red-500 hover:bg-red-600"
                     onClick={() => {
-                      logout({ returnTo: window.location.origin });
+                      logout({ returnTo: "https://gps-map-nine.vercel.app" });
                       setIsMobileMenuOpen(false);
                     }}
                   >
