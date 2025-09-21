@@ -497,10 +497,10 @@ export const getLocation = async (req, res) => {
       // Location data
       location: allBus.location,
       currentLocation: allBus.currentLocation || "Live tracking available",
-      lat: allBus.location?.coordinates?.[1] || 0, // GeoJSON format is [lng, lat]
-      lng: allBus.location?.coordinates?.[0] || 0,
-      latitude: allBus.location?.coordinates?.[1] || 0,
-      longitude: allBus.location?.coordinates?.[0] || 0,
+      lat: allBus.location?.coordinates?.[0] || 0, // GeoJSON format is [lng, lat]
+      lng: allBus.location?.coordinates?.[1] || 0,
+      latitude: allBus.location?.coordinates?.[0] || 0,
+      longitude: allBus.location?.coordinates?.[1] || 0,
 
       // Route data
       route: allBus.location.route || [],
