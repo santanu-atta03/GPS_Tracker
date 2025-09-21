@@ -37,9 +37,21 @@ const Complete = () => {
 
   return (
     <>
-      <Button onClick={() => navigate("/Login/driver")}>login as driver</Button>
+      <div className="flex justify-center items-center absolute inset-0 gap-3 shadow-2xl ">
+        <Button
+          onClick={() => navigate("/Login/driver")}
+          className="bg-green-500 hover:bg-green-600 cursor-pointer shadow-2xl"
+        >
+          login as driver
+        </Button>
 
-      <Button onClick={() => navigate("/Login/User")}>login as User</Button>
+        <Button
+          onClick={() => navigate("/Login/User")}
+          className="bg-green-500 hover:bg-green-600 cursor-pointer shadow-2xl"
+        >
+          login as User
+        </Button>
+      </div>
     </>
   );
 };
