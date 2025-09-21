@@ -532,10 +532,11 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 const calculateSpeed = (route) => {
   if (!route || route.length < 2) return 0;
   
-  // Get last 5 points to calculate average speed
-  const recentPoints = route.slice(-5);
+  // Get last 3-5 points to calculate average speed (fewer points for more stable calculation)
+  const recentPoints = route.slice(-Math.min(5, route.length));
   let totalDistance = 0;
   let totalTime = 0;
+  let validCalculations = 0;
   
   for (let i = 1; i < recentPoints.length; i++) {
     const prev = recentPoints[i - 1];
@@ -549,18 +550,23 @@ const calculateSpeed = (route) => {
       
       const timeDiff = (new Date(curr.timestamp) - new Date(prev.timestamp)) / 1000; // seconds
       
-      if (timeDiff > 0) {
+      // Only include if there's reasonable movement and time difference
+      if (timeDiff > 10 && timeDiff < 3600 && distance > 5 && distance < 50000) { // 10s-1hr, 5m-50km limits
         totalDistance += distance;
         totalTime += timeDiff;
+        validCalculations++;
       }
     }
   }
   
-  if (totalTime === 0) return 0;
+  if (totalTime === 0 || validCalculations === 0) return 0;
   
-  // Speed in km/h
+  // Speed in km/h with reasonable limits
   const speedMs = totalDistance / totalTime;
-  return Math.round(speedMs * 3.6); // Convert m/s to km/h
+  const speedKmh = speedMs * 3.6; // Convert m/s to km/h
+  
+  // Cap speed at realistic values (max 120 km/h for buses)
+  return Math.min(Math.max(Math.round(speedKmh), 0), 120);
 };
 
 // Calculate ETA based on current speed and remaining distance
@@ -580,20 +586,26 @@ const calculateETA = (currentLocation, route, destinationTime, currentSpeed) => 
     lastRoutePoint.coordinates[0], lastRoutePoint.coordinates[1]
   );
   
-  // Use current speed or average urban speed
-  const speed = currentSpeed > 0 ? currentSpeed : 25; // Default 25 km/h for urban areas
+  // Use current speed or reasonable default speed
+  let effectiveSpeed = currentSpeed;
+  if (currentSpeed === 0 || currentSpeed < 5) {
+    effectiveSpeed = 25; // Default 25 km/h for urban areas when stopped or very slow
+  }
   
-  if (speed === 0) return "Bus stopped";
+  if (remainingDistance < 100) { // Less than 100 meters
+    const now = new Date();
+    const arrivalTime = new Date(now.getTime() + 2 * 60000); // Add 2 minutes
+    return arrivalTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
   
-  const etaHours = (remainingDistance / 1000) / speed; // hours
-  const etaMinutes = Math.round(etaHours * 60);
+  const etaHours = (remainingDistance / 1000) / effectiveSpeed; // hours
+  const etaMilliseconds = etaHours * 60 * 60 * 1000; // convert to milliseconds
   
-  if (etaMinutes < 1) return "Arriving soon";
-  if (etaMinutes < 60) return `${etaMinutes} min`;
+  const currentTime = new Date();
+  const arrivalTime = new Date(currentTime.getTime() + etaMilliseconds);
   
-  const hours = Math.floor(etaMinutes / 60);
-  const minutes = etaMinutes % 60;
-  return `${hours}h ${minutes}m`;
+  // Return formatted time (HH:MM)
+  return arrivalTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
 // Calculate remaining stops (simplified - count route points ahead)

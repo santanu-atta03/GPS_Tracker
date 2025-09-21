@@ -831,6 +831,7 @@ function analyzeRouteForJourney(bus, journey) {
 //   return R * c;
 // }
 
+// Enhanced updatelocation function with better route management
 export const updatelocation = async (req, res) => {
   try {
     const { deviceID, latitude, longitude, accuracy, timestamp } = req.body;
@@ -868,64 +869,71 @@ export const updatelocation = async (req, res) => {
     console.log(`[updatelocation] Existing bus found:`, !!bus);
     
     if (bus) {
-      // Calculate speed and distance
+      // Calculate distance from last known location
+      let shouldAddToRoute = true;
       let currentSpeed = 0;
       let distanceTraveled = 0;
       
-      if (bus.location && bus.location.coordinates.length > 0 && bus.route.length > 0) {
+      if (bus.location && bus.location.coordinates.length > 0) {
         const prevCoords = bus.location.coordinates;
-        const lastRoutePoint = bus.route[bus.route.length - 1];
-        
         distanceTraveled = calculateDistance(
           prevCoords[0], prevCoords[1], 
           lat, lng
         );
         
-        // Calculate speed if we have timestamp data
-        if (lastRoutePoint && lastRoutePoint.timestamp) {
-          const timeDiff = (currentTime - new Date(lastRoutePoint.timestamp)) / 1000; // seconds
-          if (timeDiff > 0 && distanceTraveled > 10) { // Only calculate if moved more than 10m
-            currentSpeed = Math.round((distanceTraveled / timeDiff) * 3.6); // Convert m/s to km/h
-            currentSpeed = Math.min(currentSpeed, 120); // Cap at reasonable speed
+        console.log(`[updatelocation] Distance from previous location: ${distanceTraveled}m`);
+        
+        // More intelligent filtering to reduce unnecessary points
+        const MIN_DISTANCE = 20; // 20 meters minimum movement
+        const MIN_TIME_DIFF = 30; // 30 seconds minimum time difference
+        
+        shouldAddToRoute = distanceTraveled > MIN_DISTANCE;
+        
+        // Check time difference if we have route points
+        if (shouldAddToRoute && bus.route.length > 0) {
+          const lastRoutePoint = bus.route[bus.route.length - 1];
+          if (lastRoutePoint.timestamp) {
+            const timeDiff = (currentTime - new Date(lastRoutePoint.timestamp)) / 1000;
+            shouldAddToRoute = timeDiff > MIN_TIME_DIFF;
+            
+            // Calculate speed more carefully
+            if (timeDiff > 0 && distanceTraveled > 10) {
+              const speedMs = distanceTraveled / timeDiff;
+              currentSpeed = Math.round(speedMs * 3.6); // m/s to km/h
+              
+              // Cap unrealistic speeds
+              if (currentSpeed > 120) {
+                currentSpeed = Math.min(currentSpeed, 120);
+                console.log(`[updatelocation] Capped speed at 120 km/h (was ${Math.round(speedMs * 3.6)})`);
+              }
+            }
           }
         }
-        
-        console.log(`[updatelocation] Distance: ${distanceTraveled}m, Speed: ${currentSpeed}km/h`);
-        
-        // Only add to route if moved significantly
-        const shouldAddToRoute = distanceTraveled > 10; // 10 meter threshold
-        
-        if (shouldAddToRoute) {
-          // Add new location to route
-          bus.route.push({
-            type: "Point",
-            coordinates: coordinates,
-            timestamp: currentTime,
-            speed: currentSpeed,
-            accuracy: gpsAccuracy
-          });
-          
-          // Update total distance
-          bus.totalDistance = (bus.totalDistance || 0) + (distanceTraveled / 1000); // Convert to km
-          
-          // Keep route history manageable (last 100 points)
-          if (bus.route.length > 100) {
-            bus.route = bus.route.slice(-100);
-          }
-        }
-      } else {
-        // First location update
-        bus.route.push({
+      }
+      
+      if (shouldAddToRoute) {
+        // Smart route management - keep important points, remove redundant ones
+        const newRoutePoint = {
           type: "Point",
           coordinates: coordinates,
           timestamp: currentTime,
-          speed: 0,
+          speed: currentSpeed,
           accuracy: gpsAccuracy
-        });
-        bus.tripStartTime = currentTime;
+        };
+        
+        // Add new point
+        bus.route.push(newRoutePoint);
+        
+        // Intelligent route compression when approaching limit
+        if (bus.route.length >= 45) { // Start compression before hitting 50
+          bus.route = compressRoute(bus.route, 40); // Compress to 40 points
+          console.log(`[updatelocation] Compressed route to ${bus.route.length} points`);
+        }
+        
+        console.log(`[updatelocation] Added new location to route, total points: ${bus.route.length}`);
       }
       
-      // Update current location and speed data
+      // Always update current location and metadata
       bus.location = { 
         type: "Point", 
         coordinates: coordinates 
@@ -933,31 +941,18 @@ export const updatelocation = async (req, res) => {
       bus.currentSpeed = currentSpeed;
       bus.lastUpdated = currentTime;
       
-      // Calculate average speed (excluding zero speeds)
-      const nonZeroSpeeds = bus.route
-        .filter(point => point.speed && point.speed > 0)
-        .map(point => point.speed);
-      
-      if (nonZeroSpeeds.length > 0) {
-        bus.averageSpeed = Math.round(
-          nonZeroSpeeds.reduce((sum, speed) => sum + speed, 0) / nonZeroSpeeds.length
-        );
-        bus.maxSpeed = Math.max(bus.maxSpeed || 0, currentSpeed);
-      }
-      
-      // Update status based on speed
-      if (currentSpeed === 0) {
-        bus.status = bus.status === 'Active' ? 'At Stop' : bus.status;
-      } else if (currentSpeed > 0) {
-        bus.status = 'On Route';
+      // Update total distance traveled
+      if (distanceTraveled > 0) {
+        bus.totalDistance = (bus.totalDistance || 0) + (distanceTraveled / 1000);
       }
       
       await bus.save();
-      logSuccess('updatelocation', 'Location updated with speed data', { 
+      logSuccess('updatelocation', 'Location updated', { 
         deviceID, 
         coordinates, 
         currentSpeed,
-        averageSpeed: bus.averageSpeed 
+        routePoints: bus.route.length,
+        distanceTraveled: Math.round(distanceTraveled)
       });
       
       return res.json({ 
@@ -969,7 +964,6 @@ export const updatelocation = async (req, res) => {
           distanceTraveled: Math.round(distanceTraveled)
         }
       });
-      
     } else {
       // Create new bus
       const newBus = new Location({
@@ -986,10 +980,7 @@ export const updatelocation = async (req, res) => {
           accuracy: gpsAccuracy
         }],
         currentSpeed: 0,
-        averageSpeed: 0,
-        maxSpeed: 0,
         totalDistance: 0,
-        tripStartTime: currentTime,
         lastUpdated: currentTime
       });
       
@@ -1006,6 +997,115 @@ export const updatelocation = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+/**
+ * Intelligent route compression function
+ * Keeps important points while removing redundant ones
+ */
+function compressRoute(route, targetSize) {
+  if (route.length <= targetSize) return route;
+  
+  // Always keep first and last points
+  const compressed = [route[0]];
+  
+  // Calculate importance scores for middle points
+  const middlePoints = route.slice(1, -1).map((point, index) => {
+    const actualIndex = index + 1;
+    const prev = route[actualIndex - 1];
+    const next = route[actualIndex + 1];
+    
+    let importance = 0;
+    
+    // High speed changes are important
+    if (point.speed && prev.speed) {
+      const speedChange = Math.abs(point.speed - prev.speed);
+      importance += speedChange * 0.1;
+    }
+    
+    // Direction changes are important (using simple angle approximation)
+    if (prev.coordinates && next.coordinates) {
+      const bearing1 = calculateBearing(prev.coordinates, point.coordinates);
+      const bearing2 = calculateBearing(point.coordinates, next.coordinates);
+      const directionChange = Math.abs(bearing1 - bearing2);
+      importance += Math.min(directionChange, 360 - directionChange) * 0.01;
+    }
+    
+    // Recent points are more important
+    const ageMinutes = (Date.now() - new Date(point.timestamp)) / (1000 * 60);
+    importance += Math.max(0, 60 - ageMinutes) * 0.05;
+    
+    // Points with poor accuracy are less important
+    if (point.accuracy && point.accuracy > 0) {
+      importance -= Math.min(point.accuracy / 100, 1) * 10;
+    }
+    
+    return { point, importance, originalIndex: actualIndex };
+  });
+  
+  // Sort by importance and keep the most important ones
+  middlePoints.sort((a, b) => b.importance - a.importance);
+  const keepCount = Math.max(0, targetSize - 2); // Subtract 2 for first and last
+  const selectedMiddle = middlePoints.slice(0, keepCount);
+  
+  // Sort selected points back to chronological order
+  selectedMiddle.sort((a, b) => a.originalIndex - b.originalIndex);
+  
+  // Add selected middle points
+  selectedMiddle.forEach(item => compressed.push(item.point));
+  
+  // Always keep the last point
+  compressed.push(route[route.length - 1]);
+  
+  return compressed;
+}
+
+/**
+ * Calculate bearing between two points (simplified)
+ */
+function calculateBearing(coord1, coord2) {
+  const lat1 = coord1[0] * Math.PI / 180;
+  const lat2 = coord2[0] * Math.PI / 180;
+  const deltaLng = (coord2[1] - coord1[1]) * Math.PI / 180;
+  
+  const x = Math.sin(deltaLng) * Math.cos(lat2);
+  const y = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(deltaLng);
+  
+  const bearing = Math.atan2(x, y) * 180 / Math.PI;
+  return (bearing + 360) % 360;
+}
+
+// Enhanced distance calculation (same as before but with better error handling)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
+  
+  // Validate input ranges
+  if (Math.abs(lat1) > 90 || Math.abs(lat2) > 90 || 
+      Math.abs(lon1) > 180 || Math.abs(lon2) > 180) {
+    console.warn('[calculateDistance] Invalid coordinates:', { lat1, lon1, lat2, lon2 });
+    return 0;
+  }
+  
+  const R = 6371e3; // Earth's radius in meters
+  const φ1 = lat1 * Math.PI / 180;
+  const φ2 = lat2 * Math.PI / 180;
+  const Δφ = (lat2 - lat1) * Math.PI / 180;
+  const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+  const distance = R * c;
+  
+  // Sanity check - if distance is unreasonably large, something went wrong
+  if (distance > 1000000) { // 1000km
+    console.warn('[calculateDistance] Unreasonably large distance calculated:', distance);
+    return 0;
+  }
+  
+  return distance;
+}
 
 // Enhanced getBusByDeviceId with calculated stats
 export const getBusByDeviceId = async (req, res) => {
