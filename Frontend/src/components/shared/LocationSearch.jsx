@@ -177,7 +177,7 @@ export default function LocationSearch({
         
         try {
           const res = await fetch(
-            `${import.meta.env.VITE_BASE_URL}/api/v1/reverse-geocode?lat=${latitude}&lon=${longitude}`
+            `${import.meta.env.VITE_BASE_URL}/reverse-geocode?lat=${latitude}&lon=${longitude}`
           );
 
           // FIXED: Use proper coordinate format
