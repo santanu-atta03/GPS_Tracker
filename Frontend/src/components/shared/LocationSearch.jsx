@@ -4,7 +4,7 @@ import { ArrowLeftRight, MapPin, Loader2, Navigation } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import useSpeechToText from "../../hooks/useSpeechToText";
 import { geocodeAddress } from "../../services/geocode";
-
+import { Mic } from "lucide-react";
 
 export default function LocationSearch({
   onCoordsSelect,
