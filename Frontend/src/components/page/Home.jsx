@@ -9,7 +9,8 @@ import {
   Zap,
   MapPin,
   AlertTriangle,
-  Bus
+  Bus,
+  Mic
 } from 'lucide-react';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from 'react-router-dom';
@@ -23,6 +24,7 @@ import { busSearchService } from '../../services/busSearchService';
 import { getBusLocationByDeviceId } from '../../services/operations/busAPI';
 import axios  from 'axios';
 import EnhancedSearchResults from '../search/EnhancedSearchResults';
+import useSpeechToText from '../../hooks/useSpeechToText';
 
 const Home = ({ onSearch, onBusSelect }) => {
   const { getAccessTokenSilently } = useAuth0();
@@ -66,7 +68,16 @@ const Home = ({ onSearch, onBusSelect }) => {
       }
     }, [i18n]);
 
-  
+    const [address, setAddress] = useState('');
+    const { listening, startListening } = useSpeechToText();
+    
+      const handleMicClick = () => {
+        startListening(async (spokenText) => {
+          setAddress(spokenText); // Show in input
+          setBusName(spokenText)
+        });
+      }
+
   // Search state
   const [searchType, setSearchType] = useState('route'); // 'route', 'busId', 'location', 'busName'
   const [deviceID, setDeviceID] = useState('');
@@ -484,7 +495,7 @@ console.log("my reasult ayan" ,searchResults)
                 }`}
               >
                 <Bus className="w-4 h-4 inline mr-2" />
-                By Bus Name
+                {t('home.byBusName')}
               </button>
             </div>
           </div>
@@ -513,17 +524,29 @@ console.log("my reasult ayan" ,searchResults)
           ) : (
             <div className="max-w-md mx-auto">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Bus Name
+                {t('home.busNameLabel')}
               </label>
               <input
                 type="text"
                 value={busName}
                 onChange={(e) => setBusName(e.target.value)}
                 onKeyPress={handleBusNameKeyPress}
-                placeholder="Enter Bus Name (e.g., L238, 44)"
+                placeholder={t('home.busNamePlaceholder')}
                 className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               />
+              <button
+                onClick={() => handleMicClick}
+                type="button"
+                className={`p-3 rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
+                  listening ? 'animate-pulse bg-green-200' : ''
+                }`}
+                title="Speak now"
+              >
+                <Mic className="w-5 h-5" />
+              </button>
+              {listening && <p className="text-xs text-green-600 mt-1">Listening...</p>}
             </div>
+            
           )}
 
           {/* Search Button */}
@@ -549,9 +572,8 @@ console.log("my reasult ayan" ,searchResults)
               {searchType === 'route' && t('home.searchTips.route')}
               {searchType === 'location' && t('home.searchTips.location')}
               {searchType === 'busId' && t('home.searchTips.busId')}
+              {searchType === 'busName' && t('home.searchTips.busName')}
 
-              
-              {searchType === 'busName' && "Enter the bus name to find all buses with that name"}
  
             </p>
           </div>
@@ -611,7 +633,7 @@ console.log("my reasult ayan" ,searchResults)
         />
 
         {/* Error Display */}
-        {error && (
+        {error && !searchResults && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-8">
             <div className="flex items-start">
               <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
@@ -626,7 +648,7 @@ console.log("my reasult ayan" ,searchResults)
         {/* Footer */}
         <footer className="mt-16 text-center text-gray-500 text-sm">
  
-          <p>&copy; {t('home.footer')}</p>
+          <p> {t('home.footer')}</p>
  
           <Button onClick={updateProfile}></Button>
  

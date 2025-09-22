@@ -1,0 +1,162 @@
+{
+    "navbar": {
+      "appName": "બસટ્રૅકર પ્રો",
+      "tagline": "રિઅલ-ટાઇમ બસ ટ્રૅકિંગ સિસ્ટમ",
+      "home": "હોમ",
+      "busDetails": "બસની વિગતો",
+      "map": "મેપ",
+      "liveTracking": "લાઇવ ટ્રૅકિંગ સક્રિય",
+      "viewProfile": "પ્રોફાઇલ જુઓ",
+      "logout": "લોગ આઉટ",
+      "login": "લોગિન"
+    },
+    "home": {
+      "title": "તમારો પરફેક્ટ બસ રૂટ શોધો",
+      "subtitle": "રૂટ, લોકેશન અથવા બસ ID દ્વારા બસ શોધો. રિઅલ-ટાઇમ માહિતી મેળવો અને સરળતાથી તમારી યાત્રાને ટ્રૅક કરો.",
+      "searchTitle": "તમારી બસ શોધો",
+      "byRoute": "રૂટ દ્વારા",
+      "nearby": "નજીકમાં",
+      "byBusId": "બસ ID દ્વારા",
+      "byBusName": "બસના નામથી",
+      "busIdLabel": "બસ ID",
+      "busNameLabel": "બસનું નામ",
+      "busIdPlaceholder": "બસ ID દાખલ કરો (જેમ કે BUS-1234)",
+      "busNamePlaceholder": "બસનું નામ દાખલ કરો (જેમ કે L238, 44, S-12)",
+      "searchBuses": "બસ શોધો",
+      "searching": "શોધી રહ્યાં છીએ...",
+      "searchTips": {
+        "route": "તમારા રૂટ પર બસ શોધવા માટે શરૂઆતી અને અંતિમ બિંદુ પસંદ કરો",
+        "location": "નજીકની બસ શોધવા માટે એક લોકેશન પસંદ કરો",
+        "busId": "ચોક્કસ બસને ટ્રૅક કરવા માટે બસ ID દાખલ કરો",
+        "busName": "તે નામની બધી બસ શોધવા માટે બસનું નામ દાખલ કરો"
+      },
+      "features": {
+        "realTime": {
+          "title": "રિઅલ-ટાઇમ ટ્રૅકિંગ",
+          "description": "બસના લોકેશન અને આવવાના સમય પર લાઇવ અપડેટ મેળવો"
+        },
+        "accurateEta": {
+          "title": "ચોક્કસ ETA",
+          "description": "ચોક્કસ આવવાના અનુમાન સાથે તમારી યાત્રાની યોજના બનાવો"
+        },
+        "routeOptimization": {
+          "title": "રૂટ ઓપ્ટિમાઇઝેશન",
+          "description": "તમારી દૈનિક મુસાફરી માટે શ્રેષ્ઠ રૂટ શોધો"
+        }
+      },
+      "footer": "© 2024 બસ ટ્રૅકર. બધા અધિકારો સુરક્ષિત.",
+      "errors": {
+        "noBusesRoute": "આ રૂટ માટે કોઈ બસ મળી નથી. બસ હાલમાં આ રસ્તા પર ચાલતી નથી અથવા નજીકના સ્થળોથી શોધવાનો પ્રયાસ કરો.",
+        "noBusesLocation": "આ વિસ્તારમાં કોઈ બસ મળી નથી. બીજા સ્થાન પર શોધવાનો પ્રયાસ કરો અથવા પછીથી તપાસો.",
+        "busNotFound": "ID સાથે બસ મળી નથી. કૃપા કરી બસ ID તપાસો અને ફરીથી પ્રયાસ કરો.",
+        "invalidParams": "કૃપા કરી યોગ્ય શોધ પેરામીટર આપો: ",
+        "routeParams": "શરૂઆતી અને અંતિમ બંને બિંદુ પસંદ કરો.",
+        "locationParams": "નજીકની બસ શોધવા માટે એક સ્થાન પસંદ કરો.",
+        "busIdParams": "યોગ્ય બસ ID દાખલ કરો.",
+        "searchError": "શોધમાં ભૂલ થઈ. કૃપા કરી ફરીથી પ્રયાસ કરો."
+      }
+    },
+    "locationSearch": {
+      "from": "થી",
+      "to": "સુધી",
+      "searchLocation": "સ્થાન શોધો",
+      "enterStarting": "શરૂઆતી બિંદુ દાખલ કરો",
+      "enterLocation": "એક સ્થાન દાખલ કરો",
+      "selectDestination": "ગંતવ્ય પસંદ કરો",
+      "useCurrentLocation": "મારું વર્તમાન સ્થાન વાપરો",
+      "gettingLocation": "સ્થાન મેળવી રહ્યાં છીએ...",
+      "searching": "શોધી રહ્યાં છીએ...",
+      "swapLocations": "સ્થાન બદલો"
+    },
+    "busResults": {
+      "searchError": "સર્ચ એરર",
+      "tryAgain": "ફરીથી પ્રયાસ કરો",
+      "refreshSearch": "સર્ચ રીફ્રેશ કરો",
+      "noBusesFound": "કોઈ બસ મળી નથી",
+      "noBusesRoute": "આ રૂટ પર કોઈ બસ મળી નથી. બસ હાલમાં આ રસ્તા પર ચાલતી નથી, અથવા સારા બસ કવરેજ સાથેના સ્થાનોથી શોધવાનો પ્રયાસ કરો.",
+      "noBusesBusId": "આ ID સાથે કોઈ બસ મળી નથી. કૃપા કરી બસ ID તપાસો અને ફરીથી પ્રયાસ કરો.",
+      "noBusesLocation": "આ વિસ્તારમાં કોઈ બસ મળી નથી. તમારી શોધનો વિસ્તાર વધારો અથવા બીજા સ્થાન પર શોધવાનો પ્રયાસ કરો.",
+      "searchTips": {
+        "title": "સર્ચ ટિપ્સ:",
+        "tip1": "બસ સ્ટોપ અથવા મુખ્ય સ્થળોથી શોધવાનો પ્રયાસ કરો",
+        "tip2": "ખાતરી કરો કે તમારા સ્થાનોનું સારું બસ કવરેજ છે",
+        "tip3": "નજીકના વૈકલ્પિક રૂટ વિચારો",
+        "tip4": "વર્તમાન સમયે બસ ચાલી રહી છે કે કેમ તે તપાસો"
+      },
+      "busesFound": " બસ મળી",
+      "busesFound_plural": " બસ મળી",
+      "alongRoute": "(તમારા રૂટ સાથે અથવા નજીક)",
+      "passesThrough": " બસ તમારા રૂટમાંથી પસાર થાય છે",
+      "correctDirection": " બસ તમારી દિશામાં જાય છે",
+      "nearbyBuses": " નજીકની બસ",
+      "routeMatch": {
+        "passesThrough": "તમારા રૂટમાંથી પસાર થાય છે",
+        "goodDirection": "તમારી દિશામાં જાય છે",
+        "nearby": "નજીકનો રૂટ"
+      },
+      "routeInfo": "રૂટ માહિતી ઉપલબ્ધ નથી",
+      "distanceAway": " મી દૂર",
+      "distanceAwayKm": " કિમી દૂર",
+      "routePoints": " રૂટ પોઇન્ટ્સ",
+      "hasRouteData": "રૂટ ડેટા છે",
+      "points": " પોઇન્ટ્સ",
+      "lastUpdated": "છેલ્લે અપડેટ થયું: ",
+      "startTime": "શરૂઆત: ",
+      "expectedTime": "અપેક્ષિત: ",
+      "endTime": "અંત: ",
+      "distanceFromStart": "શરૂઆતથી અંતર:",
+      "distanceToDestination": "ગંતવ્ય સુધીનું અંતર:",
+      "direction": "દિશા:",
+      "correct": "સાચી",
+      "opposite": "વિરુદ્ધ"
+    },
+    "busDetails": {
+      "title": "બસની વિગતો",
+      "loadingBusDetails": "બસની વિગતો લોડ થઈ રહી છે...",
+      "errorLoading": "બસની વિગતો લોડ કરવામાં એરર",
+      "busNotFound": "બસ મળી નથી",
+      "noBusWithId": "આ ID સાથે કોઈ બસ મળી નથી: ",
+      "searchForBuses": "બસ શોધો",
+      "goBack": "પાછા જાઓ",
+      "scheduleInfo": "સમયપત્રકની માહિતી",
+      "startTime": "શરૂઆતનો સમય",
+      "expectedArrival": "અપેક્ષિત આવક",
+      "destinationTime": "ગંતવ્યનો સમય",
+      "currentTime": "વર્તમાન સમય",
+      "driverDetails": "ડ્રાઈવરની વિગતો",
+      "licensedDriver": "લાઈસન્સધારી ડ્રાઈવર",
+      "phone": "ફોન: ",
+      "experience": "અનુભવ: વ્યાવસાયિક",
+      "routeInfo": "રૂટ માહિતી",
+      "routeNotAvailable": "રૂટ માહિતી ઉપલબ્ધ નથી",
+      "moreStops": " વધુ સ્ટોપ",
+      "status": "સ્થિતિ",
+      "lastUpdated": "છેલ્લે અપડેટ થયું",
+      "location": "સ્થાન",
+      "unknown": "અજ્ઞાત",
+      "liveRouteTracking": "લાઈવ રૂટ ટ્રૅકિંગ",
+      "live": "લાઈવ",
+      "locationNotAvailable": "સ્થાન ડેટા ઉપલબ્ધ નથી",
+      "stats": {
+        "speed": "ઝડપ",
+        "eta": "ETA",
+        "distance": "અંતર",
+        "remaining": "બાકી",
+        "kmh": "કિમી/કલાક",
+        "min": "મિનિટ",
+        "km": "કિમી",
+        "stops": "સ્ટોપ"
+      }
+    },
+    "common": {
+      "active": "સક્રિય",
+      "onRoute": "રૂટ પર",
+      "atStop": "સ્ટોપ પર",
+      "stopped": "બંધ",
+      "delayed": "મોડું",
+      "offline": "ઓફલાઈન",
+      "inactive": "નિષ્ક્રિય",
+      "unknown": "અજ્ઞાત",
+      "contactSupport": "સપોર્ટ સાથે સંપર્ક કરો"
+    }
+}

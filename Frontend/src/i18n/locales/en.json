@@ -17,14 +17,18 @@
     "byRoute": "By Route",
     "nearby": "Nearby",
     "byBusId": "By Bus ID",
+    "byBusName" : "By Bus Name",
     "busIdLabel": "Bus ID",
+    "busNameLabel" : "Bus Name",
     "busIdPlaceholder": "Enter Bus ID (e.g., BUS-1234)",
+    "busNamePlaceholder": "Enter Bus Name (e.g., L238, 44, S-12)",
     "searchBuses": "Search Buses",
     "searching": "Searching...",
     "searchTips": {
       "route": "Select starting point and destination to find buses along your route",
       "location": "Choose a location to find nearby buses",
-      "busId": "Enter the specific bus ID to track a particular bus"
+      "busId": "Enter the specific bus ID to track a particular bus",
+      "busName": "Enter the bus name to find all buses with that name"
     },
     "features": {
       "realTime": {
@@ -79,12 +83,12 @@
       "tip3": "Consider nearby alternative routes",
       "tip4": "Check if buses operate at the current time"
     },
-    "busesFound": "{{count}} bus found",
-    "busesFound_plural": "{{count}} buses found",
+    "busesFound": " bus found",
+    "busesFound_plural": " buses found",
     "alongRoute": "(along or near your route)",
-    "passesThrough": "{{count}} bus(es) pass through your route",
-    "correctDirection": "{{count}} bus(es) go in your direction",
-    "nearbyBuses": "{{count}} nearby bus(es)",
+    "passesThrough": " bus(es) pass through your route",
+    "correctDirection": " bus(es) go in your direction",
+    "nearbyBuses": " nearby bus(es)",
     "routeMatch": {
       "passesThrough": "Passes through your route",
       "goodDirection": "Goes in your direction",

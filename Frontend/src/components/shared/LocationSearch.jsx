@@ -2,6 +2,10 @@
 import { useState, useEffect } from "react";
 import { ArrowLeftRight, MapPin, Loader2, Navigation } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import useSpeechToText from "../../hooks/useSpeechToText";
+import { geocodeAddress } from "../../services/geocode";
+
+
 export default function LocationSearch({
   onCoordsSelect,
   onLocationChange,
@@ -439,6 +443,36 @@ export default function LocationSearch({
         }
       }, [i18n]);
 
+      const [address, setAddress] = useState('');
+      const { listening, startListening } = useSpeechToText();
+
+  const handleMicClick = (type) => {
+    startListening(async (spokenText) => {
+      setAddress(spokenText); // Show in input
+      setActiveInput(spokenText)
+      if(type === 'from'){
+        setFromLocation(spokenText)
+      }
+      if(type === 'to'){
+        setToLocation(spokenText)
+      }
+      const geoData = await geocodeAddress(spokenText);
+      console.log("Geo data : ", geoData)
+      if (geoData) {
+        if(type === "from"){
+          setFromLocation(geoData.address);
+          setFromCoords(geoData.coords) // Send back to parent
+        }
+        else if(type === 'to'){
+          setToCoords(geoData.coords);
+          setToLocation(geoData.address)
+        }
+      } else {
+        alert("Couldn't find the location. Please try again.");
+      }
+    });
+  }
+
   return (
     <div className="space-y-4">
       {/* From Location */}
@@ -460,6 +494,16 @@ export default function LocationSearch({
             className="w-full p-4 pl-12 pr-10 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
           />
           <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <button
+            onClick={() => handleMicClick("from")}
+            type="button"
+            className={`p-3 rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
+              listening ? 'animate-pulse bg-green-200' : ''
+            }`}
+            title="Speak now"
+          >
+            <Mic className="w-5 h-5" />
+          </button>
           {fromLocation && (
             <button
               onClick={clearFromLocation}
@@ -514,7 +558,9 @@ export default function LocationSearch({
                 </div>
               </button>
             ))}
+            {listening && <p className="text-xs text-green-600 mt-1">Listening...</p>}
           </div>
+          
         )}
       </div>
 
@@ -547,6 +593,17 @@ export default function LocationSearch({
                 placeholder={t('locationSearch.selectDestination')}
               />
               <MapPin className="absolute left-4 top-8 transform -translate-y-1/2 text-gray-400 w-5 h-5 mt-6" />
+
+              <button
+                onClick={() => handleMicClick("to")}
+                type="button"
+                className={`p-3 rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
+                  listening ? 'animate-pulse bg-green-200' : ''
+                }`}
+                title="Speak now"
+              >
+                <Mic className="w-5 h-5" />
+              </button>
               {toLocation && (
                 <button
                   onClick={clearToLocation}
