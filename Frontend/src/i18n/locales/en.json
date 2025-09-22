@@ -1,6 +1,6 @@
 {
   "navbar": {
-    "appName": "BusTracker Pro",
+    "appName": "Bus Sewa",
     "tagline": "Real-time bus tracking system",
     "home": "Home",
     "busDetails": "Bus Details",
@@ -44,7 +44,7 @@
         "description": "Find the best routes for your daily commute"
       }
     },
-    "footer": "© 2024 Bus Tracker. All rights reserved.",
+    "footer": "© 2024 Bus Sewa. All rights reserved.",
     "errors": {
       "noBusesRoute": "No buses found for this route. The buses might not be currently operating on this path or try searching with nearby locations.",
       "noBusesLocation": "No buses found in this area. Try searching in a different location or check back later.",

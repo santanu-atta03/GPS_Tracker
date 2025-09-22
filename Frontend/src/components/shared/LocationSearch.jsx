@@ -4,7 +4,7 @@ import { ArrowLeftRight, MapPin, Loader2, Navigation } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import useSpeechToText from "../../hooks/useSpeechToText";
 import { geocodeAddress } from "../../services/geocode";
-import { Mic } from "lucide-react";
+import { Mic,X } from "lucide-react";
 
 export default function LocationSearch({
   onCoordsSelect,
@@ -408,16 +408,25 @@ export default function LocationSearch({
     
       const LANGUAGES = {
         en: { name: 'English', flag: '🇺🇸' },
-        hi: { name: 'हिंदी', flag: '🇮🇳' },
-        ta: { name: 'தமிழ்', flag: '🇮🇳' },
-        te: { name: 'తెలుగు', flag: '🇮🇳' },
-        kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
-        ml: { name: 'മലയാളം', flag: '🇮🇳' },
-        bn: { name: 'বাংলা', flag: '🇧🇩' },
-        gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
-        mr: { name: 'मराठी', flag: '🇮🇳' },
-        pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
-        ur: { name: 'اردو', flag: '🇵🇰' }
+hi: { name: 'हिन्दी', flag: '🇮🇳' },
+ta: { name: 'தமிழ்', flag: '🇮🇳' },
+te: { name: 'తెలుగు', flag: '🇮🇳' },
+kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
+ml: { name: 'മലയാളം', flag: '🇮🇳' },
+bn: { name: 'বাংলা', flag: '🇮🇳' },
+gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
+mr: { name: 'मराठी', flag: '🇮🇳' },
+pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+ur: { name: 'اُردُو', flag: '🇵🇰' }, // or 🇮🇳 if preferred
+kok: { name: 'कोंकणी', flag: '🇮🇳' },
+or: { name: 'ଓଡ଼ିଆ', flag: '🇮🇳' },
+ne: { name: 'नेपाली', flag: '🇳🇵' },
+sat: { name: 'ᱥᱟᱱᱛᱟᱲᱤ', flag: '🇮🇳' },
+sd: { name: 'سنڌي', flag: '🇵🇰' }, // or 🇮🇳 if preferred
+mni: { name: 'মেইতেই লোন', flag: '🇮🇳' },
+ks: { name: 'كٲشُر', flag: '🇮🇳' },
+as: { name: 'অসমীয়া', flag: '🇮🇳' },
+
       };
     
       // Handle language change with i18next
@@ -451,10 +460,12 @@ export default function LocationSearch({
       setAddress(spokenText); // Show in input
       setActiveInput(spokenText)
       if(type === 'from'){
-        setFromLocation(spokenText)
+        setFromLocation(spokenText);
+        
       }
       if(type === 'to'){
-        setToLocation(spokenText)
+        setToLocation(spokenText);
+        
       }
       const geoData = await geocodeAddress(spokenText);
       console.log("Geo data : ", geoData)
@@ -462,10 +473,26 @@ export default function LocationSearch({
         if(type === "from"){
           setFromLocation(geoData.address);
           setFromCoords(geoData.coords) // Send back to parent
+          if (searchType === "route" && onCoordsSelect && toCoords) {
+            onCoordsSelect({
+              from: geoData.coords,
+              to: toCoords,
+              fromAddress: geoData.address,
+              toAddress: toLocation,
+            });
+          }
         }
         else if(type === 'to'){
           setToCoords(geoData.coords);
-          setToLocation(geoData.address)
+          setToLocation(geoData.address);
+          if (searchType === "route" && onCoordsSelect && fromCoords) {
+            onCoordsSelect({
+              from: fromCoords,
+              to: geoData.coords,
+              fromAddress: fromLocation,
+              toAddress: geoData.address,
+            });
+          }
         }
       } else {
         alert("Couldn't find the location. Please try again.");
@@ -497,7 +524,7 @@ export default function LocationSearch({
           <button
             onClick={() => handleMicClick("from")}
             type="button"
-            className={`p-3 rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
+            className={`p-3 absolute right-6 top-1/2 transform -translate-y-1/2 rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
               listening ? 'animate-pulse bg-green-200' : ''
             }`}
             title="Speak now"
@@ -509,7 +536,7 @@ export default function LocationSearch({
               onClick={clearFromLocation}
               className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
-              ×
+              <X className="w-3 h-3"/>
             </button>
           )}
         </div>
@@ -597,7 +624,7 @@ export default function LocationSearch({
               <button
                 onClick={() => handleMicClick("to")}
                 type="button"
-                className={`p-3 rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
+                className={`p-3 absolute right-6 top-1/2 transform -translate-y-1/2 rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
                   listening ? 'animate-pulse bg-green-200' : ''
                 }`}
                 title="Speak now"
@@ -609,7 +636,7 @@ export default function LocationSearch({
                   onClick={clearToLocation}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 mt-6"
                 >
-                  ×
+                  <X className="w-3 h-3"/>
                 </button>
               )}
 
