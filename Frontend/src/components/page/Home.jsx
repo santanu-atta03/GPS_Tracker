@@ -225,14 +225,14 @@ const Home = ({ onSearch, onBusSelect }) => {
       } else if (searchType === 'location' && fromCoords) {
         // Search for buses near a single location
         try {
-          const buses = await busSearchService.findNearbyBuses(fromCoords, 1000);
+          const buses = await busSearchService.findNearbyBuses(fromCoords, 2000);
           const busArray = Array.isArray(buses) ? buses : [];
           
           setSearchResults(busArray);
           setSearchMetadata({
             searchType: 'location',
             coordinates: fromCoords,
-            radius: 1000,
+            radius: 2000,
             totalFound: busArray.length
           });
 

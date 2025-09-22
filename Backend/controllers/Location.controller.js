@@ -485,7 +485,7 @@ export const getAllBus = async (req, res) => {
         $geoNear: {
           near: {
             type: "Point",
-            coordinates: [longitude, latitude],
+            coordinates: [latitude, longitude],
           },
           distanceField: "distanceFromSearch",
           maxDistance: searchRadius,
