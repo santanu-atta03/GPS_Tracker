@@ -17,7 +17,9 @@ const port = process.env.PORT || 8000;
 
 // ✅ CORS Options
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://gps-map-nine.vercel.app"],
+ 
+  origin: ["http://localhost:5173","https://gps-map-nine.vercel.app","https://gps-tracker-ecru.vercel.app"],
+ 
   credentials: true,
 };
 

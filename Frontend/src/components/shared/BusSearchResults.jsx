@@ -349,16 +349,25 @@ const BusSearchResults = ({
     
       const LANGUAGES = {
         en: { name: 'English', flag: '🇺🇸' },
-        hi: { name: 'हिंदी', flag: '🇮🇳' },
-        ta: { name: 'தமிழ்', flag: '🇮🇳' },
-        te: { name: 'తెలుగు', flag: '🇮🇳' },
-        kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
-        ml: { name: 'മലയാളം', flag: '🇮🇳' },
-        bn: { name: 'বাংলা', flag: '🇧🇩' },
-        gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
-        mr: { name: 'मराठी', flag: '🇮🇳' },
-        pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
-        ur: { name: 'اردو', flag: '🇵🇰' }
+hi: { name: 'हिन्दी', flag: '🇮🇳' },
+ta: { name: 'தமிழ்', flag: '🇮🇳' },
+te: { name: 'తెలుగు', flag: '🇮🇳' },
+kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
+ml: { name: 'മലയാളം', flag: '🇮🇳' },
+bn: { name: 'বাংলা', flag: '🇮🇳' },
+gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
+mr: { name: 'मराठी', flag: '🇮🇳' },
+pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+ur: { name: 'اُردُو', flag: '🇵🇰' }, // or 🇮🇳 if preferred
+kok: { name: 'कोंकणी', flag: '🇮🇳' },
+or: { name: 'ଓଡ଼ିଆ', flag: '🇮🇳' },
+ne: { name: 'नेपाली', flag: '🇳🇵' },
+sat: { name: 'ᱥᱟᱱᱛᱟᱲᱤ', flag: '🇮🇳' },
+sd: { name: 'سنڌي', flag: '🇵🇰' }, // or 🇮🇳 if preferred
+mni: { name: 'মেইতেই লোন', flag: '🇮🇳' },
+ks: { name: 'كٲشُر', flag: '🇮🇳' },
+as: { name: 'অসমীয়া', flag: '🇮🇳' },
+
       };
     
       // Handle language change with i18next
@@ -483,11 +492,11 @@ const BusSearchResults = ({
         <div className="flex items-center">
           <Zap className="w-5 h-5 text-green-500 mr-2" />
           <span className="text-lg font-semibold text-gray-800">
-            {resultsArray.length} bus{resultsArray.length === 1 ? '' : 'es'} {t('busResults.busesFound')}
+            {resultsArray.length} {resultsArray.length === 1 ? '' : 'es'} {t('busResults.busesFound')}
           </span>
           {searchType === 'route' && (
             <span className="text-sm text-gray-500 ml-2">
-              ({t('busResults.alongRoute')})
+              {t('busResults.alongRoute')}
             </span>
           )}
         </div>

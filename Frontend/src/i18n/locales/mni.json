@@ -1,0 +1,162 @@
+{
+  "navbar": {
+    "appName": "Bus Sewa",
+    "tagline": "Real-time bus tracking system",
+    "home": "মহল",
+    "busDetails": "বাসগী মসমসা",
+    "map": "ইমাইক",
+    "liveTracking": "লাইভ ট্র্যাকিং অক্তিপা",
+    "viewProfile": "প্রোফাইল মতা শিজিন্নবা",
+    "logout": "লগ আউট তৌবা",
+    "login": "লগইন তৌবা"
+  },
+  "home": {
+    "title": "অদোমগী মায়ামদা হৈনা বাস রূট ফিন্দ তৌবি",
+    "subtitle": "রূট, লোকেশান আমসুং বাস আইডি গী মতমদা বাসগী খোঁজ তৌ। লাইভ ইনফরমেশান লৈবরা, অদোমগী যাত্ৰা ট্র্যাক তৌনা মঙগী হৌরি।",
+    "searchTitle": "অদোমগী বাস ফিন্দ তৌবিযা",
+    "byRoute": "রূট যে মালী",
+    "nearby": "মতম পাঙ ফঙনি",
+    "byBusId": "বাস আইডি যে মালী",
+    "byBusName": "বাস মমীং যে মালী",
+    "busIdLabel": "বাস আইডি",
+    "busNameLabel": "বাস মমীং",
+    "busIdPlaceholder": "বাস আইডি উপরবা (যেনা: BUS-1234)",
+    "busNamePlaceholder": "বাস মমীং উপরবা (যেনা: L238, 44, S-12)",
+    "searchBuses": "বাসগী খোঁজ তৌ",
+    "searching": "খোঁজ নৌরি...",
+    "searchTips": {
+      "route": "হোঙ্গদবা মপুং আমসুং লৈরিবা মপুং খনবা রূট গী বাস ফিন্দ তৌবগীদমক",
+      "location": "লোকেশান খনবা মতম পাঙফঙ বাস ফিন্দ তৌবগীদমক",
+      "busId": "খুদোল বাস ট্র্যাক তৌবগীদমক বাস আইডি লিখ্বা",
+      "busName": "তাকতকপা বাসগী মমীং লিখ্বা অমুক হন্না সারু"
+    },
+    "features": {
+      "realTime": {
+        "title": "রিয়েল টাইম ট্র্যাকিং",
+        "description": "বাসগী মহৎ লোকেশান আমসুং পোই লৌগী মতমদা আপডেট ফৌ"
+      },
+      "accurateEta": {
+        "title": "খুদমখি ETA",
+        "description": "অদোমগী যাত্ৰা হৌরিবদু খুদমক্তা পোই হৌরি"
+      },
+      "routeOptimization": {
+        "title": "রূট অপটিমাইজেসন",
+        "description": "অদোমগী কোরৌখনবা রূট ফিন্দ তৌখ্রবা"
+      }
+    },
+    "footer": "© 2024 Bus Tracker. ওপ্পা ফঙড্রবা হোরমনি.",
+    "errors": {
+      "noBusesRoute": "ই রূটদা বাস নাফঙদে। মতমশিদা বাস চালকি নাই আমদি অমুক হন্না লোকেশানদা ফিন্দ তৌবা।",
+      "noBusesLocation": "ই লোকেশানদা বাস নাফঙদে। অমুক হন্না ইয়েকশিলিবা মপুংদা ফিন্দ তৌবা চাহি।",
+      "busNotFound": "আইডি লৈবা বাস নাফঙদে। বাস আইডিদু অমুক হন্না চেক তৌনা লোইবা।",
+      "invalidParams": "অদোমগী ফিন্দ তৌবা উপযুক্তবগী অথুবা পরামিটার খোদোকবা দরকারি: ",
+      "routeParams": "হোঙ্গদবা মপুং আমসুং লৈরিবা মপুং খনরো।",
+      "locationParams": "মতম পাঙ ফিন্দ তৌবগীদমক লোকেশান খনরো।",
+      "busIdParams": "খুদম বাস আইডি লিখ্বা দরকার।",
+      "searchError": "খোঁজ তৌদা সমস্যা ফঙখ্রে। অমুক হন্না চাহি।"
+    }
+  },
+  "locationSearch": {
+    "from": "মখোঙদাগী",
+    "to": "মখোঙদা",
+    "searchLocation": "লোকেশান ফিন্দ তৌ",
+    "enterStarting": "হোঙ্গদবা মপুং লিখ্বা",
+    "enterLocation": "লোকেশান লিখ্বা",
+    "selectDestination": "গন্তব্য খনবা",
+    "useCurrentLocation": "অদোমগী হৌজিক লোকেশান ব্যবহার তৌবা",
+    "gettingLocation": "লোকেশান পী..",
+    "searching": "ফিন্দ তৌরি...",
+    "swapLocations": "লোকেশান অহৌবা"
+  },
+  "busResults": {
+    "searchError": "ফিন্দ তৌবা এরর",
+    "tryAgain": "অমুক হন্না হৌবা",
+    "refreshSearch": "ফিন্দ তৌবা রিফ্রেশ তৌ",
+    "noBusesFound": "বাস নাফঙদে",
+    "noBusesRoute": "ই রূটদা বাস নাফঙদে। মতমশিদা চাল্কি নাই, নহক্কনা ইয়েকশিলিবা লোকেশান খুদোকবা চাহি।",
+    "noBusesBusId": "আইডি লৈবা বাস নাফঙদে। চাহিবা মতমদা আইডি চেক তৌ।",
+    "noBusesLocation": "লোকেশানদা বাস নাফঙদে। ইয়েকশিলিবা মপুং চাহনা অথবা অমুক হন্না লোকেশান খুদোকবা।",
+    "searchTips": {
+      "title": "ফিন্দ তৌবা টিপস:",
+      "tip1": "বাস স্টপ নহক্কনা মখা প্রধান ল্যান্ডমার্কদাগী ফিন্দ তৌ",
+      "tip2": "লোকেশানদা বাসগী কভারেজ লৈবা চেক তৌ",
+      "tip3": "পাংফঙ রূট তাকতকবা",
+      "tip4": "মতমশিদা বাস অপরেট তৌরি নহক্কনা চেক তৌরিবা"
+    },
+    "busesFound": " বাস ফঙ্নে",
+    "busesFound_plural": " বাস ফঙ্লে",
+    "alongRoute": "(রূটদা বা মতম পাঙফঙদা)",
+    "passesThrough": " বাস(শিং) অদোমগী রূট থৌরি",
+    "correctDirection": " বাস(শিং) অদোমগী মখা হৌরি",
+    "nearbyBuses": " মতম পাঙ ফঙ বাস(শিং)",
+    "routeMatch": {
+      "passesThrough": "অদোমগী রূট থৌরি",
+      "goodDirection": "অদোমগী মখা হৌরি",
+      "nearby": "মতম পাঙ রূট"
+    },
+    "routeInfo": "রূট ইনফরমেশান লৈতে",
+    "distanceAway": " মিটার মখা",
+    "distanceAwayKm": " km মখা",
+    "routePoints": " রূট পয়েন্ট",
+    "hasRouteData": "রূট ডাটা লৈ",
+    "points": " পয়েন্ট",
+    "lastUpdated": "হারাউরিবা মতম: ",
+    "startTime": "হোঙ্গদবা মতম: ",
+    "expectedTime": "অশা তৌরি মতম: ",
+    "endTime": "মকন্নবা মতম: ",
+    "distanceFromStart": "হোঙ্গদবা মখাগী শিংথিল:",
+    "distanceToDestination": "মখোঙগী শিংথিল:",
+    "direction": "মখা:",
+    "correct": "খুদম",
+    "opposite": "মখা মতঙ"
+  },
+  "busDetails": {
+    "title": "বাসগী মসমসা",
+    "loadingBusDetails": "বাসগী মসমসা লোড তৌরি...",
+    "errorLoading": "বাসগী মসমসা লোড তৌবা এরর",
+    "busNotFound": "বাস নাফঙদে",
+    "noBusWithId": "আইডিদা বাস ফঙদে: ",
+    "searchForBuses": "বাস ফিন্দ তৌ",
+    "goBack": "মখাদরগী থিগনি",
+    "scheduleInfo": "সিডিউল ইনফরমেশান",
+    "startTime": "হোঙ্গদবা মতম",
+    "expectedArrival": "অশা তৌনা পোই মতম",
+    "destinationTime": "গন্তব্য মতম",
+    "currentTime": "হৌজিক মতম",
+    "driverDetails": "চালকগী মসমসা",
+    "licensedDriver": "লাইসেন্স লৈবা চালক",
+    "phone": "ফোন: ",
+    "experience": "মসমসা: পেশোনাল",
+    "routeInfo": "রূট ইনফরমেশান",
+    "routeNotAvailable": "রূট ইনফরমেশান লৈতে",
+    "moreStops": " মতমজারোইগী থম্বা",
+    "status": "স্টেটাস",
+    "lastUpdated": "হারাউরিবা",
+    "location": "লোকেশান",
+    "unknown": "খঙদে",
+    "liveRouteTracking": "লাইভ রূট ট্র্যাকিং",
+    "live": "লাইভ",
+    "locationNotAvailable": "লোকেশান ডাটা লৈতে",
+    "stats": {
+      "speed": "লমাই",
+      "eta": "ETA",
+      "distance": "শিংথিল",
+      "remaining": "লেপ্লবা",
+      "kmh": "km/h",
+      "min": "মিন",
+      "km": "km",
+      "stops": "থম্বা"
+    }
+  },
+  "common": {
+    "active": "অক্তিপা",
+    "onRoute": "রূটদা",
+    "atStop": "থম্বাদা",
+    "stopped": "থম্লে",
+    "delayed": "তাম্বা তৌরে",
+    "offline": "অফলাইনে",
+    "inactive": "অক্তিতে",
+    "unknown": "খঙদে",
+    "contactSupport": "সাপোর্টগী খুউ খঙবা"
+  }
+}

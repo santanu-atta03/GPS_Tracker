@@ -92,7 +92,7 @@ const BusMap = () => {
     const fetchBusLocations = async () => {
       try {
         setError(null);
-        const res = await axios.get("https://gps-tracker-kq2q.vercel.app/api/v1/AllLocation");
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/AllLocation`);
         setBusLocations(res.data.buses || []);
         setLastUpdated(new Date());
         setIsLoading(false);
@@ -117,7 +117,7 @@ const BusMap = () => {
   const handleRefresh = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get("https://gps-tracker-kq2q.vercel.app/api/v1/AllLocation");
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/AllLocation`);
       setBusLocations(res.data.buses || []);
       setLastUpdated(new Date());
       setError(null);
@@ -384,7 +384,7 @@ const BusMap = () => {
 
         {/* Footer */}
         <footer className="mt-16 text-center text-gray-500 text-sm">
-          <p>&copy; 2024 Bus Tracker. All rights reserved.</p>
+          <p>&copy; 2024 Bus Sewa. All rights reserved.</p>
         </footer>
       </main>
     </div>

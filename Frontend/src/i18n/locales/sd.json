@@ -1,0 +1,162 @@
+{
+  "navbar": {
+    "appName": "بس سيوه",
+    "tagline": "حقيقي وقت ۾ بس ٽريڪنگ سسٽم",
+    "home": "گهر",
+    "busDetails": "بس جي تفصيل",
+    "map": "نقشو",
+    "liveTracking": "ذهنده ٽريڪنگ سرگرم آهي",
+    "viewProfile": "پروفائل ڏسو",
+    "logout": "لاگ آئوٽ ٿيو",
+    "login": "لاگ ان ٿيو"
+  },
+  "home": {
+    "title": "پنهنجي بهترين بس روٽ ڳولهيو",
+    "subtitle": "روٽ، جڳهه، يا بس آئي ڊي سان بس ڳوليو. حقيقي وقت جي معلومات حاصل ڪريو ۽ آساني سان پنهنجي سفر کي ٽريڪ ڪريو.",
+    "searchTitle": "پنهنجي بس ڳولهيو",
+    "byRoute": "روٽ موجب",
+    "nearby": "ويجهي",
+    "byBusId": "بس آئي ڊي موجب",
+    "byBusName" : "بس جي نالي موجب",
+    "busIdLabel": "بس آئي ڊي",
+    "busNameLabel" : "بس جو نالو",
+    "busIdPlaceholder": "بس آئي ڊي داخل ڪريو (مثال: BUS-1234)",
+    "busNamePlaceholder": "بس جو نالو داخل ڪريو (مثال: L238, 44, S-12)",
+    "searchBuses": "بس ڳولهيو",
+    "searching": "ڳولهڻ جاري آهي...",
+    "searchTips": {
+      "route": "پنهنجو روٽ چونڊيو شروعات ۽ منزل لاءِ",
+      "location": "ويجهي بس ڳولڻ لاءِ هن جڳهه چونڊيو",
+      "busId": "ڪنهن خاص بس کي ٽريڪ ڪرڻ لاءِ بس آئي ڊي داخل ڪريو",
+      "busName": "بس نالي سان سڀ بس ڳولهيو"
+    },
+    "features": {
+      "realTime": {
+        "title": "حقيقي وقت جو ٽريڪنگ",
+        "description": "بس جي جڳهه ۽ اچڻ جو وقت فوري حاصل ڪريو"
+      },
+      "accurateEta": {
+        "title": "صحیح ETA",
+        "description": "پنهنجي سفر جو صحيح اندازو لڳايو"
+      },
+      "routeOptimization": {
+        "title": "روٽ بهتر ڪرڻ",
+        "description": "روزاني سفر لاءِ بهترين روٽ ڳولهيو"
+      }
+    },
+    "footer": "© 2024 بس سيوه. سڀ حق محفوظ آهن.",
+    "errors": {
+      "noBusesRoute": "هن روٽ تي ڪا بس ناهي ملي. شايد بس هلڻ ۾ نه هجن يا ويجهي جڳهن ذريعي ڳوليو.",
+      "noBusesLocation": "هي علائقو ۾ ڪا بس ناهي ملي. ٻي جڳهه يا پوءِ ڳوليو.",
+      "busNotFound": "آئي ڊي سان ڪا بس ناهي ملي. بس آئي ڊي چيڪ ڪريو ۽ ٻيهر ڪوشش ڪريو.",
+      "invalidParams": "مهرباني ڪري صحيح ڳولا جا شرط ڏيو: ",
+      "routeParams": "شروعات ۽ منزل ٻئي چونڊيو.",
+      "locationParams": "ويجهي بس ڳولڻ لاءِ جڳهه چونڊيو.",
+      "busIdParams": "سهي بس آئي ڊي داخل ڪريو.",
+      "searchError": "ڳولڻ ۾ غلطي ٿي. مھرباني ڪري ٻيهر ڪوشش ڪريو."
+    }
+  },
+  "locationSearch": {
+    "from": "کان",
+    "to": "ڏانهن",
+    "searchLocation": "جڳھ ڳولهيو",
+    "enterStarting": "شروعات واري جڳھ داخل ڪريو",
+    "enterLocation": "جڳھ داخل ڪريو",
+    "selectDestination": "منزل چونڊيو",
+    "useCurrentLocation": "منهنجي موجوده جڳھ استعمال ڪريو",
+    "gettingLocation": "جڳھ معلوم ٿي رهي آهي...",
+    "searching": "ڳولهڻ جاري آهي...",
+    "swapLocations": "جڳهون مٽايو"
+  },
+  "busResults": {
+    "searchError": "ڳولڻ ۾ غلطي",
+    "tryAgain": "ٻيهر ڪوشش ڪريو",
+    "refreshSearch": "ڳولا تازو ڪريو",
+    "noBusesFound": "ڪو بس ناهي مليو",
+    "noBusesRoute": "هن روٽ تي ڪابه بس ناهي ملي. شايد بس هلڻ ۾ نه هجن يا وڌيڪ بس ڪوريج وارن هنن جڳهن مان ڳوليو.",
+    "noBusesBusId": "آئي ڊي موجب ڪا بس ناهي ملي. بس آئي ڊي چيڪ ڪريو.",
+    "noBusesLocation": "هن علائقي ۾ ڪا بس ناهي. ڳولا جي دائري کي وڌايو يا ٻي جڳهه ڳوليو.",
+    "searchTips": {
+      "title": "ڳولا جا ٽوٽڪا:",
+      "tip1": "بس روڪڻ واري هنڌ يا اهم جڳهن کان ڳولا ڪريو",
+      "tip2": "پڪ ڪريو ته توهان جي جڳهه ۾ بس ڪوريج آهي",
+      "tip3": "ويجهي متبادل روٽن تي به غور ڪريو",
+      "tip4": "پڪ ڪريو ته بس هلڻ ۾ آهي"
+    },
+    "busesFound": "بس مليو",
+    "busesFound_plural": "بس مليا",
+    "alongRoute": "(توهان جي روٽ يا ويجهو)",
+    "passesThrough": "بس توهان جي روٽ مان گذري ٿي",
+    "correctDirection": "بس توهان جي طرف وڃي ٿي",
+    "nearbyBuses": "ويجهي بسون",
+    "routeMatch": {
+      "passesThrough": "توهان جي روٽ مان گذري ٿي",
+      "goodDirection": "توهان جي طرف وڃي ٿي",
+      "nearby": "ويجهي روٽ"
+    },
+    "routeInfo": "روٽ جي معلومات موجود ناهي",
+    "distanceAway": "ميٽر پري",
+    "distanceAwayKm": "ڪلو ميٽر پري",
+    "routePoints": "روٽ جا نقطا",
+    "hasRouteData": "روٽ جو ڊيٽا موجود آهي",
+    "points": "نقاط",
+    "lastUpdated": "آخري تازه ڪاري:",
+    "startTime": "شروعات:",
+    "expectedTime": "متوقع وقت:",
+    "endTime": "اختتام:",
+    "distanceFromStart": "شروعات کان فاصلو:",
+    "distanceToDestination": "منزل تائين فاصلو:",
+    "direction": "سمت:",
+    "correct": "سھيو",
+    "opposite": "الٽو"
+  },
+  "busDetails": {
+    "title": "بس جي تفصيل",
+    "loadingBusDetails": "بس جون تفصيلون لوڊ ٿي رهيون آهن...",
+    "errorLoading": "بس جي تفصيل لوڊ ڪرڻ ۾ غلطي",
+    "busNotFound": "بس ناهي ملي",
+    "noBusWithId": "هي آئي ڊي سان ڪا بس ناهي ملي: ",
+    "searchForBuses": "بس ڳوليو",
+    "goBack": "واپس وڃو",
+    "scheduleInfo": "شيڊيول جي معلومات",
+    "startTime": "شروعات جو وقت",
+    "expectedArrival": "متوقع آمد",
+    "destinationTime": "منزل جو وقت",
+    "currentTime": "موجوده وقت",
+    "driverDetails": "ڊرائيور جي تفصيل",
+    "licensedDriver": "لائسنس يافته ڊرائيور",
+    "phone": "فون:",
+    "experience": "تجربو: پيشاور",
+    "routeInfo": "روٽ جي معلومات",
+    "routeNotAvailable": "روٽ جي معلومات موجود ناهي",
+    "moreStops": "وڌيڪ روڪڻ جا هنڌ",
+    "status": "حالت",
+    "lastUpdated": "آخري تازه ڪاري",
+    "location": "جڳھ",
+    "unknown": "نامعلوم",
+    "liveRouteTracking": "زندہ روٽ ٽريڪنگ",
+    "live": "زندہ",
+    "locationNotAvailable": "جڳھ جو ڊيٽا موجود ناهي",
+    "stats": {
+      "speed": "رفتار",
+      "eta": "ETA",
+      "distance": "فاصلو",
+      "remaining": "باقي",
+      "kmh": "ڪلو ميٽر في ڪلاڪ",
+      "min": "منٽ",
+      "km": "ڪلو ميٽر",
+      "stops": "روڪڻ جا هنڌ"
+    }
+  },
+  "common": {
+    "active": "فعال",
+    "onRoute": "روٽ تي",
+    "atStop": "اسٽاپ تي",
+    "stopped": "رڪيل",
+    "delayed": "دير ٿي وئي",
+    "offline": "آف لائن",
+    "inactive": "غير فعال",
+    "unknown": "نامعلوم",
+    "contactSupport": "سپورٽ سان رابطو ڪريو"
+  }
+}

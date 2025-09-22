@@ -20,7 +20,7 @@ const Complete = () => {
       if (!user) return;
       try {
         const res = await axios.get(
-          `https://gps-tracker-kq2q.vercel.app/api/v1/driver/veryfi/email/${user.email}`
+          `${import.meta.env.VITE_BASE_URL}/driver/veryfi/email/${user.email}`
         );
         if (res.data.success) {
           navigate("/"); // already registered driver
@@ -35,6 +35,39 @@ const Complete = () => {
     fetchData();
   }, [getAccessTokenSilently, navigate, user]);
 
+ 
+  // Create new driver
+  const CreateDriver = async (e) => {
+    e.preventDefault();
+    console.log("call")
+    try {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v3",
+      });
+      console.log(token)
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/driver/createUser`,
+        {
+          fullname: user.name,
+          email: user.email,
+          picture: user.picture,
+          licenceId,
+          driverExp,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (res.data.success) {
+        dispatch(setuser(res.data.userData));
+        navigate("/"); // redirect after success
+      }
+    } catch (error) {
+      console.log("Create Driver error:", error.message);
+    }
+  };
+
+ 
   return (
     <>
       <div className="flex justify-center items-center absolute inset-0 gap-3 shadow-2xl ">

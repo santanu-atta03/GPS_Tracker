@@ -50,6 +50,7 @@
     "react-leaflet": "^5.0.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.1",
+    "react-speech-recognition": "^4.0.1",
     "redux-persist": "^6.0.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",

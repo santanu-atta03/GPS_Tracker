@@ -25,11 +25,26 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const LANGUAGES = {
-    en: { name: "English", flag: "🇺🇸" },
-    hi: { name: "हिंदी", flag: "🇮🇳" },
-    ta: { name: "தமிழ்", flag: "🇮🇳" },
-    bn: { name: "বাংলা", flag: "🇧🇩" },
-    pa: { name: "ਪੰਜਾਬੀ", flag: "🇮🇳" },
+    en: { name: 'English', flag: '🇺🇸' },
+hi: { name: 'हिन्दी', flag: '🇮🇳' },
+ta: { name: 'தமிழ்', flag: '🇮🇳' },
+te: { name: 'తెలుగు', flag: '🇮🇳' },
+kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
+ml: { name: 'മലയാളം', flag: '🇮🇳' },
+bn: { name: 'বাংলা', flag: '🇮🇳' },
+gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
+mr: { name: 'मराठी', flag: '🇮🇳' },
+pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+ur: { name: 'اُردُو', flag: '🇵🇰' }, // or 🇮🇳 if preferred
+kok: { name: 'कोंकणी', flag: '🇮🇳' },
+or: { name: 'ଓଡ଼ିଆ', flag: '🇮🇳' },
+ne: { name: 'नेपाली', flag: '🇳🇵' },
+sat: { name: 'ᱥᱟᱱᱛᱟᱲᱤ', flag: '🇮🇳' },
+sd: { name: 'سنڌي', flag: '🇵🇰' }, // or 🇮🇳 if preferred
+mni: { name: 'মেইতেই লোন', flag: '🇮🇳' },
+ks: { name: 'كٲشُر', flag: '🇮🇳' },
+as: { name: 'অসমীয়া', flag: '🇮🇳' },
+
   };
 
   // Language Change
@@ -82,7 +97,7 @@ const Navbar = () => {
           </div>
           {/* Desktop Title */}
           <div className="hidden md:block">
-            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
+            <h1 className="text-2xl sm:text-2xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
               {t("navbar.appName")}
             </h1>
             <p className="text-gray-600 text-xs sm:text-sm">

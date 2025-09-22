@@ -55,7 +55,7 @@ const Profile = () => {
       });
 
       const res = await axios.put(
-        "https://gps-tracker-kq2q.vercel.app/api/v1/driver/update/profile",
+        `${import.meta.env.VITE_BASE_URL}/driver/update/profile`,
         { name, licenceId, driverExp },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -278,7 +278,7 @@ const Profile = () => {
 
         {/* Footer */}
         <footer className="mt-16 text-center text-gray-500 text-sm">
-          <p>&copy; 2024 Bus Tracker. All rights reserved.</p>
+          <p>&copy; 2024 Bus Sewa. All rights reserved.</p>
         </footer>
       </main>
     </div>

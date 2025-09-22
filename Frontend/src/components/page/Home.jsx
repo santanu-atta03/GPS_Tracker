@@ -9,7 +9,9 @@ import {
   Zap,
   MapPin,
   AlertTriangle,
-  Bus
+  Bus,
+  Mic,
+  X
 } from 'lucide-react';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from 'react-router-dom';
@@ -23,6 +25,7 @@ import { busSearchService } from '../../services/busSearchService';
 import { getBusLocationByDeviceId } from '../../services/operations/busAPI';
 import axios  from 'axios';
 import EnhancedSearchResults from '../search/EnhancedSearchResults';
+import useSpeechToText from '../../hooks/useSpeechToText';
 
 const Home = ({ onSearch, onBusSelect }) => {
   const { getAccessTokenSilently } = useAuth0();
@@ -34,12 +37,26 @@ const Home = ({ onSearch, onBusSelect }) => {
   
     const LANGUAGES = {
       en: { name: 'English', flag: '🇺🇸' },
-      hi: { name: 'हिंदी', flag: '🇮🇳' },
-      ta: { name: 'தமிழ்', flag: '🇮🇳' },
-      
-      bn: { name: 'বাংলা', flag: '🇧🇩' },
-       
-      pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+hi: { name: 'हिन्दी', flag: '🇮🇳' },
+ta: { name: 'தமிழ்', flag: '🇮🇳' },
+te: { name: 'తెలుగు', flag: '🇮🇳' },
+kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
+ml: { name: 'മലയാളം', flag: '🇮🇳' },
+bn: { name: 'বাংলা', flag: '🇮🇳' },
+gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
+mr: { name: 'मराठी', flag: '🇮🇳' },
+pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
+ur: { name: 'اُردُو', flag: '🇵🇰' }, // or 🇮🇳 if preferred
+kok: { name: 'कोंकणी', flag: '🇮🇳' },
+or: { name: 'ଓଡ଼ିଆ', flag: '🇮🇳' },
+ne: { name: 'नेपाली', flag: '🇳🇵' },
+sat: { name: 'ᱥᱟᱱᱛᱟᱲᱤ', flag: '🇮🇳' },
+sd: { name: 'سنڌي', flag: '🇵🇰' }, // or 🇮🇳 if preferred
+mni: { name: 'মেইতেই লোন', flag: '🇮🇳' },
+ks: { name: 'كٲشُر', flag: '🇮🇳' },
+as: { name: 'অসমীয়া', flag: '🇮🇳' },
+
+
       
     };
   
@@ -66,7 +83,16 @@ const Home = ({ onSearch, onBusSelect }) => {
       }
     }, [i18n]);
 
-  
+    const [address, setAddress] = useState('');
+    const { listening, startListening } = useSpeechToText();
+    
+      const handleMicClick = () => {
+        startListening(async (spokenText) => {
+          setAddress(spokenText); // Show in input
+          setBusName(spokenText)
+        });
+      }
+
   // Search state
   const [searchType, setSearchType] = useState('route'); // 'route', 'busId', 'location', 'busName'
   const [deviceID, setDeviceID] = useState('');
@@ -98,7 +124,7 @@ const Home = ({ onSearch, onBusSelect }) => {
   // New function to fetch all buses and filter by name
   const searchBusByName = async (name) => {
     try {
-      const response = await axios.get(`https://gps-tracker-kq2q.vercel.app/api/v1/Bus/get/allBus`);
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/Bus/get/allBus`);
       const data = await response.data;
       // console.log( "ayan",data.data)
       if (data.success && data.data) {
@@ -225,14 +251,14 @@ const Home = ({ onSearch, onBusSelect }) => {
       } else if (searchType === 'location' && fromCoords) {
         // Search for buses near a single location
         try {
-          const buses = await busSearchService.findNearbyBuses(fromCoords, 1000);
+          const buses = await busSearchService.findNearbyBuses(fromCoords, 2000);
           const busArray = Array.isArray(buses) ? buses : [];
           
           setSearchResults(busArray);
           setSearchMetadata({
             searchType: 'location',
             coordinates: fromCoords,
-            radius: 1000,
+            radius: 2000,
             totalFound: busArray.length
           });
 
@@ -420,12 +446,12 @@ console.log("my reasult ayan" ,searchResults)
         </div>
 
         {/* Search Section */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-green-100">
+        <div className="bg-white md:rounded-2xl shadow-xl p-8 mb-8 border border-green-100">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">{t('home.searchTitle')}</h2>
           
           {/* Search Type Toggle */}
-          <div className="flex justify-center mb-6">
-            <div className="bg-gray-100 rounded-full p-2 flex transition-all duration-200 flex-wrap">
+          <div className="md:flex md:justify-center mb-6 ">
+            <div className="bg-gray-100 rounded-lg md:rounded-full p-2 transition-all duration-200 grid md:grid-cols-4 grid-cols-2 ">
               <button
                 onClick={() => {
                   setSearchType('route');
@@ -484,7 +510,7 @@ console.log("my reasult ayan" ,searchResults)
                 }`}
               >
                 <Bus className="w-4 h-4 inline mr-2" />
-                By Bus Name
+                {t('home.byBusName')}
               </button>
             </div>
           </div>
@@ -513,17 +539,29 @@ console.log("my reasult ayan" ,searchResults)
           ) : (
             <div className="max-w-md mx-auto">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Bus Name
+                {t('home.busNameLabel')}
               </label>
               <input
                 type="text"
                 value={busName}
                 onChange={(e) => setBusName(e.target.value)}
                 onKeyPress={handleBusNameKeyPress}
-                placeholder="Enter Bus Name (e.g., L238, 44)"
+                placeholder={t('home.busNamePlaceholder')}
                 className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               />
+              <button
+                onClick={handleMicClick}
+                type="button"
+                className={`p-2 absolute right-[17%] translate-y-[22%] lg:right-[36%] lg:translate-y-[30%] rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
+                  listening ? 'animate-pulse bg-green-200' : ''
+                }`}
+                title="Speak now"
+              >
+                <Mic className="w-5 h-5" />
+              </button>
+              {listening && <p className="text-xs text-green-600 mt-1">Listening...</p>}
             </div>
+            
           )}
 
           {/* Search Button */}
@@ -549,9 +587,8 @@ console.log("my reasult ayan" ,searchResults)
               {searchType === 'route' && t('home.searchTips.route')}
               {searchType === 'location' && t('home.searchTips.location')}
               {searchType === 'busId' && t('home.searchTips.busId')}
+              {searchType === 'busName' && t('home.searchTips.busName')}
 
-              
-              {searchType === 'busName' && "Enter the bus name to find all buses with that name"}
  
             </p>
           </div>
@@ -611,7 +648,7 @@ console.log("my reasult ayan" ,searchResults)
         />
 
         {/* Error Display */}
-        {error && (
+        {error && !searchResults && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-8">
             <div className="flex items-start">
               <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
@@ -626,7 +663,7 @@ console.log("my reasult ayan" ,searchResults)
         {/* Footer */}
         <footer className="mt-16 text-center text-gray-500 text-sm">
  
-          <p>&copy; {t('home.footer')}</p>
+          <p> {t('home.footer')}</p>
  
           <Button onClick={updateProfile}></Button>
  

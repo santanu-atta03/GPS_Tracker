@@ -37,7 +37,7 @@ const Bus = () => {
         });
 
         const res = await axios.get(
-          "https://gps-tracker-kq2q.vercel.app/api/v1/driver/allBus",
+          "${import.meta.env.VITE_BASE_URL}/driver/allBus",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -273,7 +273,7 @@ const Bus = () => {
 
         {/* Footer */}
         <footer className="mt-16 text-center text-gray-500 text-sm">
-          <p>&copy; 2024 Bus Tracker. All rights reserved.</p>
+          <p>&copy; 2024 Bus Sewa. All rights reserved.</p>
         </footer>
       </main>
     </div>
