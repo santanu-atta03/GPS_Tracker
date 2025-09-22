@@ -446,12 +446,12 @@ console.log("my reasult ayan" ,searchResults)
         </div>
 
         {/* Search Section */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-green-100">
+        <div className="bg-white md:rounded-2xl shadow-xl p-8 mb-8 border border-green-100">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">{t('home.searchTitle')}</h2>
           
           {/* Search Type Toggle */}
-          <div className="flex justify-center mb-6">
-            <div className="bg-gray-100 rounded-full p-2 flex transition-all duration-200 flex-wrap">
+          <div className="md:flex md:justify-center mb-6 ">
+            <div className="bg-gray-100 rounded-lg md:rounded-full p-2 transition-all duration-200 grid md:grid-cols-4 grid-cols-2 ">
               <button
                 onClick={() => {
                   setSearchType('route');
@@ -552,7 +552,7 @@ console.log("my reasult ayan" ,searchResults)
               <button
                 onClick={() => handleMicClick}
                 type="button"
-                className={`p-2 absolute right-[17%] translate-y-[22%] md:left-[61%] md:top-[63%] rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
+                className={`p-2 absolute right-[17%] translate-y-[22%] lg:right-[36%] lg:translate-y-[30%] rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
                   listening ? 'animate-pulse bg-green-200' : ''
                 }`}
                 title="Speak now"
