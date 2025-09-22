@@ -552,7 +552,7 @@ console.log("my reasult ayan" ,searchResults)
               <button
                 onClick={() => handleMicClick}
                 type="button"
-                className={`p-3 absolute right-6 top-1/2 transform -translate-y-1/2 rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
+                className={`p-2 absolute right-[17%] translate-y-[22%] md:left-[61%] md:top-[63%] rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
                   listening ? 'animate-pulse bg-green-200' : ''
                 }`}
                 title="Speak now"

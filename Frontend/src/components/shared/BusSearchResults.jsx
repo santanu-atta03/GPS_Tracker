@@ -492,11 +492,11 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
         <div className="flex items-center">
           <Zap className="w-5 h-5 text-green-500 mr-2" />
           <span className="text-lg font-semibold text-gray-800">
-            {resultsArray.length} bus{resultsArray.length === 1 ? '' : 'es'} {t('busResults.busesFound')}
+            {resultsArray.length} {resultsArray.length === 1 ? '' : 'es'} {t('busResults.busesFound')}
           </span>
           {searchType === 'route' && (
             <span className="text-sm text-gray-500 ml-2">
-              ({t('busResults.alongRoute')})
+              {t('busResults.alongRoute')}
             </span>
           )}
         </div>

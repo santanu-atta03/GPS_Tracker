@@ -624,7 +624,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
               <button
                 onClick={() => handleMicClick("to")}
                 type="button"
-                className={`p-3 absolute right-6 top-1/2 transform -translate-y-1/2 rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
+                className={`p-3 absolute right-6 top-2/3 transform -translate-y-1/2 rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
                   listening ? 'animate-pulse bg-green-200' : ''
                 }`}
                 title="Speak now"
