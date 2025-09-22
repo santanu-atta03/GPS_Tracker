@@ -550,7 +550,7 @@ console.log("my reasult ayan" ,searchResults)
                 className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               />
               <button
-                onClick={() => handleMicClick}
+                onClick={handleMicClick}
                 type="button"
                 className={`p-2 absolute right-[17%] translate-y-[22%] lg:right-[36%] lg:translate-y-[30%] rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition ${
                   listening ? 'animate-pulse bg-green-200' : ''
