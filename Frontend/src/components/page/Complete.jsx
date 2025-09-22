@@ -1,9 +1,12 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import React from "react";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAuth0 } from "@auth0/auth0-react";
 import { useDispatch } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const Complete = () => {
   const navigate = useNavigate();
@@ -12,10 +15,9 @@ const Complete = () => {
   const [licenceId, setlicenceId] = useState("");
   const dispatch = useDispatch();
 
-  // Check if user already exists
   useEffect(() => {
     const fetchData = async () => {
-      if (!user) return; // Wait for Auth0 user to load
+      if (!user) return;
       try {
         const res = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/driver/veryfi/email/${user.email}`
@@ -33,6 +35,7 @@ const Complete = () => {
     fetchData();
   }, [getAccessTokenSilently, navigate, user]);
 
+ 
   // Create new driver
   const CreateDriver = async (e) => {
     e.preventDefault();
@@ -64,48 +67,25 @@ const Complete = () => {
     }
   };
 
+ 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <form
-        onSubmit={CreateDriver}
-        className="bg-white shadow-md rounded-lg p-6 w-96"
-      >
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          Complete Your Driver Profile
-        </h2>
-
-        <label className="block mb-2 text-sm font-medium text-gray-700">
-          Licence ID
-        </label>
-        <input
-          type="text"
-          value={licenceId}
-          onChange={(e) => setlicenceId(e.target.value)}
-          required
-          className="w-full border rounded-lg p-2 mb-4 focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter your licence ID"
-        />
-
-        <label className="block mb-2 text-sm font-medium text-gray-700">
-          Driving Experience (years)
-        </label>
-        <input
-          type="text"
-          value={driverExp}
-          onChange={(e) => setdriverExp(e.target.value)}
-          required
-          className="w-full border rounded-lg p-2 mb-4 focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter years of experience"
-        />
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700"
+    <>
+      <div className="flex justify-center items-center absolute inset-0 gap-3 shadow-2xl ">
+        <Button
+          onClick={() => navigate("/Login/driver")}
+          className="bg-green-500 hover:bg-green-600 cursor-pointer shadow-2xl"
         >
-          Submit
-        </button>
-      </form>
-    </div>
+          login as driver
+        </Button>
+
+        <Button
+          onClick={() => navigate("/Login/User")}
+          className="bg-green-500 hover:bg-green-600 cursor-pointer shadow-2xl"
+        >
+          login as User
+        </Button>
+      </div>
+    </>
   );
 };
 

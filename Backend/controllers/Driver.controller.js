@@ -1,5 +1,6 @@
 import Bus from "../models/Bus.model.js";
 import Driver from "../models/Driver.model.js";
+import User from "../models/User.model.js";
 
 export const createDriver = async (req, res) => {
   try {
@@ -20,6 +21,7 @@ export const createDriver = async (req, res) => {
       picture: picture,
       licenceId: licenceId,
       driverExp: driverExp,
+      status:"driver"
     };
     const userData = await Driver.create(newUser);
     return res.status(200).json({
@@ -37,7 +39,8 @@ export const userFindByEmail = async (req, res) => {
     const { email } = req.params;
     console.log(email);
     const emailfind = await Driver.findOne({ email: email });
-    if (!emailfind) {
+    const userfind = await User.findOne({ email: email });
+    if (!emailfind || !userfind) {
       return res.status(404).json({
         message: "user not exict",
         success: false,

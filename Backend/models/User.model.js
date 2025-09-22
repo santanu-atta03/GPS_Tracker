@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const DriverDetails = new mongoose.Schema({
+const UserDetails = new mongoose.Schema({
   auth0Id: {
     type: String,
     required: true,
@@ -17,23 +17,15 @@ const DriverDetails = new mongoose.Schema({
   picture: {
     type: String,
   },
-  licenceId: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  driverExp: {
-    type: String,
-  },
   lastUpdated: {
     type: Date,
     default: Date.now,
   },
-  status: {
-    type: String,
-    default: "driver",
-  },
+  status:{
+    type:String,
+    default:"user"
+  }
 });
 
-const Driver = mongoose.model("Driver", DriverDetails);
-export default Driver;
+const User = mongoose.model("User", UserDetails);
+export default User;
