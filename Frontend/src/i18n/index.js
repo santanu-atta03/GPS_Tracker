@@ -22,7 +22,6 @@ import satTranslations from './locales/sat.json';
 import sdTranslations from './locales/sd.json';
 import orTranslations from './locales/or.json';
 import mniTranslations from './locales/mni.json';
-import sdTranslations from './locales/sd.json';
 import kokTranslations from './locales/kok.json';
 
 const resources = {
