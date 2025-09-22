@@ -40,7 +40,7 @@ export const userFindByEmail = async (req, res) => {
     console.log(email);
     const emailfind = await Driver.findOne({ email: email });
     const userfind = await User.findOne({ email: email });
-    if (!emailfind || !userfind) {
+    if (!emailfind && !userfind) {
       return res.status(404).json({
         message: "user not exict",
         success: false,
