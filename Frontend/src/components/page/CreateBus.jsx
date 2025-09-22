@@ -28,7 +28,7 @@ const CreateBus = () => {
       });
 
       const res = await axios.post(
-        "https://gps-tracker-kq2q.vercel.app/api/v1/Bus/createbus",
+        `${import.meta.env.VITE_BASE_URL}/Bus/createbus`,
         { name, deviceID, from, to },
         { headers: { Authorization: `Bearer ${token}` } }
       );
