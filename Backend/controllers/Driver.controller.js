@@ -21,7 +21,7 @@ export const createDriver = async (req, res) => {
       picture: picture,
       licenceId: licenceId,
       driverExp: driverExp,
-      status:"driver"
+      status: "driver",
     };
     const userData = await Driver.create(newUser);
     return res.status(200).json({
@@ -46,8 +46,15 @@ export const userFindByEmail = async (req, res) => {
         success: false,
       });
     }
+    let newUser;
+    if (emailfind) {
+      newUser = emailfind;
+    } else {
+      newUser = userfind;
+    }
     return res.status(200).json({
       message: "user alredy exicet",
+      newUser,
       success: true,
     });
   } catch (error) {

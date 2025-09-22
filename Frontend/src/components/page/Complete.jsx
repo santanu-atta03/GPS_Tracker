@@ -22,6 +22,7 @@ const Complete = () => {
         const res = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/driver/veryfi/email/${user.email}`
         );
+        dispatch(setuser(res.data.newUser));
         if (res.data.success) {
           navigate("/"); // already registered driver
         }
@@ -35,10 +36,6 @@ const Complete = () => {
     fetchData();
   }, [getAccessTokenSilently, navigate, user]);
 
- 
- 
-
- 
   return (
     <>
       <div className="flex justify-center items-center absolute inset-0 gap-3 shadow-2xl ">
