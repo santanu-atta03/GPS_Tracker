@@ -61,6 +61,12 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
     setIsMobileMenuOpen(false);
   };
 
+   const handleLogout = () => {
+    localStorage.removeItem("loginShown");
+    logout({
+      logoutParams: { returnTo: window.location.origin },
+    });
+  };
   // Init Language on Mount
   useEffect(() => {
     const savedLang = localStorage.getItem("selectedLanguage");
@@ -127,7 +133,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                 {t("navbar.home")}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
-              {isAuthenticated ? (
+              {usere?.status === "driver" ? (
                 <div
                   onClick={() => handleNavigation("/Bus")}
                   className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
@@ -208,7 +214,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                   <Button
                     variant="destructive"
                     className="w-full bg-red-500 hover:bg-red-600"
-                    onClick={() => logout({ returnTo: window.location.origin })}
+                    onClick={handleLogout}
                   >
                     {t("navbar.logout")}
                   </Button>
@@ -264,7 +270,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
               >
                 {t("navbar.home")}
               </div>
-              {isAuthenticated ? (
+              {usere?.status === "driver" ? (
                 <div
                   onClick={() => handleNavigation("/Bus")}
                   className="block cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-green-50"
@@ -340,10 +346,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                   <Button
                     variant="destructive"
                     className="w-full bg-red-500 hover:bg-red-600"
-                    onClick={() => {
-                      logout({ returnTo: window.location.origin });
-                      setIsMobileMenuOpen(false);
-                    }}
+                    onClick={handleLogout}
                   >
                     {t("navbar.logout")}
                   </Button>
