@@ -113,12 +113,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
         </div>
 
         {/* Center Badge (Desktop only) */}
-        <div className="hidden lg:flex items-center space-x-2 bg-gradient-to-r from-green-50 to-green-100 rounded-full px-4 py-2 border border-green-200 absolute left-1/2 transform -translate-x-1/2">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          <span className="text-sm font-medium text-green-700">
-            {t("navbar.liveTracking")}
-          </span>
-        </div>
+        
 
         {/* Right Side */}
         <div className="flex items-center gap-2 sm:gap-4">
@@ -150,6 +145,13 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                 className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
               >
                 {t("navbar.map")}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+              </div>
+              <div
+                onClick={() => handleNavigation("/nearBy/search")}
+                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+              >
+                 NearBy
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
             </div>

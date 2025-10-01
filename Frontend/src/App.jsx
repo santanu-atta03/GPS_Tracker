@@ -11,6 +11,7 @@ import BusMap from "./components/page/BusMap";
 import { useEffect } from "react";
 import DriverLogin from "./components/page/DriverLogin";
 import UserLogin from "./components/page/UserLogin";
+import NearbyPOIMap from "./components/page/NearbyPOIMap";
 
 function App() {
   const approute = createBrowserRouter([
@@ -50,6 +51,10 @@ function App() {
       path: "/Login/User",
       element: <UserLogin />,
     },
+    {
+      path:"/nearBy/search",
+      element:<NearbyPOIMap/>
+    }
   ]);
 
   return (
