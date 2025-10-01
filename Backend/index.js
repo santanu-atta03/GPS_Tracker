@@ -9,6 +9,7 @@ import driverRoute from "./routes/Driver.route.js";
 import BusRoute from "./routes/bus.route.js";
 import JourneyRoute from "./routes/journey.route.js";
 import UserRoute from "./routes/User.route.js";
+import findBusRoute from "./routes/MyLocation.route.js";
 dotenv.config();
 connectToMongo();
 
@@ -41,11 +42,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // ✅ Public Test Route
 
+
+
+
+app.use("/api/v1/Myroute",findBusRoute)
+
+
+
+
 app.use("/api/v1", locationRoute);
 app.use("/api/v1/driver", driverRoute);
 app.use("/api/v1/Bus", BusRoute);
 app.use("/api/v1/", JourneyRoute);
 app.use("/api/v1/user", UserRoute);
+
 app.get("/api/v1/search", async (req, res) => {
   try {
     const query = req.query.q;
@@ -65,7 +75,6 @@ app.get("/api/v1/search", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch from Nominatim" });
   }
 });
-
 app.get("/api/v1/reverse-geocode", async (req, res) => {
   try {
     const { lat, lon } = req.query;

@@ -1,115 +1,6 @@
 import Bus from "../models/Bus.model.js";
 import Location from "../models/Location.model.js";
 
- 
-// export const updatelocation = async (req, res) => {
-//   try {
-//     const { deviceID, latitude, longitude } = req.body;
-    
-//     console.log(`[updatelocation] Received request:`, { deviceID, latitude, longitude });
-    
-//     if (!deviceID || !latitude || !longitude) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Missing required fields: deviceID, latitude, longitude",
-//         received: { deviceID: !!deviceID, latitude: !!latitude, longitude: !!longitude }
-//       });
-//     }
-    
-//     // Validate coordinates
-//     const lat = parseFloat(latitude);
-//     const lng = parseFloat(longitude);
-    
-//     if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid coordinates",
-//         details: { latitude: lat, longitude: lng, valid: false }
-//       });
-//     }
-    
-//     const coordinates = [lat, lng]; // [latitude, longitude] format
-//     const currentTime = new Date();
-//     console.log(`[updatelocation] Parsed coordinates:`, coordinates);
-    
-//     // Find bus by deviceID
-//     let bus = await Location.findOne({ deviceID });
-//     console.log(`[updatelocation] Existing bus found:`, !!bus);
-    
-//     if (bus) {
-//       // Check if there's a significant movement (only if bus has previous location)
-//       let shouldAddToRoute = true;
-      
-//       if (bus.location && bus.location.coordinates.length > 0) {
-//         const prevCoords = bus.location.coordinates;
-//         const distance = calculateDistance(
-//           prevCoords[0], prevCoords[1], 
-//           lat, lng
-//         );
-        
-//         console.log(`[updatelocation] Distance from previous location: ${distance}m`);
-        
-//         // Only add to route if moved more than 10 meters
-//         shouldAddToRoute = distance > 1;
-//       }
-      
-//       if (shouldAddToRoute) {
-//         // Add NEW incoming location to route
-//         bus.route.push({
-//           type: "Point",
-//           coordinates: coordinates,
-//           timestamp: currentTime
-//         });
-//         console.log(`[updatelocation] Added new location to route, total route points: ${bus.route.length}`);
-        
-//         // Keep route history manageable (last 50 points)
-//         if (bus.route.length > 50) {
-//           bus.route = bus.route.slice(-50);
-//           console.log(`[updatelocation] Trimmed route to 50 points`);
-//         }
-//       }
-      
-//       // Update current location with NEW coordinates
-//       bus.location = { 
-//         type: "Point", 
-//         coordinates: coordinates 
-//       };
-//       bus.lastUpdated = currentTime;
-      
-//       await bus.save();
-//       logSuccess('updatelocation', 'Location updated', { deviceID, coordinates });
-//       return res.json({ success: true, message: "Location updated", bus });
-//     } else {
-//       // If new bus → create new document
-//       const newBus = new Location({
-//         deviceID,
-//         location: { 
-//           type: "Point", 
-//           coordinates: coordinates 
-//         },
-//         route: [{
-//           type: "Point",
-//           coordinates: coordinates,
-//           timestamp: currentTime
-//         }],
-//         lastUpdated: currentTime
-//       });
-      
-//       await newBus.save();
-//       logSuccess('updatelocation', 'New bus created', { deviceID, coordinates });
-//       return res.json({
-//         success: true,
-//         message: "New bus created",
-//         bus: newBus,
-//       });
-//     }
-//   } catch (error) {
-//     logError('updatelocation', error, req.body);
-//     res.status(500).json({ success: false, error: error.message });
-//   }
-// };
- 
- 
 export const updatelocation = async (req, res) => {
   try {
     const { deviceID, latitude, longitude } = req.body;
@@ -240,188 +131,7 @@ export const updatelocation = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
- 
-
-// export const getAllBus = async (req, res) => {
-
-//   const { lat, lng, radius } = req.query;
-
-//   console.log(`[getAllBus] Query params:`, { lat, lng, radius });
-
-//   // Validation
-//   if (!lat || !lng) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "lat & lng are required parameters",
-//       received: { lat, lng, radius },
-//     });
-//   }
-
-//   const latitude = parseFloat(lat);
-//   const longitude = parseFloat(lng);
-//   const searchRadius = radius ? parseInt(radius) : 10000; // Default 10km
-
-//   console.log(`[getAllBus] Parsed values:`, {
-//     latitude,
-//     longitude,
-//     searchRadius,
-//   });
-
-//   // Validate coordinates
-//   if (
-//     isNaN(latitude) ||
-//     isNaN(longitude) ||
-//     latitude < -90 ||
-//     latitude > 90 ||
-//     longitude < -180 ||
-//     longitude > 180
-//   ) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "Invalid coordinates provided",
-//       details: {
-//         latitude,
-//         longitude,
-//         validLat: !isNaN(latitude) && latitude >= -90 && latitude <= 90,
-//         validLng: !isNaN(longitude) && longitude >= -180 && longitude <= 180,
-//       },
-//     });
-//   }
-
-//   try {
-//     console.log(
-//       `[getAllBus] Searching near ${latitude}, ${longitude} within ${searchRadius}m`
-//     );
-
-//     // Debug: Check if there are any buses in the database
-//     const totalBusCount = await Location.countDocuments();
-//     console.log(`[getAllBus] Total buses in database: ${totalBusCount}`);
-
-//     // Debug: Get a sample of buses to check their coordinates
-//     const sampleBuses = await Location.find({}).limit(3);
-//     console.log(
-//       `[getAllBus] Sample bus locations:`,
-//       sampleBuses.map((bus) => ({
-//         deviceID: bus.deviceID,
-//         coordinates: bus.location?.coordinates,
-//         hasLocation: !!bus.location,
-//       }))
-//     );
-
-//     const pipeline = [
-//       {
-//         $geoNear: {
-//           near: {
-//             type: "Point",
-//             coordinates: [longitude, latitude],
-//           },
-//           distanceField: "distanceFromSearch",
-//           maxDistance: searchRadius,
-//           spherical: true,
-//         },
-//       },
-//       {
-//         $addFields: {
-//           formattedDistance: {
-//             $cond: {
-//               if: { $lt: ["$distanceFromSearch", 1000] },
-//               then: {
-//                 $concat: [
-//                   { $toString: { $round: "$distanceFromSearch" } },
-//                   "m",
-//                 ],
-//               },
-//               else: {
-//                 $concat: [
-//                   {
-//                     $toString: {
-//                       $round: [{ $divide: ["$distanceFromSearch", 1000] }, 1],
-//                     },
-//                   },
-//                   "km",
-//                 ],
-//               },
-//             },
-//           },
-//         },
-//       },
-//       { $sort: { distanceFromSearch: 1 } },
-//       { $limit: 100 },
-//     ];
-
-//     console.log(`[getAllBus] Running aggregation pipeline...`);
-//     const buses = await Location.aggregate(pipeline);
-//     console.log(`[getAllBus] Aggregation returned ${buses.length} buses`);
-
-//     // Debug: Log distances of found buses
-//     buses.slice(0, 5).forEach((bus) => {
-//       console.log(
-//         `[getAllBus] Bus ${bus.deviceID}: ${Math.round(
-//           bus.distanceFromSearch
-//         )}m away`
-//       );
-//     });
-
-//     // Format the results
-//     const busesWithDistance = buses.map((bus) => ({
-//       ...bus,
-//       distanceFromSearch: Math.round(bus.distanceFromSearch),
-//       hasRoute: bus.route && bus.route.length > 0,
-//       routePoints: bus.route ? bus.route.length : 0,
-//       // Add mock driver and timing data
-//       driverName: bus.driverName || "Driver Available",
-//       driverPhone: bus.driverPhone || "+91-9876543210",
-//       startTime: bus.startTime || "06:00 AM",
-//       expectedTime: bus.expectedTime || "Calculating...",
-//       destinationTime: bus.destinationTime || "08:00 PM",
-//       status: bus.status || "Active",
-//     }));
-
-//     logSuccess("getAllBus", `Found ${busesWithDistance.length} buses`, {
-//       latitude,
-//       longitude,
-//       searchRadius,
-//     });
-
-//     res.json({
-//       success: true,
-//       buses: busesWithDistance,
-//       metadata: {
-//         searchLocation: { latitude, longitude },
-//         radius: searchRadius,
-//         totalFound: busesWithDistance.length,
-//         totalInDatabase: totalBusCount,
-//         searchTime: new Date().toISOString(),
-//       },
-//       debug: {
-//         coordinates: [longitude, latitude],
-//         sampleLocations: sampleBuses
-//           .map((b) => b.location?.coordinates)
-//           .filter(Boolean),
-//       },
-//     });
-//   } catch (err) {
-//     logError("getAllBus", err, { latitude, longitude, searchRadius });
-
-//     // Enhanced error response
-//     res.status(500).json({
-//       success: false,
-//       message: "Server error while searching for buses",
-//       error: process.env.NODE_ENV === "development" ? err.message : undefined,
-//       debug:
-//         process.env.NODE_ENV === "development"
-//           ? {
-//               searchParams: { latitude, longitude, searchRadius },
-//               errorType: err.name,
-//               mongoError: err.code,
-//             }
-//           : undefined,
-//     });
-//   }
-// };
-
-// ADDED: New debug endpoint to check database state
-
+  
 export const getAllBus = async (req, res) => {
   const { lat, lng, radius } = req.query;
   
@@ -624,7 +334,7 @@ export const debugDatabase = async (req, res) => {
   }
 };
 
-// Rest of the existing functions remain the same...
+ 
  
 export const getLocation = async (req, res) => {
   try {
@@ -732,117 +442,6 @@ export const createBusId = async (req, res) => {
   }
 };
 
- 
-// export const getBusByDeviceId = async (req, res) => {
-//   const { deviceId } = req.params;
-//   console.log(`[getBusByDeviceId] Looking for device: ${deviceId}`);
-  
-//   if (!deviceId) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "Device ID is required"
-//     });
-//   }
-
-//   try {
-//     const bus = await Location.findOne({ deviceID: deviceId }).sort({ lastUpdated: -1 });
-    
-//     if (!bus) {
-//       console.log(`[getBusByDeviceId] Bus not found: ${deviceId}`);
-//       return res.status(404).json({
-//         success: false,
-//         message: `Bus with device ID ${deviceId} not found`
-//       });
-//     }
-
-//     // Add mock data for better display
-//     const busWithMockData = {
-//       ...bus.toJSON(),
-//       driverName: bus.driverName || "Driver Available",
-//       driverPhone: bus.driverPhone || "+91-9876543210",
-//       startTime: bus.startTime || "06:00 AM",
-//       expectedTime: bus.expectedTime || "Calculating...",
-//       destinationTime: bus.destinationTime || "08:00 PM",
-//       status: bus.status || "Active"
-//     };
-
-//     logSuccess('getBusByDeviceId', 'Bus found', { deviceId });
-//     res.json({
-//       success: true,
-//       latestLocations: busWithMockData,
-//       metadata: {
-//         deviceId,
-//         searchTime: new Date().toISOString()
-//       }
-//     });
-
-//   } catch (err) {
-//     logError('getBusByDeviceId', err, { deviceId });
-//     res.status(500).json({
-//       success: false,
-//       message: "Server error while fetching bus details",
-//       error: process.env.NODE_ENV === 'development' ? err.message : undefined
-//     });
-//   }
-// };
- 
-// export const getBusByDeviceId = async (req, res) => {
-//   const { deviceId } = req.params;
-//   console.log(`[getBusByDeviceId] Looking for device: ${deviceId}`);
-
-//   if (!deviceId) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "Device ID is required",
-//     });
-//   }
-
-//   try {
-//     const bus = await Location.findOne({ deviceID: deviceId }).sort({
-//       lastUpdated: -1,
-//     });
-
-//     if (!bus) {
-//       console.log(`[getBusByDeviceId] Bus not found: ${deviceId}`);
-//       return res.status(404).json({
-//         success: false,
-//         message: `Bus with device ID ${deviceId} not found`,
-//       });
-//     }
-
-//     // Add mock data for better display
-//     const busWithMockData = {
-//       ...bus.toJSON(),
-//       driverName: bus.driverName || "Driver Available",
-//       driverPhone: bus.driverPhone || "+91-9876543210",
-//       startTime: bus.startTime || "06:00 AM",
-//       expectedTime: bus.expectedTime || "Calculating...",
-//       destinationTime: bus.destinationTime || "08:00 PM",
-//       status: bus.status || "Active",
-//     };
-
-//     logSuccess("getBusByDeviceId", "Bus found", { deviceId });
-//     res.json({
-//       success: true,
-//       latestLocations: busWithMockData,
-//       metadata: {
-//         deviceId,
-//         searchTime: new Date().toISOString(),
-//       },
-//     });
-//   } catch (err) {
-//     logError("getBusByDeviceId", err, { deviceId });
-//     res.status(500).json({
-//       success: false,
-//       message: "Server error while fetching bus details",
-//       error: process.env.NODE_ENV === "development" ? err.message : undefined,
-//     });
-//   }
-// };
- 
-
-// Helper Functions
-
 export const getAllBusDetails = async (req, res) => {
   try {
     const buses = await Bus.find({}).populate("driver").populate("location"); // this brings full Location doc
@@ -909,9 +508,7 @@ const logSuccess = (functionName, result, context = {}) => {
   });
 };
 
-/**
- * FIXED: Enhanced route search with proper coordinate handling
- */
+ 
 export const getBusesAlongRoute = async (req, res) => {
   const { fromLat, fromLon, toLat, toLon, radius } = req.query;
 
@@ -1204,10 +801,7 @@ export const getBusesAlongRoute = async (req, res) => {
     });
   }
 };
-
-/**
- * FIXED: Enhanced route analysis function
- */
+ 
 function analyzeRouteForJourney(bus, journey) {
   const analysis = {
     score: 0,
@@ -1307,198 +901,7 @@ function analyzeRouteForJourney(bus, journey) {
 
   return analysis;
 }
-
-/**
- * Calculate distance between two points using Haversine formula
- */
-// function calculateDistance(lat1, lon1, lat2, lon2) {
-//   if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity;
-  
-//   const R = 6371e3; // Earth's radius in meters
-//   const φ1 = lat1 * Math.PI / 180;
-//   const φ2 = lat2 * Math.PI / 180;
-//   const Δφ = (lat2 - lat1) * Math.PI / 180;
-//   const Δλ = (lon2 - lon1) * Math.PI / 180;
-
-//   const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-//             Math.cos(φ1) * Math.cos(φ2) *
-//             Math.sin(Δλ/2) * Math.sin(Δλ/2);
-//   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-//   return R * c;
-// }
-
-// Enhanced updatelocation function with better route management
-// export const updatelocation = async (req, res) => {
-//   try {
-//     const { deviceID, latitude, longitude, accuracy, timestamp } = req.body;
-    
-//     console.log(`[updatelocation] Received request:`, { deviceID, latitude, longitude, accuracy });
-    
-//     if (!deviceID || !latitude || !longitude) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Missing required fields: deviceID, latitude, longitude",
-//         received: { deviceID: !!deviceID, latitude: !!latitude, longitude: !!longitude }
-//       });
-//     }
-    
-//     // Validate coordinates
-//     const lat = parseFloat(latitude);
-//     const lng = parseFloat(longitude);
-    
-//     if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Invalid coordinates",
-//         details: { latitude: lat, longitude: lng, valid: false }
-//       });
-//     }
-    
-//     const coordinates = [lat, lng];
-//     const currentTime = new Date(timestamp || Date.now());
-//     const gpsAccuracy = parseFloat(accuracy) || 0;
-    
-//     console.log(`[updatelocation] Parsed coordinates:`, coordinates);
-    
-//     // Find bus by deviceID
-//     let bus = await Location.findOne({ deviceID });
-//     console.log(`[updatelocation] Existing bus found:`, !!bus);
-    
-//     if (bus) {
-//       // Calculate distance from last known location
-//       let shouldAddToRoute = true;
-//       let currentSpeed = 0;
-//       let distanceTraveled = 0;
-      
-//       if (bus.location && bus.location.coordinates.length > 0) {
-//         const prevCoords = bus.location.coordinates;
-//         distanceTraveled = calculateDistance(
-//           prevCoords[0], prevCoords[1], 
-//           lat, lng
-//         );
-        
-//         console.log(`[updatelocation] Distance from previous location: ${distanceTraveled}m`);
-        
-//         // More intelligent filtering to reduce unnecessary points
-//         const MIN_DISTANCE = 10; // 20 meters minimum movement
-//         const MIN_TIME_DIFF = 5; // 30 seconds minimum time difference
-        
-//         shouldAddToRoute = distanceTraveled > MIN_DISTANCE;
-        
-//         // Check time difference if we have route points
-//         if (shouldAddToRoute && bus.route.length > 0) {
-//           const lastRoutePoint = bus.route[bus.route.length - 1];
-//           if (lastRoutePoint.timestamp) {
-//             const timeDiff = (currentTime - new Date(lastRoutePoint.timestamp)) / 1000;
-//             shouldAddToRoute = timeDiff > MIN_TIME_DIFF;
-            
-//             // Calculate speed more carefully
-//             if (timeDiff > 0 && distanceTraveled > 10) {
-//               const speedMs = distanceTraveled / timeDiff;
-//               currentSpeed = Math.round(speedMs * 3.6); // m/s to km/h
-              
-//               // Cap unrealistic speeds
-//               if (currentSpeed > 120) {
-//                 currentSpeed = Math.min(currentSpeed, 120);
-//                 console.log(`[updatelocation] Capped speed at 120 km/h (was ${Math.round(speedMs * 3.6)})`);
-//               }
-//             }
-//           }
-//         }
-//       }
-      
-//       if (shouldAddToRoute) {
-//         // Smart route management - keep important points, remove redundant ones
-//         const newRoutePoint = {
-//           type: "Point",
-//           coordinates: coordinates,
-//           timestamp: currentTime,
-//           speed: currentSpeed,
-//           accuracy: gpsAccuracy
-//         };
-        
-//         // Add new point
-//         bus.route.push(newRoutePoint);
-        
-//         // Intelligent route compression when approaching limit
-//         if (bus.route.length >= 45) { // Start compression before hitting 50
-//           bus.route = compressRoute(bus.route, 40); // Compress to 40 points
-//           console.log(`[updatelocation] Compressed route to ${bus.route.length} points`);
-//         }
-        
-//         console.log(`[updatelocation] Added new location to route, total points: ${bus.route.length}`);
-//       }
-      
-//       // Always update current location and metadata
-//       bus.location = { 
-//         type: "Point", 
-//         coordinates: coordinates 
-//       };
-//       bus.currentSpeed = currentSpeed;
-//       bus.lastUpdated = currentTime;
-      
-//       // Update total distance traveled
-//       if (distanceTraveled > 0) {
-//         bus.totalDistance = (bus.totalDistance || 0) + (distanceTraveled / 1000);
-//       }
-      
-//       await bus.save();
-//       logSuccess('updatelocation', 'Location updated', { 
-//         deviceID, 
-//         coordinates, 
-//         currentSpeed,
-//         routePoints: bus.route.length,
-//         distanceTraveled: Math.round(distanceTraveled)
-//       });
-      
-//       return res.json({ 
-//         success: true, 
-//         message: "Location updated", 
-//         bus: {
-//           ...bus.toJSON(),
-//           currentSpeed,
-//           distanceTraveled: Math.round(distanceTraveled)
-//         }
-//       });
-//     } else {
-//       // Create new bus
-//       const newBus = new Location({
-//         deviceID,
-//         location: { 
-//           type: "Point", 
-//           coordinates: coordinates 
-//         },
-//         route: [{
-//           type: "Point",
-//           coordinates: coordinates,
-//           timestamp: currentTime,
-//           speed: 0,
-//           accuracy: gpsAccuracy
-//         }],
-//         currentSpeed: 0,
-//         totalDistance: 0,
-//         lastUpdated: currentTime
-//       });
-      
-//       await newBus.save();
-//       logSuccess('updatelocation', 'New bus created', { deviceID, coordinates });
-//       return res.json({
-//         success: true,
-//         message: "New bus created",
-//         bus: newBus,
-//       });
-//     }
-//   } catch (error) {
-//     logError('updatelocation', error, req.body);
-//     res.status(500).json({ success: false, error: error.message });
-//   }
-// };
-
-/**
- * Intelligent route compression function
- * Keeps important points while removing redundant ones
- */
+ 
 function compressRoute(route, targetSize) {
   if (route.length <= targetSize) return route;
   
@@ -1556,9 +959,6 @@ function compressRoute(route, targetSize) {
   return compressed;
 }
 
-/**
- * Calculate bearing between two points (simplified)
- */
 function calculateBearing(coord1, coord2) {
   const lat1 = coord1[0] * Math.PI / 180;
   const lat2 = coord2[0] * Math.PI / 180;
@@ -1571,7 +971,6 @@ function calculateBearing(coord1, coord2) {
   return (bearing + 360) % 360;
 }
 
-// Enhanced distance calculation (same as before but with better error handling)
 function calculateDistance(lat1, lon1, lat2, lon2) {
  
   if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
