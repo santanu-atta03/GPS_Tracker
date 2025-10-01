@@ -5,15 +5,17 @@ import { Input } from "@/components/ui/input";
 import { MapPin, Bus, Search } from "lucide-react";
 import axios from "axios";
 import MicInput from "./MicInput";
+import { useNavigate } from "react-router-dom";
 
 const API_BASE = "http://localhost:5000/api/v1/Myroute";
 const GEOCODE_API = "https://nominatim.openstreetmap.org/search";
 
 // Place autocomplete component
-const PlaceSearch = ({ label, onSelect }) => {
+const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingLocation, setLoadingLocation] = useState(false);
 
   const handleSearch = async (value) => {
     setQuery(value);
@@ -33,14 +35,63 @@ const PlaceSearch = ({ label, onSelect }) => {
     }
   };
 
+  const handleUseMyLocation = async () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    setLoadingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+
+        // Reverse geocoding
+        try {
+          const res = await fetch(
+            `${GEOCODE_API}?format=json&lat=${latitude}&lon=${longitude}&zoom=16&addressdetails=1`
+          );
+          const data = await res.json();
+          const displayName = data[0]?.display_name || "Current Location";
+
+          setQuery(displayName);
+          onSelect({ lat: latitude, lon: longitude });
+          setSuggestions([]);
+        } catch (err) {
+          console.error("Reverse geocoding failed", err);
+          alert("Failed to retrieve address.");
+        } finally {
+          setLoadingLocation(false);
+        }
+      },
+      (err) => {
+        console.error("Geolocation error", err);
+        alert("Unable to get location.");
+        setLoadingLocation(false);
+      }
+    );
+  };
+
   return (
     <div className="mb-4 relative">
       <label className="block mb-1 font-medium">{label}</label>
+
       <MicInput
         value={query}
         placeholder="Type a place..."
         onChange={(e) => handleSearch(e.target.value)}
       />
+
+      {enableUseMyLocation && (
+        <button
+          type="button"
+          className="text-blue-600 text-sm mt-1 underline"
+          onClick={handleUseMyLocation}
+          disabled={loadingLocation}
+        >
+          {loadingLocation ? "Getting location..." : "Use My Location"}
+        </button>
+      )}
 
       {loading && <p className="text-sm text-gray-400 mt-1">Searching...</p>}
       {suggestions.length > 0 && (
@@ -72,7 +123,7 @@ const BusSearch = () => {
   const [busName, setBusName] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   const handleSearch = async () => {
     try {
       setLoading(true);
@@ -145,8 +196,10 @@ const BusSearch = () => {
         <div className="mb-6">
           <PlaceSearch
             label="From"
+            enableUseMyLocation={true}
             onSelect={(place) => setFrom({ lat: place.lat, lon: place.lon })}
           />
+
           <PlaceSearch
             label="To"
             onSelect={(place) => setTo({ lat: place.lat, lon: place.lon })}
@@ -190,7 +243,11 @@ const BusSearch = () => {
       <div className="mt-8 grid gap-4">
         {results.length > 0
           ? results.map((bus, idx) => (
-              <Card key={idx} className="shadow-lg rounded-2xl">
+              <Card
+                key={idx}
+                className="shadow-lg rounded-2xl"
+                onClick={() => navigate(`bus/${bus.deviceID}`)}
+              >
                 <CardContent className="p-4 flex items-center gap-4">
                   <Bus className="w-10 h-10 text-green-600" />
                   <div>
