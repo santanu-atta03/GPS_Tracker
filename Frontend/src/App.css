@@ -88,3 +88,14 @@ iframe.goog-te-banner-frame {
   background: none !important;
   box-shadow: none !important;
 }
+
+
+/* Style the routing panel */
+.leaflet-routing-container {
+  background: #fff !important;   /* white background */
+  color: #000 !important;        /* black text */
+  border-radius: 8px;            /* rounded corners */
+  padding: 10px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2); /* optional shadow */
+}
