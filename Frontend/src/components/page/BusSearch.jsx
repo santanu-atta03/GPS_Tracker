@@ -278,44 +278,55 @@ const BusSearch = () => {
               <div className="space-y-6">
                 <div className="flex flex-col items-center">
                   <h2 className="text-lg font-bold text-green-700">Start</h2>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {results.pathAddresses?.[0].address}
+                  </p>
                 </div>
 
-                {results.busesUsed.map((bus, idx) => (
-                  <div
-                    key={bus._id}
-                    className="flex items-start gap-6"
-                    onClick={() => navigate(`bus/${bus.deviceID}`)}
-                  >
-                    <div className="flex flex-col items-center">
-                      <div className="w-1 bg-gray-400 h-12"></div>
-                      <div className="text-gray-700 text-sm font-medium">
-                        {idx === results.busesUsed.length - 1
-                          ? "Destination"
-                          : "Change Here"}
-                      </div>
-                      <div className="w-1 bg-gray-400 h-12"></div>
-                    </div>
+                {results.busesUsed.map((bus, idx) => {
+                  const isLast = idx === results.busesUsed.length - 1;
+                  const changeLocation = results.pathAddresses?.[idx + 2];
 
-                    <Card className="flex-1 shadow-lg border-l-4 border-green-500">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-4">
-                          <Bus className="w-8 h-8 text-green-600" />
-                          <div>
-                            <h3 className="font-semibold text-lg">
-                              Bus: {bus.name}
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                              Route: {bus.from} → {bus.to}
+                  return (
+                    <div
+                      key={bus._id}
+                      className="flex items-start gap-6"
+                      onClick={() => navigate(`bus/${bus.deviceID}`)}
+                    >
+                      <div className="flex flex-col items-center">
+                        <div className="w-1 bg-gray-400 h-12"></div>
+                        <div className="text-gray-700 text-sm font-medium text-center">
+                          {isLast ? "Destination" : "Change Here"}
+                          {changeLocation?.address && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              {changeLocation.address}
                             </p>
-                            <p className="text-sm text-gray-500">
-                              Device: {bus.deviceID}
-                            </p>
-                          </div>
+                          )}
                         </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                ))}
+                        <div className="w-1 bg-gray-400 h-12"></div>
+                      </div>
+
+                      <Card className="flex-1 shadow-lg border-l-4 border-green-500">
+                        <CardContent className="p-4">
+                          <div className="flex items-center gap-4">
+                            <Bus className="w-8 h-8 text-green-600" />
+                            <div>
+                              <h3 className="font-semibold text-lg">
+                                Bus: {bus.name}
+                              </h3>
+                              <p className="text-sm text-gray-600">
+                                Route: {bus.from} → {bus.to}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                Device: {bus.deviceID}
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </>

@@ -1,6 +1,7 @@
 import haversine from "haversine-distance";
 import Location from "../models/Location.model.js";
 import Bus from "../models/Bus.model.js";
+import getAddressFromCoordinates from "../utils/getAddressFromCoordinates.js";
 
 // helper: check if a point is within 1km of any route coordinate
 const isWithin1Km = (point, routeCoords) => {
@@ -118,12 +119,22 @@ export const findBusByRoute = async (req, res) => {
     const uniqueBusIDs = [...new Set(foundPath.busesUsed)];
     const matchedBuses = await Bus.find({ deviceID: { $in: uniqueBusIDs } });
 
+    const pathAddresses = [];
+
+    for (const coord of foundPath.path) {
+      const address = await getAddressFromCoordinates(coord);
+      pathAddresses.push({
+        coordinates: coord,
+        address,
+      });
+    }
     return res.status(200).json({
       message: "Multi-hop route found",
       success: true,
       type: "multi-hop",
       busesUsed: matchedBuses,
-      pathCoordinates: foundPath.path, // full A→B→C→D sequence
+      pathCoordinates: foundPath.path,
+      pathAddresses, // full A→B→C→D sequence
     });
   } catch (error) {
     console.error(error);
