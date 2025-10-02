@@ -15,7 +15,32 @@ const findNearbyIndex = (point, routeCoords) => {
   return -1;
 };
 
-// ✅ Controller: find buses (direct + multi-hop) + matched coordinates
+// helper: find nearest future startTime
+const getNextStartTime = (timeSlots) => {
+  const now = new Date();
+  let nearestSlot = null;
+  let minDiff = Infinity;
+
+  timeSlots.forEach((slot) => {
+    const [startH, startM] = slot.startTime.split(":").map(Number);
+    const slotStartTime = new Date();
+    slotStartTime.setHours(startH, startM, 0, 0);
+
+    // if start time already passed, consider next day
+    let diff = slotStartTime - now;
+    if (diff < 0) diff += 24 * 60 * 60 * 1000;
+
+    if (diff < minDiff) {
+      minDiff = diff;
+      nearestSlot = slot;
+    }
+  });
+
+  return nearestSlot; // { startTime: "08:00", endTime: "10:00" }
+};
+
+
+// ✅ Controller: find buses (direct + multi-hop) + nearest start time
 export const findBusByRoute = async (req, res) => {
   try {
     const { fromLat, fromLng, toLat, toLng } = req.body;
@@ -39,7 +64,6 @@ export const findBusByRoute = async (req, res) => {
 
       const fromIndex = findNearbyIndex([fromLat, fromLng], routePoints);
       const toIndex = findNearbyIndex([toLat, toLng], routePoints);
-
       const prevIndex = findNearbyIndex(
         bus.prevlocation.coordinates,
         routePoints
@@ -55,15 +79,19 @@ export const findBusByRoute = async (req, res) => {
         const userDirection = fromIndex < toIndex ? "forward" : "backward";
         const busDirection = prevIndex < locIndex ? "forward" : "backward";
 
-        if (userDirection === busDirection) {
-          // ✅ Only push if directions match
-          directBusIDs.push(bus.deviceID);
-        }
+        if (userDirection === busDirection) directBusIDs.push(bus.deviceID);
       }
     }
 
     if (directBusIDs.length > 0) {
-      const matchedBuses = await Bus.find({ deviceID: { $in: directBusIDs } });
+      let matchedBuses = await Bus.find({ deviceID: { $in: directBusIDs } });
+
+      // ✅ Filter each bus for the nearest start time
+      matchedBuses = matchedBuses.map((bus) => ({
+        ...bus.toObject(),
+        nextStartTime: getNextStartTime(bus.timeSlots),
+      }));
+
       return res.status(200).json({
         message: "Direct route found",
         success: true,
@@ -77,8 +105,7 @@ export const findBusByRoute = async (req, res) => {
       });
     }
 
-    // ❗ Multi-hop part remains same (you may also add same busDirection filter if needed)
-    // Build adjacency list: stop (lat,lon) -> buses that go through it
+    // ❗ Multi-hop remains same
     const stopToBuses = new Map();
     buses.forEach((bus) => {
       bus.route.forEach((p, idx) => {
@@ -90,10 +117,8 @@ export const findBusByRoute = async (req, res) => {
       });
     });
 
-    // BFS to find path of stops (and buses) from start to end
     const start = [parseFloat(fromLat), parseFloat(fromLng)];
     const end = [parseFloat(toLat), parseFloat(toLng)];
-
     const visited = new Set();
     const queue = [
       {
@@ -104,13 +129,10 @@ export const findBusByRoute = async (req, res) => {
         busID: null,
       },
     ];
-
     let foundPath = null;
 
     while (queue.length > 0) {
       const { point, path, busesUsed, lastIndex, busID } = queue.shift();
-
-      // check if within 1km of destination
       const distToEnd = haversine(
         { lat: point[0], lon: point[1] },
         { lat: end[0], lon: end[1] }
@@ -120,7 +142,6 @@ export const findBusByRoute = async (req, res) => {
         break;
       }
 
-      // expand neighbors
       const key = `${point[0].toFixed(4)},${point[1].toFixed(4)}`;
       if (!stopToBuses.has(key)) continue;
       if (visited.has(key)) continue;
@@ -129,8 +150,6 @@ export const findBusByRoute = async (req, res) => {
       for (const { busID: nextBusID, index } of stopToBuses.get(key)) {
         const bus = buses.find((b) => b.deviceID === nextBusID);
         if (!bus) continue;
-
-        // ✅ enforce forward direction if staying on the same bus
         if (busID && busID === nextBusID && index <= lastIndex) continue;
 
         for (let j = index + 1; j < bus.route.length; j++) {
@@ -146,24 +165,27 @@ export const findBusByRoute = async (req, res) => {
       }
     }
 
-    if (!foundPath) {
-      return res.status(404).json({
-        message: "No direct or multi-hop bus route found",
-        success: false,
-      });
-    }
+    if (!foundPath)
+      return res
+        .status(404)
+        .json({
+          message: "No direct or multi-hop bus route found",
+          success: false,
+        });
 
-    // Fetch bus details
     const uniqueBusIDs = [...new Set(foundPath.busesUsed)];
-    const matchedBuses = await Bus.find({ deviceID: { $in: uniqueBusIDs } });
+    let matchedBuses = await Bus.find({ deviceID: { $in: uniqueBusIDs } });
+
+    // ✅ Add nearest start time for multi-hop buses
+    matchedBuses = matchedBuses.map((bus) => ({
+      ...bus.toObject(),
+      nextStartTime: getNextStartTime(bus.timeSlots),
+    }));
 
     const pathAddresses = [];
     for (const coord of foundPath.path) {
       const address = await getAddressFromCoordinates(coord);
-      pathAddresses.push({
-        coordinates: coord,
-        address,
-      });
+      pathAddresses.push({ coordinates: coord, address });
     }
 
     return res.status(200).json({
@@ -172,7 +194,7 @@ export const findBusByRoute = async (req, res) => {
       type: "multi-hop",
       busesUsed: matchedBuses,
       pathCoordinates: foundPath.path,
-      pathAddresses, // full A→B→C→D sequence
+      pathAddresses,
     });
   } catch (error) {
     console.error(error);

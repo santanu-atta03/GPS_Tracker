@@ -376,6 +376,9 @@ const BusSearch = () => {
                               <p className="text-sm text-gray-500">
                                 Device: {bus.deviceID}
                               </p>
+                              <p className="text-sm text-gray-500">
+                                Time: {bus.nextStartTime.startTime} to {bus.nextStartTime.endTime}
+                              </p>
                             </div>
                           </div>
                         </CardContent>
