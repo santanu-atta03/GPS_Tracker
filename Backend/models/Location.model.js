@@ -31,6 +31,7 @@ const busSchema = new mongoose.Schema({
       type: [Number],
       default: [0, 0],
     },
+    timestamp: { type: Date, default: Date.now },
   },
   prevlocation: {
     type: {
@@ -42,6 +43,7 @@ const busSchema = new mongoose.Schema({
       type: [Number],
       default: [0, 0],
     },
+    timestamp: { type: Date, default: Date.now },
   },
   lastUpdated: {
     type: Date,

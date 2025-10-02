@@ -110,6 +110,7 @@ export const updatelocation = async (req, res) => {
       bus.prevlocation = {
         type: "Point",
         coordinates: bus.location.coordinates, // old location
+        timestamp:bus.location.timestamp
       };
 
       bus.location = {
@@ -415,6 +416,9 @@ export const getLocation = async (req, res) => {
       driverName: allBus.driver?.name || "Driver Available",
       driver: allBus.driver?.name || "Driver Available",
       driverPhone: allBus.driver?.phone || "Contact Support",
+
+      prevlocation: allBus.location?.prevlocation,
+      livelocation:allBus.location?.location,
 
       _id: allBus._id,
       __v: allBus.__v,
