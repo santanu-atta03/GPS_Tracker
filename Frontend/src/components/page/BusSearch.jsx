@@ -10,12 +10,31 @@ import { useNavigate } from "react-router-dom";
 const API_BASE = "http://localhost:5000/api/v1/Myroute";
 const GEOCODE_API = "https://nominatim.openstreetmap.org/search";
 
-// Place autocomplete component
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+
+const markerIcon = new L.Icon({
+  iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+
+const LocationPicker = ({ onSelect }) => {
+  useMapEvents({
+    click(e) {
+      onSelect({ lat: e.latlng.lat, lon: e.latlng.lng });
+    },
+  });
+  return null;
+};
+
 const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
+  const [selectedPos, setSelectedPos] = useState(null);
 
   const handleSearch = async (value) => {
     setQuery(value);
@@ -35,6 +54,19 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
     }
   };
 
+  const reverseGeocode = async (lat, lon) => {
+    try {
+      const res = await fetch(
+        `${GEOCODE_API}?format=json&lat=${lat}&lon=${lon}&zoom=16&addressdetails=1`
+      );
+      const data = await res.json();
+      return data[0]?.display_name || `${lat}, ${lon}`;
+    } catch (err) {
+      console.error("Reverse geocoding failed", err);
+      return `${lat}, ${lon}`;
+    }
+  };
+
   const handleUseMyLocation = async () => {
     if (!navigator.geolocation) {
       alert("Geolocation is not supported by your browser.");
@@ -45,20 +77,13 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-
         try {
-          const res = await fetch(
-            `${GEOCODE_API}?format=json&lat=${latitude}&lon=${longitude}&zoom=16&addressdetails=1`
-          );
-          const data = await res.json();
-          const displayName = data[0]?.display_name || "Current Location";
+          const address = await reverseGeocode(latitude, longitude);
 
-          setQuery(displayName);
-          onSelect({ lat: latitude, lon: longitude });
+          setQuery(address);
+          setSelectedPos({ lat: latitude, lon: longitude });
+          onSelect({ lat: latitude, lon: longitude, address });
           setSuggestions([]);
-        } catch (err) {
-          console.error("Reverse geocoding failed", err);
-          alert("Failed to retrieve address.");
         } finally {
           setLoadingLocation(false);
         }
@@ -76,9 +101,11 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
       <label className="block mb-1 font-medium">{label}</label>
 
       <MicInput
+        type="text"
         value={query}
         placeholder="Type a place..."
         onChange={(e) => handleSearch(e.target.value)}
+        className="border p-2 w-full rounded"
       />
 
       {enableUseMyLocation && (
@@ -100,8 +127,10 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
               key={idx}
               className="p-2 cursor-pointer hover:bg-gray-100 text-sm"
               onClick={() => {
-                onSelect({ lat: parseFloat(s.lat), lon: parseFloat(s.lon) });
+                const pos = { lat: parseFloat(s.lat), lon: parseFloat(s.lon) };
                 setQuery(s.display_name);
+                setSelectedPos(pos);
+                onSelect({ ...pos, address: s.display_name });
                 setSuggestions([]);
               }}
             >
@@ -109,6 +138,33 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
             </li>
           ))}
         </ul>
+      )}
+
+      {selectedPos && (
+        <div className="mt-4 h-64">
+          <MapContainer
+            center={[selectedPos.lat, selectedPos.lon]}
+            zoom={15}
+            style={{ height: "100%", width: "100%" }}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution="&copy; OpenStreetMap contributors"
+            />
+            <Marker
+              position={[selectedPos.lat, selectedPos.lon]}
+              icon={markerIcon}
+            />
+            <LocationPicker
+              onSelect={async (pos) => {
+                setSelectedPos(pos);
+                const address = await reverseGeocode(pos.lat, pos.lon);
+                setQuery(address);
+                onSelect({ ...pos, address });
+              }}
+            />
+          </MapContainer>
+        </div>
       )}
     </div>
   );
