@@ -46,7 +46,6 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
       async (position) => {
         const { latitude, longitude } = position.coords;
 
-        // Reverse geocoding
         try {
           const res = await fetch(
             `${GEOCODE_API}?format=json&lat=${latitude}&lon=${longitude}&zoom=16&addressdetails=1`
@@ -121,9 +120,10 @@ const BusSearch = () => {
   const [to, setTo] = useState({ lat: "", lon: "" });
   const [deviceId, setDeviceId] = useState("");
   const [busName, setBusName] = useState("");
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState(null); // ✅ can be object (multi-hop) or array
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
   const handleSearch = async () => {
     try {
       setLoading(true);
@@ -134,12 +134,15 @@ const BusSearch = () => {
           alert("Please select both From and To locations");
           return;
         }
+        console.log(from);
+        console.log(to);
         res = await axios.post(`${API_BASE}/find-bus`, {
           fromLat: from.lat,
           fromLng: from.lon,
           toLat: to.lat,
           toLng: to.lon,
         });
+        console.log(res);
       } else if (searchType === "device") {
         if (!deviceId) return alert("Please enter Device ID");
         res = await axios.post(`${API_BASE}/find-bus-By-id`, {
@@ -154,11 +157,11 @@ const BusSearch = () => {
 
       const data = res.data;
       if (data.success) {
-        if (searchType === "route") setResults(data.allBus || []);
+        if (searchType === "route") setResults(data); // may include multi-hop
         else if (searchType === "device") setResults([data.allbus]);
         else setResults(data.allBus || []);
       } else {
-        setResults([]);
+        setResults(null);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -199,7 +202,6 @@ const BusSearch = () => {
             enableUseMyLocation={true}
             onSelect={(place) => setFrom({ lat: place.lat, lon: place.lon })}
           />
-
           <PlaceSearch
             label="To"
             onSelect={(place) => setTo({ lat: place.lat, lon: place.lon })}
@@ -240,9 +242,83 @@ const BusSearch = () => {
       </Button>
 
       {/* Results */}
-      <div className="mt-8 grid gap-4">
-        {results.length > 0
-          ? results.map((bus, idx) => (
+      <div className="mt-8">
+        {/* ✅ Multi-hop case */}
+        {searchType === "route" && results  ? (
+          <>
+            {results.type === "direct" && (
+              <div className="grid gap-4">
+                {results.buses.map((bus, idx) => (
+                  <Card
+                    key={bus._id}
+                    className="shadow-lg rounded-2xl"
+                    onClick={() => navigate(`bus/${bus.deviceID}`)}
+                  >
+                    <CardContent className="p-4 flex items-center gap-4">
+                      <Bus className="w-10 h-10 text-green-600" />
+                      <div>
+                        <h2 className="text-lg font-semibold">
+                          Bus Name: {bus.name || "N/A"}
+                        </h2>
+                        <p className="text-sm text-gray-600">
+                          Device ID: {bus.deviceID}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Route: {bus.from} → {bus.to}
+                        </p>
+                      </div>
+                      <MapPin className="w-6 h-6 text-blue-500 ml-auto" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {results.type === "multi-hop" && (
+              <div className="space-y-6">
+                <div className="flex flex-col items-center">
+                  <h2 className="text-lg font-bold text-green-700">Start</h2>
+                </div>
+
+                {results.busesUsed.map((bus, idx) => (
+                  <div key={bus._id} className="flex items-start gap-6">
+                    <div className="flex flex-col items-center">
+                      <div className="w-1 bg-gray-400 h-12"></div>
+                      <div className="text-gray-700 text-sm font-medium">
+                        {idx === results.busesUsed.length - 1
+                          ? "Destination"
+                          : "Change Here"}
+                      </div>
+                      <div className="w-1 bg-gray-400 h-12"></div>
+                    </div>
+
+                    <Card className="flex-1 shadow-lg border-l-4 border-green-500">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-4">
+                          <Bus className="w-8 h-8 text-green-600" />
+                          <div>
+                            <h3 className="font-semibold text-lg">
+                              Bus: {bus.name}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              Route: {bus.from} → {bus.to}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              Device: {bus.deviceID}
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        ) : Array.isArray(results) && results.length > 0 ? (
+          /* ✅ Normal single-bus case */
+          <div className="grid gap-4">
+            {results.map((bus, idx) => (
               <Card
                 key={idx}
                 className="shadow-lg rounded-2xl"
@@ -269,10 +345,13 @@ const BusSearch = () => {
                   <MapPin className="w-6 h-6 text-blue-500 ml-auto" />
                 </CardContent>
               </Card>
-            ))
-          : !loading && (
-              <p className="text-center text-gray-500">No buses found</p>
-            )}
+            ))}
+          </div>
+        ) : (
+          !loading && (
+            <p className="text-center text-gray-500">No buses found</p>
+          )
+        )}
       </div>
     </div>
   );
