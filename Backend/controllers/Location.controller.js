@@ -1,6 +1,37 @@
 import Bus from "../models/Bus.model.js";
 import Location from "../models/Location.model.js";
 
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const toRad = (value) => (value * Math.PI) / 180;
+
+  const R = 6371000; // Radius of Earth in meters
+  const φ1 = toRad(lat1);
+  const φ2 = toRad(lat2);
+  const Δφ = toRad(lat2 - lat1);
+  const Δλ = toRad(lon2 - lon1);
+
+  const a =
+    Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // in meters
+};
+
+// Check if coordinate is within radius of any existing route point
+const isCoordinateNearExisting = (newCoord, route, radiusInMeters = 500) => {
+  for (const point of route) {
+    const existingCoord = point.coordinates;
+    const distance = calculateDistance(
+      existingCoord[0],
+      existingCoord[1],
+      newCoord[0],
+      newCoord[1]
+    );
+    if (distance <= radiusInMeters) return true;
+  }
+  return false;
+};
+
 export const updatelocation = async (req, res) => {
   try {
     const { deviceID, latitude, longitude } = req.body;
@@ -23,7 +54,6 @@ export const updatelocation = async (req, res) => {
       });
     }
 
-    // Validate coordinates
     const lat = parseFloat(latitude);
     const lng = parseFloat(longitude);
 
@@ -42,49 +72,41 @@ export const updatelocation = async (req, res) => {
       });
     }
 
-    const coordinates = [lat, lng]; // [latitude, longitude] format
+    const coordinates = [lat, lng];
     const currentTime = new Date();
     console.log(`[updatelocation] Parsed coordinates:`, coordinates);
 
-    // Find bus by deviceID
     let bus = await Location.findOne({ deviceID });
     console.log(`[updatelocation] Existing bus found:`, !!bus);
 
     if (bus) {
-      // Check if there's a significant movement (only if bus has previous location)
       let shouldAddToRoute = true;
 
-      if (bus.location && bus.location.coordinates.length > 0) {
-        const prevCoords = bus.location.coordinates;
-        const distance = calculateDistance(
-          prevCoords[0],
-          prevCoords[1],
-          lat,
-          lng
+      if (bus.route && bus.route.length > 0) {
+        const isDuplicate = isCoordinateNearExisting(
+          coordinates,
+          bus.route,
+          500
         );
-
-        console.log(
-          `[updatelocation] Distance from previous location: ${distance}m`
-        );
-
-        // Only add to route if moved more than 10 meters
-        shouldAddToRoute = distance > 1;
+        shouldAddToRoute = !isDuplicate;
       }
 
       if (shouldAddToRoute) {
-        // Add NEW incoming location to route
         bus.route.push({
           type: "Point",
           coordinates: coordinates,
           timestamp: currentTime,
         });
         console.log(
-          `[updatelocation] Added new location to route, total route points: ${bus.route.length}`
+          `[updatelocation] Added new location to route, total points: ${bus.route.length}`
         );
-
+      } else {
+        console.log(
+          `[updatelocation] Skipped adding duplicate route point (within 500m)`
+        );
       }
 
-      // Update current location with NEW coordinates
+      // ✅ Always update live location
       bus.location = {
         type: "Point",
         coordinates: coordinates,
@@ -92,13 +114,8 @@ export const updatelocation = async (req, res) => {
       bus.lastUpdated = currentTime;
 
       await bus.save();
-      logSuccess("updatelocation", "Location updated", {
-        deviceID,
-        coordinates,
-      });
       return res.json({ success: true, message: "Location updated", bus });
     } else {
-      // If new bus → create new document
       const newBus = new Location({
         deviceID,
         location: {
@@ -116,10 +133,6 @@ export const updatelocation = async (req, res) => {
       });
 
       await newBus.save();
-      logSuccess("updatelocation", "New bus created", {
-        deviceID,
-        coordinates,
-      });
       return res.json({
         success: true,
         message: "New bus created",
@@ -127,14 +140,14 @@ export const updatelocation = async (req, res) => {
       });
     }
   } catch (error) {
-    logError("updatelocation", error, req.body);
+    console.error(`[updatelocation] Error:`, error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
-  
+
 export const getAllBus = async (req, res) => {
   const { lat, lng, radius } = req.query;
-  
+
   console.log(`[getAllBus] Query params:`, { lat, lng, radius });
 
   // Validation
@@ -142,7 +155,7 @@ export const getAllBus = async (req, res) => {
     return res.status(400).json({
       success: false,
       message: "lat & lng are required parameters",
-      received: { lat, lng, radius }
+      received: { lat, lng, radius },
     });
   }
 
@@ -150,7 +163,11 @@ export const getAllBus = async (req, res) => {
   const longitude = parseFloat(lng);
   const searchRadius = radius ? parseInt(radius) : 10000; // Default 10km
 
-  console.log(`[getAllBus] Parsed values:`, { latitude, longitude, searchRadius });
+  console.log(`[getAllBus] Parsed values:`, {
+    latitude,
+    longitude,
+    searchRadius,
+  });
 
   // Validate coordinates
   if (
@@ -164,33 +181,36 @@ export const getAllBus = async (req, res) => {
     return res.status(400).json({
       success: false,
       message: "Invalid coordinates provided",
-      details: { 
-        latitude, 
-        longitude, 
+      details: {
+        latitude,
+        longitude,
         validLat: !isNaN(latitude) && latitude >= -90 && latitude <= 90,
-        validLng: !isNaN(longitude) && longitude >= -180 && longitude <= 180
-      }
+        validLng: !isNaN(longitude) && longitude >= -180 && longitude <= 180,
+      },
     });
   }
 
   try {
-    console.log(`[getAllBus] Searching near ${latitude}, ${longitude} within ${searchRadius}m`);
-    
+    console.log(
+      `[getAllBus] Searching near ${latitude}, ${longitude} within ${searchRadius}m`
+    );
+
     // Debug: Check if there are any buses in the database
     const totalBusCount = await Location.countDocuments();
     console.log(`[getAllBus] Total buses in database: ${totalBusCount}`);
-    
+
     // Debug: Get a sample of buses to check their coordinates
     const sampleBuses = await Location.find({}).limit(3);
-    console.log(`[getAllBus] Sample bus locations:`, 
-      sampleBuses.map(bus => ({
+    console.log(
+      `[getAllBus] Sample bus locations:`,
+      sampleBuses.map((bus) => ({
         deviceID: bus.deviceID,
         coordinates: bus.location?.coordinates,
-        hasLocation: !!bus.location
+        hasLocation: !!bus.location,
       }))
     );
-    
-     const pipeline = [
+
+    const pipeline = [
       {
         $geoNear: {
           near: {
@@ -210,28 +230,25 @@ export const getAllBus = async (req, res) => {
               then: {
                 $concat: [
                   { $toString: { $round: "$distanceFromSearch" } },
-                  "m"
-                ]
+                  "m",
+                ],
               },
               else: {
                 $concat: [
                   {
                     $toString: {
-                      $round: [
-                        { $divide: ["$distanceFromSearch", 1000] },
-                        1
-                      ]
-                    }
+                      $round: [{ $divide: ["$distanceFromSearch", 1000] }, 1],
+                    },
                   },
-                  "km"
-                ]
-              }
-            }
-          }
-        }
+                  "km",
+                ],
+              },
+            },
+          },
+        },
       },
       { $sort: { distanceFromSearch: 1 } },
-      { $limit: 100 }
+      { $limit: 100 },
     ];
 
     console.log(`[getAllBus] Running aggregation pipeline...`);
@@ -239,8 +256,12 @@ export const getAllBus = async (req, res) => {
     console.log(`[getAllBus] Aggregation returned ${buses.length} buses`);
 
     // Debug: Log distances of found buses
-    buses.slice(0, 5).forEach(bus => {
-      console.log(`[getAllBus] Bus ${bus.deviceID}: ${Math.round(bus.distanceFromSearch)}m away`);
+    buses.slice(0, 5).forEach((bus) => {
+      console.log(
+        `[getAllBus] Bus ${bus.deviceID}: ${Math.round(
+          bus.distanceFromSearch
+        )}m away`
+      );
     });
 
     // Format the results
@@ -255,10 +276,14 @@ export const getAllBus = async (req, res) => {
       startTime: bus.startTime || "06:00 AM",
       expectedTime: bus.expectedTime || "Calculating...",
       destinationTime: bus.destinationTime || "08:00 PM",
-      status: bus.status || "Active"
+      status: bus.status || "Active",
     }));
 
-    logSuccess('getAllBus', `Found ${busesWithDistance.length} buses`, { latitude, longitude, searchRadius });
+    logSuccess("getAllBus", `Found ${busesWithDistance.length} buses`, {
+      latitude,
+      longitude,
+      searchRadius,
+    });
 
     res.json({
       success: true,
@@ -272,26 +297,30 @@ export const getAllBus = async (req, res) => {
       },
       debug: {
         coordinates: [longitude, latitude],
-        sampleLocations: sampleBuses.map(b => b.location?.coordinates).filter(Boolean)
-      }
+        sampleLocations: sampleBuses
+          .map((b) => b.location?.coordinates)
+          .filter(Boolean),
+      },
     });
   } catch (err) {
-    logError('getAllBus', err, { latitude, longitude, searchRadius });
-    
+    logError("getAllBus", err, { latitude, longitude, searchRadius });
+
     // Enhanced error response
     res.status(500).json({
       success: false,
       message: "Server error while searching for buses",
       error: process.env.NODE_ENV === "development" ? err.message : undefined,
-      debug: process.env.NODE_ENV === "development" ? {
-        searchParams: { latitude, longitude, searchRadius },
-        errorType: err.name,
-        mongoError: err.code
-      } : undefined
+      debug:
+        process.env.NODE_ENV === "development"
+          ? {
+              searchParams: { latitude, longitude, searchRadius },
+              errorType: err.name,
+              mongoError: err.code,
+            }
+          : undefined,
     });
   }
 };
-
 
 export const debugDatabase = async (req, res) => {
   try {
@@ -334,8 +363,6 @@ export const debugDatabase = async (req, res) => {
   }
 };
 
- 
- 
 export const getLocation = async (req, res) => {
   try {
     const { deviceID } = req.params;
@@ -402,7 +429,6 @@ export const getLocation = async (req, res) => {
     });
   }
 };
- 
 
 export const createBusId = async (req, res) => {
   try {
@@ -508,7 +534,6 @@ const logSuccess = (functionName, result, context = {}) => {
   });
 };
 
- 
 export const getBusesAlongRoute = async (req, res) => {
   const { fromLat, fromLon, toLat, toLon, radius } = req.query;
 
@@ -801,7 +826,7 @@ export const getBusesAlongRoute = async (req, res) => {
     });
   }
 };
- 
+
 function analyzeRouteForJourney(bus, journey) {
   const analysis = {
     score: 0,
@@ -901,27 +926,27 @@ function analyzeRouteForJourney(bus, journey) {
 
   return analysis;
 }
- 
+
 function compressRoute(route, targetSize) {
   if (route.length <= targetSize) return route;
-  
+
   // Always keep first and last points
   const compressed = [route[0]];
-  
+
   // Calculate importance scores for middle points
   const middlePoints = route.slice(1, -1).map((point, index) => {
     const actualIndex = index + 1;
     const prev = route[actualIndex - 1];
     const next = route[actualIndex + 1];
-    
+
     let importance = 0;
-    
+
     // High speed changes are important
     if (point.speed && prev.speed) {
       const speedChange = Math.abs(point.speed - prev.speed);
       importance += speedChange * 0.1;
     }
-    
+
     // Direction changes are important (using simple angle approximation)
     if (prev.coordinates && next.coordinates) {
       const bearing1 = calculateBearing(prev.coordinates, point.coordinates);
@@ -929,108 +954,78 @@ function compressRoute(route, targetSize) {
       const directionChange = Math.abs(bearing1 - bearing2);
       importance += Math.min(directionChange, 360 - directionChange) * 0.01;
     }
-    
+
     // Recent points are more important
     const ageMinutes = (Date.now() - new Date(point.timestamp)) / (1000 * 60);
     importance += Math.max(0, 60 - ageMinutes) * 0.05;
-    
+
     // Points with poor accuracy are less important
     if (point.accuracy && point.accuracy > 0) {
       importance -= Math.min(point.accuracy / 100, 1) * 10;
     }
-    
+
     return { point, importance, originalIndex: actualIndex };
   });
-  
+
   // Sort by importance and keep the most important ones
   middlePoints.sort((a, b) => b.importance - a.importance);
   const keepCount = Math.max(0, targetSize - 2); // Subtract 2 for first and last
   const selectedMiddle = middlePoints.slice(0, keepCount);
-  
+
   // Sort selected points back to chronological order
   selectedMiddle.sort((a, b) => a.originalIndex - b.originalIndex);
-  
+
   // Add selected middle points
-  selectedMiddle.forEach(item => compressed.push(item.point));
-  
+  selectedMiddle.forEach((item) => compressed.push(item.point));
+
   // Always keep the last point
   compressed.push(route[route.length - 1]);
-  
+
   return compressed;
 }
 
 function calculateBearing(coord1, coord2) {
-  const lat1 = coord1[0] * Math.PI / 180;
-  const lat2 = coord2[0] * Math.PI / 180;
-  const deltaLng = (coord2[1] - coord1[1]) * Math.PI / 180;
-  
+  const lat1 = (coord1[0] * Math.PI) / 180;
+  const lat2 = (coord2[0] * Math.PI) / 180;
+  const deltaLng = ((coord2[1] - coord1[1]) * Math.PI) / 180;
+
   const x = Math.sin(deltaLng) * Math.cos(lat2);
-  const y = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(deltaLng);
-  
-  const bearing = Math.atan2(x, y) * 180 / Math.PI;
+  const y =
+    Math.cos(lat1) * Math.sin(lat2) -
+    Math.sin(lat1) * Math.cos(lat2) * Math.cos(deltaLng);
+
+  const bearing = (Math.atan2(x, y) * 180) / Math.PI;
   return (bearing + 360) % 360;
-}
-
-function calculateDistance(lat1, lon1, lat2, lon2) {
- 
-  if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
-  
-  // Validate input ranges
-  if (Math.abs(lat1) > 90 || Math.abs(lat2) > 90 || 
-      Math.abs(lon1) > 180 || Math.abs(lon2) > 180) {
-    console.warn('[calculateDistance] Invalid coordinates:', { lat1, lon1, lat2, lon2 });
-    return 0;
-  }
-  
- 
-  const R = 6371e3; // Earth's radius in meters
-  const φ1 = (lat1 * Math.PI) / 180;
-  const φ2 = (lat2 * Math.PI) / 180;
-  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
-  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
-
-  const a =
-    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
- 
-  const distance = R * c;
-  
-  // Sanity check - if distance is unreasonably large, something went wrong
-  if (distance > 1000000) { // 1000km
-    console.warn('[calculateDistance] Unreasonably large distance calculated:', distance);
-    return 0;
-  }
-  
-  return distance;
 }
 
 // Enhanced getBusByDeviceId with calculated stats
 export const getBusByDeviceId = async (req, res) => {
   const { deviceId } = req.params;
   console.log(`[getBusByDeviceId] Looking for device: ${deviceId}`);
-  
+
   if (!deviceId) {
     return res.status(400).json({
       success: false,
-      message: "Device ID is required"
+      message: "Device ID is required",
     });
   }
 
   try {
-    const bus = await Location.findOne({ deviceID: deviceId }).sort({ lastUpdated: -1 });
-    
+    const bus = await Location.findOne({ deviceID: deviceId }).sort({
+      lastUpdated: -1,
+    });
+
     if (!bus) {
       console.log(`[getBusByDeviceId] Bus not found: ${deviceId}`);
       return res.status(404).json({
         success: false,
-        message: `Bus with device ID ${deviceId} not found`
+        message: `Bus with device ID ${deviceId} not found`,
       });
     }
 
     // Calculate enhanced statistics
     const stats = calculateBusStatistics(bus);
-    
+
     // Enhanced bus data with real-time calculations
     const busWithCalculatedData = {
       ...bus.toJSON(),
@@ -1045,7 +1040,7 @@ export const getBusByDeviceId = async (req, res) => {
         averageSpeed: stats.averageSpeed,
         maxSpeed: stats.maxSpeed,
         tripDuration: stats.tripDuration,
-        activeTime: stats.activeTime
+        activeTime: stats.activeTime,
       },
       // Enhanced display data
       driverName: bus.driverName || "Driver Available",
@@ -1053,26 +1048,27 @@ export const getBusByDeviceId = async (req, res) => {
       startTime: bus.startTime || formatTime(bus.tripStartTime) || "06:00 AM",
       expectedTime: stats.estimatedArrival || "Calculating...",
       destinationTime: bus.destinationTime || "08:00 PM",
-      status: bus.status || "Active"
+      status: bus.status || "Active",
     };
 
-    logSuccess('getBusByDeviceId', 'Bus found with calculated data', { deviceId });
+    logSuccess("getBusByDeviceId", "Bus found with calculated data", {
+      deviceId,
+    });
     res.json({
       success: true,
       latestLocations: busWithCalculatedData,
       metadata: {
         deviceId,
         searchTime: new Date().toISOString(),
-        calculationsPerformed: true
-      }
+        calculationsPerformed: true,
+      },
     });
-
   } catch (err) {
-    logError('getBusByDeviceId', err, { deviceId });
+    logError("getBusByDeviceId", err, { deviceId });
     res.status(500).json({
       success: false,
       message: "Server error while fetching bus details",
-      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+      error: process.env.NODE_ENV === "development" ? err.message : undefined,
     });
   }
 };
@@ -1088,7 +1084,7 @@ function calculateBusStatistics(bus) {
     remainingStops: 0,
     estimatedArrival: null,
     tripDuration: 0,
-    activeTime: 0
+    activeTime: 0,
   };
 
   if (!bus || !bus.route || bus.route.length === 0) {
@@ -1097,40 +1093,53 @@ function calculateBusStatistics(bus) {
 
   const route = bus.route;
   const currentLocation = bus.location?.coordinates;
-  
+
   // Calculate current speed from recent route points
   if (route.length >= 2) {
     const recentPoints = route.slice(-5); // Last 5 points
     let totalDistance = 0;
     let totalTime = 0;
-    
+
     for (let i = 1; i < recentPoints.length; i++) {
       const prev = recentPoints[i - 1];
       const curr = recentPoints[i];
-      
-      if (prev.coordinates && curr.coordinates && prev.timestamp && curr.timestamp) {
+
+      if (
+        prev.coordinates &&
+        curr.coordinates &&
+        prev.timestamp &&
+        curr.timestamp
+      ) {
         const distance = calculateDistance(
-          prev.coordinates[0], prev.coordinates[1],
-          curr.coordinates[0], curr.coordinates[1]
+          prev.coordinates[0],
+          prev.coordinates[1],
+          curr.coordinates[0],
+          curr.coordinates[1]
         );
-        const timeDiff = (new Date(curr.timestamp) - new Date(prev.timestamp)) / 1000;
-        
+        const timeDiff =
+          (new Date(curr.timestamp) - new Date(prev.timestamp)) / 1000;
+
         if (timeDiff > 0) {
           totalDistance += distance;
           totalTime += timeDiff;
         }
       }
     }
-    
+
     if (totalTime > 0) {
       stats.currentSpeed = Math.round((totalDistance / totalTime) * 3.6); // Convert to km/h
     }
   }
 
   // Calculate other statistics
-  const nonZeroSpeeds = route.filter(point => point.speed && point.speed > 0).map(p => p.speed);
+  const nonZeroSpeeds = route
+    .filter((point) => point.speed && point.speed > 0)
+    .map((p) => p.speed);
   if (nonZeroSpeeds.length > 0) {
-    stats.averageSpeed = Math.round(nonZeroSpeeds.reduce((sum, speed) => sum + speed, 0) / nonZeroSpeeds.length);
+    stats.averageSpeed = Math.round(
+      nonZeroSpeeds.reduce((sum, speed) => sum + speed, 0) /
+        nonZeroSpeeds.length
+    );
     stats.maxSpeed = Math.max(...nonZeroSpeeds);
   }
 
@@ -1141,31 +1150,42 @@ function calculateBusStatistics(bus) {
     const curr = route[i];
     if (prev.coordinates && curr.coordinates) {
       totalDistance += calculateDistance(
-        prev.coordinates[0], prev.coordinates[1],
-        curr.coordinates[0], curr.coordinates[1]
+        prev.coordinates[0],
+        prev.coordinates[1],
+        curr.coordinates[0],
+        curr.coordinates[1]
       );
     }
   }
-  stats.totalDistance = Math.round(totalDistance / 1000 * 100) / 100; // Convert to km, round to 2 decimals
+  stats.totalDistance = Math.round((totalDistance / 1000) * 100) / 100; // Convert to km, round to 2 decimals
 
   // Calculate remaining distance to destination (if available)
   if (currentLocation && bus.destinationCoords) {
-    stats.remainingDistance = Math.round(calculateDistance(
-      currentLocation[0], currentLocation[1],
-      bus.destinationCoords[0], bus.destinationCoords[1]
-    ) / 1000 * 100) / 100;
+    stats.remainingDistance =
+      Math.round(
+        (calculateDistance(
+          currentLocation[0],
+          currentLocation[1],
+          bus.destinationCoords[0],
+          bus.destinationCoords[1]
+        ) /
+          1000) *
+          100
+      ) / 100;
   }
 
   // Estimate remaining stops (simplified)
   if (currentLocation && route.length > 0) {
     let closestIndex = 0;
     let minDistance = Infinity;
-    
+
     route.forEach((point, index) => {
       if (point.coordinates) {
         const distance = calculateDistance(
-          currentLocation[0], currentLocation[1],
-          point.coordinates[0], point.coordinates[1]
+          currentLocation[0],
+          currentLocation[1],
+          point.coordinates[0],
+          point.coordinates[1]
         );
         if (distance < minDistance) {
           minDistance = distance;
@@ -1173,7 +1193,7 @@ function calculateBusStatistics(bus) {
         }
       }
     });
-    
+
     stats.remainingStops = Math.max(0, route.length - closestIndex - 1);
   }
 
@@ -1181,12 +1201,17 @@ function calculateBusStatistics(bus) {
   if (stats.remainingDistance > 0 && stats.currentSpeed > 0) {
     const etaHours = stats.remainingDistance / stats.currentSpeed;
     const etaTime = new Date(Date.now() + etaHours * 60 * 60 * 1000);
-    stats.estimatedArrival = etaTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    stats.estimatedArrival = etaTime.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
 
   // Calculate trip duration
   if (bus.tripStartTime) {
-    stats.tripDuration = Math.round((Date.now() - new Date(bus.tripStartTime)) / (1000 * 60)); // minutes
+    stats.tripDuration = Math.round(
+      (Date.now() - new Date(bus.tripStartTime)) / (1000 * 60)
+    ); // minutes
   }
 
   return stats;
@@ -1195,8 +1220,8 @@ function calculateBusStatistics(bus) {
 // Helper function to format time
 function formatTime(date) {
   if (!date) return null;
-  return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return new Date(date).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
-
- 
- 
