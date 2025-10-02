@@ -1,52 +1,65 @@
 import Bus from "../models/Bus.model.js";
 import Driver from "../models/Driver.model.js";
 import Location from "../models/Location.model.js";
+ 
 
-export const CreateDriver = async (req, res) => {
+export const CreateBus = async (req, res) => {
   try {
-    const { name, deviceID, to, from } = req.body;
-    if (!name || !deviceID || !to || !from) {
+    const { name, deviceID, to, from, timeSlots } = req.body;
+
+    if (!name || !deviceID || !to || !from || !timeSlots?.length) {
       return res.status(400).json({
-        message: " all fild are required",
+        message: "All fields including time slots are required",
         success: false,
       });
     }
+
     const userId = req.auth.sub;
     let user = await Driver.findOne({ auth0Id: userId });
     if (!user) {
       return res.status(404).json({
-        message: "login first",
+        message: "Login first",
         success: false,
       });
     }
+
     const existingBus = await Location.findOne({ deviceID });
     if (existingBus) {
       return res.status(400).json({
-        message: "bus already registered",
+        message: "Bus already registered",
         success: false,
       });
     }
 
-    // ✅ Correct way (no extra nesting)
-    const newBusdetails = await Location.create({ deviceID });
+    // create location record
+    const newBusLocation = await Location.create({ deviceID });
 
+    // build bus details
     const busDetails = {
-      name: name,
-      deviceID: deviceID,
-      to: to,
-      from: from,
+      name,
+      deviceID,
+      to,
+      from,
       driver: user._id,
-      location: newBusdetails._id,
+      location: newBusLocation._id,
+      timeSlots,
     };
+
     const newBus = await Bus.create(busDetails);
+
     return res.status(200).json({
-      message: "bus details create success fully",
-      newBus,
-      newBusdetails,
+      message: "Bus details created successfully",
+      bus: newBus,
+      location: newBusLocation,
       success: true,
     });
   } catch (error) {
     console.log(error);
+    res.status(500).json({
+      message: "Something went wrong",
+      error: error.message,
+      success: false,
+    });
   }
 };
 

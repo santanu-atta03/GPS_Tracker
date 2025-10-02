@@ -25,6 +25,18 @@ const BusDetails = mongoose.Schema({
     ref: "Location",
     required: true,
   },
+  timeSlots: [
+    {
+      startTime: {
+        type: String, // could also use Date if exact timestamp needed
+        required: true,
+      },
+      endTime: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 const Bus = mongoose.model("Bus", BusDetails);

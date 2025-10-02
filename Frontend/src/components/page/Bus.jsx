@@ -35,6 +35,7 @@ const Bus = () => {
         const token = await getAccessTokenSilently({
           audience: "http://localhost:5000/api/v3",
         });
+        console.log(token)
 
         const res = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/driver/allBus`,
