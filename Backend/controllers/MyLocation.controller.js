@@ -131,7 +131,6 @@ export const findBusByRoute = async (req, res) => {
   }
 };
 
-
 export const findByBusId = async (req, res) => {
   try {
     const { DeviceId } = req.body;

@@ -244,7 +244,7 @@ const BusSearch = () => {
       {/* Results */}
       <div className="mt-8">
         {/* ✅ Multi-hop case */}
-        {searchType === "route" && results  ? (
+        {searchType === "route" && results ? (
           <>
             {results.type === "direct" && (
               <div className="grid gap-4">
@@ -281,7 +281,11 @@ const BusSearch = () => {
                 </div>
 
                 {results.busesUsed.map((bus, idx) => (
-                  <div key={bus._id} className="flex items-start gap-6">
+                  <div
+                    key={bus._id}
+                    className="flex items-start gap-6"
+                    onClick={() => navigate(`bus/${bus.deviceID}`)}
+                  >
                     <div className="flex flex-col items-center">
                       <div className="w-1 bg-gray-400 h-12"></div>
                       <div className="text-gray-700 text-sm font-medium">
