@@ -3,6 +3,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
 import Navbar from "../shared/Navbar";
+
 const POI_TYPES = [
   { label: "Hospital", tag: "hospital", icon: "🏥" },
   { label: "Clinic", tag: "clinic", icon: "🩺" },
@@ -32,7 +33,12 @@ const NearbyPOIMap = () => {
   const [selectedType, setSelectedType] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [markersLayer, setMarkersLayer] = useState(null);
-  const routingControlRef = useRef(null); // keep ref for routing control
+  const routingControlRef = useRef(null);
+
+  // 🔎 Search states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const searchMarkerRef = useRef(null);
 
   useEffect(() => {
     if (mapInstanceRef.current) return;
@@ -115,7 +121,6 @@ const NearbyPOIMap = () => {
         );
 
         marker.on("popupopen", () => {
-          // Add click listener to "Go Here" button inside popup
           const btn = document.getElementById(`go-${lat}-${lon}`);
           if (btn) {
             btn.onclick = () => handleRoute(lat, lon);
@@ -133,7 +138,6 @@ const NearbyPOIMap = () => {
   const handleRoute = (destLat, destLon) => {
     if (!userLocation) return;
 
-    // Remove old route if exists
     if (routingControlRef.current) {
       mapInstanceRef.current.removeControl(routingControlRef.current);
     }
@@ -146,22 +150,108 @@ const NearbyPOIMap = () => {
       router: L.Routing.osrmv1({
         serviceUrl: "https://router.project-osrm.org/route/v1",
         profile: "driving",
-        alternatives: true, // show multiple routes
+        alternatives: true,
       }),
       showAlternatives: true,
       lineOptions: { styles: [{ color: "blue", weight: 5 }] },
       altLineOptions: {
         styles: [{ color: "gray", weight: 3, dashArray: "5,5" }],
       },
-      addWaypoints: false, // prevent dragging
+      addWaypoints: false,
     }).addTo(mapInstanceRef.current);
 
     routingControlRef.current = control;
   };
 
+  // 🔎 Handle search input
+  const handleSearchChange = async (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    if (value.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${value}&addressdetails=1&limit=5`
+      );
+      const data = await res.json();
+      setSuggestions(data);
+    } catch (error) {
+      console.error("Search failed:", error);
+    }
+  };
+
+  // 📍 Handle suggestion click
+  const handleSuggestionClick = (place) => {
+    const lat = parseFloat(place.lat);
+    const lon = parseFloat(place.lon);
+
+    mapInstanceRef.current.setView([lat, lon], 14);
+
+    if (searchMarkerRef.current) {
+      mapInstanceRef.current.removeLayer(searchMarkerRef.current);
+    }
+
+    const marker = L.marker([lat, lon])
+      .addTo(mapInstanceRef.current)
+      .bindPopup(
+        `<b>${place.display_name}</b><br/><button id="go-${lat}-${lon}">Go Here</button>`
+      )
+      .openPopup();
+
+    // Add "Go Here" routing
+    marker.on("popupopen", () => {
+      const btn = document.getElementById(`go-${lat}-${lon}`);
+      if (btn) {
+        btn.onclick = () => handleRoute(lat, lon);
+      }
+    });
+
+    searchMarkerRef.current = marker;
+    setSuggestions([]);
+    setSearchQuery(place.display_name);
+  };
+
   return (
     <>
       <Navbar />
+      <div className="p-4">
+        <h2 className="text-xl font-semibold mb-3">Nearby Places + Search</h2>
+
+        {/* 🔎 Search bar */}
+        <div className="relative mb-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search for a location..."
+            className="w-full border p-2 rounded-lg"
+          />
+          {suggestions.length > 0 && (
+            <ul className="absolute bg-white border rounded-lg shadow-md w-full mt-1 max-h-40 overflow-y-auto z-50">
+              {suggestions.map((place) => (
+                <li
+                  key={place.place_id}
+                  onClick={() => handleSuggestionClick(place)}
+                  className="p-2 hover:bg-gray-200 cursor-pointer text-sm"
+                >
+                  {place.display_name}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div
+          ref={mapContainerRef}
+          id="map"
+          className="h-[550px] w-full rounded-lg border shadow"
+        ></div>
+      </div>
+
       <div className="p-4">
         <h2 className="text-xl font-semibold mb-3">Nearby Places</h2>
         <div className="flex flex-wrap gap-2 mb-4">
