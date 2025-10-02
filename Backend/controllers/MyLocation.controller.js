@@ -16,8 +16,7 @@ const findNearbyIndex = (point, routeCoords) => {
 };
 
 // helper: find nearest future startTime
-const getNextStartTime = (timeSlots) => {
-  const now = new Date();
+const getNextStartTime = (timeSlots, minTime = new Date()) => {
   let nearestSlot = null;
   let minDiff = Infinity;
 
@@ -26,8 +25,8 @@ const getNextStartTime = (timeSlots) => {
     const slotStartTime = new Date();
     slotStartTime.setHours(startH, startM, 0, 0);
 
-    // if start time already passed, consider next day
-    let diff = slotStartTime - now;
+    // if slotStartTime < minTime, consider next day
+    let diff = slotStartTime - minTime;
     if (diff < 0) diff += 24 * 60 * 60 * 1000;
 
     if (diff < minDiff) {
@@ -36,9 +35,8 @@ const getNextStartTime = (timeSlots) => {
     }
   });
 
-  return nearestSlot; // { startTime: "08:00", endTime: "10:00" }
+  return nearestSlot; // { startTime, endTime }
 };
-
 
 // ✅ Controller: find buses (direct + multi-hop) + nearest start time
 export const findBusByRoute = async (req, res) => {
@@ -166,21 +164,27 @@ export const findBusByRoute = async (req, res) => {
     }
 
     if (!foundPath)
-      return res
-        .status(404)
-        .json({
-          message: "No direct or multi-hop bus route found",
-          success: false,
-        });
+      return res.status(404).json({
+        message: "No direct or multi-hop bus route found",
+        success: false,
+      });
 
     const uniqueBusIDs = [...new Set(foundPath.busesUsed)];
     let matchedBuses = await Bus.find({ deviceID: { $in: uniqueBusIDs } });
 
     // ✅ Add nearest start time for multi-hop buses
-    matchedBuses = matchedBuses.map((bus) => ({
-      ...bus.toObject(),
-      nextStartTime: getNextStartTime(bus.timeSlots),
-    }));
+    let currentTime = new Date();
+    matchedBuses = matchedBuses.map((bus, index) => {
+      const slot = getNextStartTime(bus.timeSlots, currentTime);
+      // update currentTime for next bus as the endTime of this slot
+      const [endH, endM] = slot.endTime.split(":").map(Number);
+      currentTime.setHours(endH, endM, 0, 0);
+
+      return {
+        ...bus.toObject(),
+        nextStartTime: slot,
+      };
+    });
 
     const pathAddresses = [];
     for (const coord of foundPath.path) {
