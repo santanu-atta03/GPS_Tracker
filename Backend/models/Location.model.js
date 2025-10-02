@@ -5,7 +5,7 @@ const busSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-   route: [
+  route: [
     {
       type: {
         type: String,
@@ -13,12 +13,12 @@ const busSchema = new mongoose.Schema({
         default: "Point",
       },
       coordinates: {
-        type: [Number], 
+        type: [Number],
         required: true,
       },
       timestamp: { type: Date, default: Date.now },
-    speed: { type: Number, default: 0 }, // km/h
-    accuracy: { type: Number, default: 0 }
+      speed: { type: Number, default: 0 }, // km/h
+      accuracy: { type: Number, default: 0 },
     },
   ],
   location: {
@@ -29,7 +29,18 @@ const busSchema = new mongoose.Schema({
     },
     coordinates: {
       type: [Number],
-      default: [0, 0]
+      default: [0, 0],
+    },
+  },
+  prevlocation: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      default: "Point",
+    },
+    coordinates: {
+      type: [Number],
+      default: [0, 0],
     },
   },
   lastUpdated: {

@@ -3,16 +3,16 @@ import Location from "../models/Location.model.js";
 import Bus from "../models/Bus.model.js";
 import getAddressFromCoordinates from "../utils/getAddressFromCoordinates.js";
 
-// helper: check if a point is within 1km of any route coordinate
-const isWithin1Km = (point, routeCoords) => {
-  for (const routePoint of routeCoords) {
+// helper: check if a point is within 1km of any route coordinate → return index
+const findNearbyIndex = (point, routeCoords) => {
+  for (let i = 0; i < routeCoords.length; i++) {
     const dist = haversine(
       { lat: point[0], lon: point[1] },
-      { lat: routePoint.coordinates[0], lon: routePoint.coordinates[1] }
+      { lat: routeCoords[i].coordinates[0], lon: routeCoords[i].coordinates[1] }
     );
-    if (dist <= 1000) return true;
+    if (dist <= 1000) return i;
   }
-  return false;
+  return -1;
 };
 
 // ✅ Controller: find buses (direct + multi-hop) + matched coordinates
@@ -27,16 +27,38 @@ export const findBusByRoute = async (req, res) => {
       });
     }
 
-    const buses = await Location.find({}, { deviceID: 1, route: 1 });
+    const buses = await Location.find(
+      {},
+      { deviceID: 1, route: 1, location: 1, prevlocation: 1 }
+    );
 
-    // Step 1: Direct buses
+    // Step 1: Direct buses with direction check
     const directBusIDs = [];
     for (const bus of buses) {
       const routePoints = bus.route;
-      const fromMatch = isWithin1Km([fromLat, fromLng], routePoints);
-      const toMatch = isWithin1Km([toLat, toLng], routePoints);
-      if (fromMatch && toMatch) {
-        directBusIDs.push(bus.deviceID);
+
+      const fromIndex = findNearbyIndex([fromLat, fromLng], routePoints);
+      const toIndex = findNearbyIndex([toLat, toLng], routePoints);
+
+      const prevIndex = findNearbyIndex(
+        bus.prevlocation.coordinates,
+        routePoints
+      );
+      const locIndex = findNearbyIndex(bus.location.coordinates, routePoints);
+
+      if (
+        fromIndex !== -1 &&
+        toIndex !== -1 &&
+        prevIndex !== -1 &&
+        locIndex !== -1
+      ) {
+        const userDirection = fromIndex < toIndex ? "forward" : "backward";
+        const busDirection = prevIndex < locIndex ? "forward" : "backward";
+
+        if (userDirection === busDirection) {
+          // ✅ Only push if directions match
+          directBusIDs.push(bus.deviceID);
+        }
       }
     }
 
@@ -55,16 +77,16 @@ export const findBusByRoute = async (req, res) => {
       });
     }
 
-    // Step 2: Multi-hop buses
+    // ❗ Multi-hop part remains same (you may also add same busDirection filter if needed)
     // Build adjacency list: stop (lat,lon) -> buses that go through it
     const stopToBuses = new Map();
     buses.forEach((bus) => {
-      bus.route.forEach((p) => {
+      bus.route.forEach((p, idx) => {
         const key = `${p.coordinates[0].toFixed(4)},${p.coordinates[1].toFixed(
           4
         )}`;
         if (!stopToBuses.has(key)) stopToBuses.set(key, []);
-        stopToBuses.get(key).push(bus.deviceID);
+        stopToBuses.get(key).push({ busID: bus.deviceID, index: idx });
       });
     });
 
@@ -73,12 +95,20 @@ export const findBusByRoute = async (req, res) => {
     const end = [parseFloat(toLat), parseFloat(toLng)];
 
     const visited = new Set();
-    const queue = [{ point: start, path: [start], busesUsed: [] }];
+    const queue = [
+      {
+        point: start,
+        path: [start],
+        busesUsed: [],
+        lastIndex: -1,
+        busID: null,
+      },
+    ];
 
     let foundPath = null;
 
     while (queue.length > 0) {
-      const { point, path, busesUsed } = queue.shift();
+      const { point, path, busesUsed, lastIndex, busID } = queue.shift();
 
       // check if within 1km of destination
       const distToEnd = haversine(
@@ -96,13 +126,21 @@ export const findBusByRoute = async (req, res) => {
       if (visited.has(key)) continue;
       visited.add(key);
 
-      for (const busID of stopToBuses.get(key)) {
-        const bus = buses.find((b) => b.deviceID === busID);
-        for (const p of bus.route) {
+      for (const { busID: nextBusID, index } of stopToBuses.get(key)) {
+        const bus = buses.find((b) => b.deviceID === nextBusID);
+        if (!bus) continue;
+
+        // ✅ enforce forward direction if staying on the same bus
+        if (busID && busID === nextBusID && index <= lastIndex) continue;
+
+        for (let j = index + 1; j < bus.route.length; j++) {
+          const p = bus.route[j];
           queue.push({
             point: [p.coordinates[0], p.coordinates[1]],
             path: [...path, point],
-            busesUsed: [...busesUsed, busID],
+            busesUsed: [...busesUsed, nextBusID],
+            lastIndex: j,
+            busID: nextBusID,
           });
         }
       }
@@ -120,7 +158,6 @@ export const findBusByRoute = async (req, res) => {
     const matchedBuses = await Bus.find({ deviceID: { $in: uniqueBusIDs } });
 
     const pathAddresses = [];
-
     for (const coord of foundPath.path) {
       const address = await getAddressFromCoordinates(coord);
       pathAddresses.push({
@@ -128,6 +165,7 @@ export const findBusByRoute = async (req, res) => {
         address,
       });
     }
+
     return res.status(200).json({
       message: "Multi-hop route found",
       success: true,

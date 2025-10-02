@@ -107,6 +107,11 @@ export const updatelocation = async (req, res) => {
       }
 
       // ✅ Always update live location
+      bus.prevlocation = {
+        type: "Point",
+        coordinates: bus.location.coordinates, // old location
+      };
+
       bus.location = {
         type: "Point",
         coordinates: coordinates,
