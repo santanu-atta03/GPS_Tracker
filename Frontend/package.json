@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+   "backend": "cd ../backend && npm run dev",
+    "both": "concurrently \"npm run dev\" \"npm run backend\""
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.4.0",

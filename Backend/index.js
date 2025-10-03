@@ -10,6 +10,7 @@ import BusRoute from "./routes/bus.route.js";
 import JourneyRoute from "./routes/journey.route.js";
 import UserRoute from "./routes/User.route.js";
 import findBusRoute from "./routes/MyLocation.route.js";
+import ReviewRoute from "./routes/Review.route.js";
 dotenv.config();
 connectToMongo();
 
@@ -18,20 +19,17 @@ const port = process.env.PORT || 8000;
 
 // ✅ CORS Options
 const corsOptions = {
- 
-  origin: ["http://localhost:5173","https://gps-map-nine.vercel.app","https://gps-tracker-ecru.vercel.app"],
- 
+  origin: [
+    "http://localhost:5173",
+    "https://gps-map-nine.vercel.app",
+    "https://gps-tracker-ecru.vercel.app",
+  ],
+
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-// const jwtCheck = auth({
-//   audience: process.env.AUTH0_AUDIENCE,
-//   issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
-//   tokenSigningAlg: "RS256",
-// });
 
-// ✅ Secured Test Route
 app.get("/authorized", (req, res) => {
   res.send("Secured Resource");
 });
@@ -42,19 +40,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // ✅ Public Test Route
 
-
-
-
-app.use("/api/v1/Myroute",findBusRoute)
-
-
-
+app.use("/api/v1/Myroute", findBusRoute);
 
 app.use("/api/v1", locationRoute);
 app.use("/api/v1/driver", driverRoute);
 app.use("/api/v1/Bus", BusRoute);
 app.use("/api/v1/", JourneyRoute);
 app.use("/api/v1/user", UserRoute);
+
+app.use("/api/v1/review",ReviewRoute)
 
 app.get("/api/v1/search", async (req, res) => {
   try {
@@ -106,7 +100,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// ✅ API Routes
+ 
 
 app.listen(port, () => {
   console.log(`Website is running at http://localhost:${port}`);

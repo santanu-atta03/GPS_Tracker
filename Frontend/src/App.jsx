@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import DriverLogin from "./components/page/DriverLogin";
 import UserLogin from "./components/page/UserLogin";
 import NearbyPOIMap from "./components/page/NearbyPOIMap";
+import ReviewForm from "./components/page/ReviewForm";
 
 function App() {
   const approute = createBrowserRouter([
@@ -54,6 +55,10 @@ function App() {
     {
       path:"/nearBy/search",
       element:<NearbyPOIMap/>
+    },
+    {
+      path:"/bus/review/:busId",
+      element:<ReviewForm/>
     }
   ]);
 

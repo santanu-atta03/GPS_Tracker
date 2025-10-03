@@ -53,7 +53,7 @@ const Profile = () => {
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v3",
       });
-
+      console.log(token)
       const res = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/driver/update/profile`,
         { name, licenceId, driverExp },

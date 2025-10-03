@@ -25,10 +25,18 @@ const BusDetails = mongoose.Schema({
     ref: "Location",
     required: true,
   },
+  ratings: {
+    punctuality: { type: Number, min: 1, max: 5, required: true },
+    comfort: { type: Number, min: 1, max: 5, required: true },
+    cleanliness: { type: Number, min: 1, max: 5, required: true },
+    driverBehavior: { type: Number, min: 1, max: 5, required: true },
+    safety: { type: Number, min: 1, max: 5, required: true },
+    valueForMoney: { type: Number, min: 1, max: 5, required: true },
+  },
   timeSlots: [
     {
       startTime: {
-        type: String, // could also use Date if exact timestamp needed
+        type: String,  
         required: true,
       },
       endTime: {

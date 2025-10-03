@@ -14,6 +14,7 @@ import {
 import { getBusLocationByDeviceId } from "../../services/operations/busAPI";
 import Navbar from "../shared/Navbar";
 import { useTranslation } from "react-i18next";
+import { Button } from "../ui/button";
 
 // Utility function to calculate distance between two points (Haversine formula)
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -209,6 +210,9 @@ const BusDetailsPage = () => {
       setIsLoading(false);
       return;
     }
+
+     
+
 
     const fetchBusDetails = async () => {
       try {
@@ -450,6 +454,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
         return "bg-gray-100 text-gray-800";
     }
   };
+ 
 
   return (
     <>
@@ -471,6 +476,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                     {busDetails.name || busDetails.busName}
                   </h1>
                   <p className="text-gray-600">{busDetails.deviceID}</p>
+                  <Button onClick={()=>navigate(`/bus/review/${busDetails.deviceID}`)} >Review</Button>
                 </div>
               </div>
               <div
