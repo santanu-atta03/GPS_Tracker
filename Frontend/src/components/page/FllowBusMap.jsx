@@ -15,13 +15,13 @@ const Routing = ({ pathCoordinates }) => {
     if (!pathCoordinates || pathCoordinates.length < 2) return;
 
     const routingControl = L.Routing.control({
-      waypoints: [
-        L.latLng(...pathCoordinates[0]),
-        L.latLng(...pathCoordinates[pathCoordinates.length - 1]),
-      ],
+      waypoints: pathCoordinates.map((coords) => L.latLng(...coords)),
       routeWhileDragging: false,
       addWaypoints: false,
       show: false,
+      lineOptions: {
+        styles: [{ color: "blue", weight: 3 }],
+      },
     }).addTo(map);
 
     return () => map.removeControl(routingControl);
@@ -161,7 +161,7 @@ const FllowBusMap = () => {
 
   return (
     <>
-    <Navbar/>
+      <Navbar />
       <div className="w-full">
         <div className="flex justify-center items-center">
           <MapContainer
