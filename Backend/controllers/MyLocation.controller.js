@@ -84,25 +84,54 @@ export const findBusByRoute = async (req, res) => {
     }
 
     if (directBusIDs.length > 0) {
-      let matchedBuses = await Bus.find({
-        deviceID: { $in: directBusIDs },
-      });
-      matchedBuses = matchedBuses.map((bus) => ({
-        ...bus.toObject(),
-        nextStartTime: getNextStartTime(bus.timeSlots),
-      }));
-      return res.status(200).json({
-        message: "Direct route found",
-        success: true,
-        type: "direct",
-        total: matchedBuses.length,
-        buses: matchedBuses,
-        pathCoordinates: [
-          [parseFloat(fromLat), parseFloat(fromLng)],
-          [parseFloat(toLat), parseFloat(toLng)],
-        ],
-      });
-    }
+  let matchedBuses = await Bus.find({
+    deviceID: { $in: directBusIDs },
+  });
+  matchedBuses = matchedBuses.map((bus) => ({
+    ...bus.toObject(),
+    nextStartTime: getNextStartTime(bus.timeSlots),
+  }));
+
+  // Find the first direct bus and its route
+  const directBus = buses.find((bus) => directBusIDs.includes(bus.deviceID));
+  const directBusRoute = directBus?.route || [];
+
+  // Find indices of from and to on the route
+  const fromIndex = findNearbyIndex([fromLat, fromLng], directBusRoute);
+  const toIndex = findNearbyIndex([toLat, toLng], directBusRoute);
+
+  // Ensure fromIndex < toIndex to get segment
+  const startIndex = Math.min(fromIndex, toIndex);
+  const endIndex = Math.max(fromIndex, toIndex);
+
+  // Extract coordinates between from and to indices (inclusive)
+  const middleCoords = directBusRoute
+    .slice(startIndex, endIndex + 1)
+    .map((p) => [p.coordinates[0], p.coordinates[1]]);
+
+  // Compose full pathCoordinates: from user input, middle segment, to user input
+  const pathCoordinates = [
+    [parseFloat(fromLat), parseFloat(fromLng)], // user start
+    ...middleCoords,
+    [parseFloat(toLat), parseFloat(toLng)],     // user end
+  ];
+
+  const pathAddresses = [];
+  for (const coord of pathCoordinates) {
+    const address = await getAddressFromCoordinates(coord);
+    pathAddresses.push({ coordinates: coord, address });
+  }
+
+  return res.status(200).json({
+    message: "Direct route found",
+    success: true,
+    type: "direct",
+    total: matchedBuses.length,
+    busesUsed: matchedBuses,
+    pathCoordinates,
+    pathAddresses,
+  });
+}
 
     // 2. Multi-hop: build stop → (bus, index) map
     const stopToBuses = new Map();

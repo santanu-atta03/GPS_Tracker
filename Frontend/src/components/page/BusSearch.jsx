@@ -305,7 +305,10 @@ const BusSearch = () => {
 
         {/* Conditionally show Start Journey */}
         {searchType === "route" && results && (
-          <Button className="w-full flex items-center justify-center gap-2 m-2.5" onClick={()=>navigate("/fllow/path")}>
+          <Button
+            className="w-full flex items-center justify-center gap-2 m-2.5"
+            onClick={() => navigate("/fllow/path")}
+          >
             Start Journey
           </Button>
         )}
@@ -317,30 +320,55 @@ const BusSearch = () => {
         {searchType === "route" && results ? (
           <>
             {results.type === "direct" && (
-              <div className="grid gap-4">
-                {results.buses.map((bus, idx) => (
+              <div className="space-y-6">
+                <div className="flex flex-col items-center">
+                  <h2 className="text-lg font-bold text-green-700">Start</h2>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {results.pathAddresses?.[0]?.address ||
+                      "Unknown start location"}
+                  </p>
+                </div>
+
+                {results.busesUsed.map((bus, idx) => (
                   <Card
                     key={bus._id}
-                    className="shadow-lg rounded-2xl"
+                    className="flex-1 shadow-lg border-l-4 border-green-500 cursor-pointer"
                     onClick={() => navigate(`bus/${bus.deviceID}`)}
                   >
-                    <CardContent className="p-4 flex items-center gap-4">
-                      <Bus className="w-10 h-10 text-green-600" />
-                      <div>
-                        <h2 className="text-lg font-semibold">
-                          Bus Name: {bus.name || "N/A"}
-                        </h2>
-                        <p className="text-sm text-gray-600">
-                          Device ID: {bus.deviceID}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Route: {bus.from} → {bus.to}
-                        </p>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-4">
+                        <Bus className="w-8 h-8 text-green-600" />
+                        <div>
+                          <h3 className="font-semibold text-lg">
+                            Bus: {bus.name || "N/A"}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            Route: {bus.from || "N/A"} → {bus.to || "N/A"}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Device: {bus.deviceID}
+                          </p>
+                          {bus.nextStartTime && (
+                            <p className="text-sm text-gray-500">
+                              Time: {bus.nextStartTime.startTime} to{" "}
+                              {bus.nextStartTime.endTime}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <MapPin className="w-6 h-6 text-blue-500 ml-auto" />
                     </CardContent>
                   </Card>
                 ))}
+
+                <div className="flex flex-col items-center">
+                  <h2 className="text-lg font-bold text-red-700">
+                    Destination
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {results.pathAddresses?.[results.pathAddresses.length - 1]
+                      ?.address || "Unknown destination"}
+                  </p>
+                </div>
               </div>
             )}
 
