@@ -5,6 +5,7 @@ const authSlice = createSlice({
   initialState: {
     loding: false,
     usere: null,
+    path:null
   },
   reducers: {
     setLoding: (state, action) => {
@@ -13,10 +14,13 @@ const authSlice = createSlice({
     setuser: (state, action) => {
       state.usere = action.payload;
     },
+    setpath: (state, action) => {
+      state.path = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setLoding, setuser } = authSlice.actions;
+export const { setLoding, setuser ,setpath} = authSlice.actions;
 
 export default authSlice.reducer;

@@ -13,6 +13,7 @@ import DriverLogin from "./components/page/DriverLogin";
 import UserLogin from "./components/page/UserLogin";
 import NearbyPOIMap from "./components/page/NearbyPOIMap";
 import ReviewForm from "./components/page/ReviewForm";
+import FllowBusMap from "./components/page/FllowBusMap";
 
 function App() {
   const approute = createBrowserRouter([
@@ -59,6 +60,10 @@ function App() {
     {
       path:"/bus/review/:busId",
       element:<ReviewForm/>
+    },
+     {
+      path:"/fllow/path",
+      element:<FllowBusMap/>
     }
   ]);
 

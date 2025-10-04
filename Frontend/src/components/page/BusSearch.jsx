@@ -13,6 +13,8 @@ const GEOCODE_API = "https://nominatim.openstreetmap.org/search";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { useDispatch } from "react-redux";
+import { setpath } from "@/Redux/auth.reducer";
 
 const markerIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -180,6 +182,7 @@ const BusSearch = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const dispatch = useDispatch();
   const handleSearch = async () => {
     try {
       setLoading(true);
@@ -212,6 +215,7 @@ const BusSearch = () => {
       }
 
       const data = res.data;
+      dispatch(setpath(data));
       if (data.success) {
         if (searchType === "route") setResults(data); // may include multi-hop
         else if (searchType === "device") setResults([data.allbus]);
@@ -377,7 +381,8 @@ const BusSearch = () => {
                                 Device: {bus.deviceID}
                               </p>
                               <p className="text-sm text-gray-500">
-                                Time: {bus.nextStartTime.startTime} to {bus.nextStartTime.endTime}
+                                Time: {bus.nextStartTime.startTime} to{" "}
+                                {bus.nextStartTime.endTime}
                               </p>
                             </div>
                           </div>
