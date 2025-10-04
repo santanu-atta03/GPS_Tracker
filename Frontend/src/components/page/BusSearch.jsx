@@ -292,14 +292,24 @@ const BusSearch = () => {
       )}
 
       {/* Search Button */}
-      <Button
-        className="w-full flex items-center justify-center gap-2"
-        onClick={handleSearch}
-        disabled={loading}
-      >
-        <Search className="w-5 h-5" />
-        {loading ? "Searching..." : "Search"}
-      </Button>
+      {/* Search Button */}
+      <div className="">
+        <Button
+          className="w-full flex items-center justify-center gap-2 m-2.5"
+          onClick={handleSearch}
+          disabled={loading}
+        >
+          <Search className="w-5 h-5" />
+          {loading ? "Searching..." : "Search"}
+        </Button>
+
+        {/* Conditionally show Start Journey */}
+        {searchType === "route" && results && (
+          <Button className="w-full flex items-center justify-center gap-2 m-2.5" onClick={()=>navigate("/fllow/path")}>
+            Start Journey
+          </Button>
+        )}
+      </div>
 
       {/* Results */}
       <div className="mt-8">

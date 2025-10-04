@@ -1,13 +1,13 @@
-// FllowBusMap.jsx
-
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet-routing-machine";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
+import Navbar from "../shared/Navbar";
 
+// Routing Control Component
 const Routing = ({ pathCoordinates }) => {
   const map = useMap();
 
@@ -30,8 +30,121 @@ const Routing = ({ pathCoordinates }) => {
   return null;
 };
 
+// User icon for the map
+const userIcon = L.icon({
+  iconUrl:
+    "https://www.citypng.com/public/uploads/preview/red-gps-location-symbol-icon-hd-png-701751695035446zkphf8tfr3.png",
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
+// Bus icon for the timeline (inline SVG)
+const TimelineBusIcon = () => (
+  <div
+    style={{
+      backgroundColor: "#16a34a",
+      color: "white",
+      fontSize: 20,
+      width: 32,
+      height: 32,
+      borderRadius: "50%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      border: "3px solid white",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+    }}
+  >
+    🚌
+  </div>
+);
+
+// Haversine formula to calculate distance between two lat/lon points in meters
+const getDistance = (lat1, lon1, lat2, lon2) => {
+  const toRad = (value) => (value * Math.PI) / 180;
+
+  const R = 6371e3; // Earth radius in meters
+  const φ1 = toRad(lat1);
+  const φ2 = toRad(lat2);
+  const Δφ = toRad(lat2 - lat1);
+  const Δλ = toRad(lon2 - lon1);
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // distance in meters
+};
+
+// Find closest step index of userLocation on pathCoordinates
+const getUserStepIndex = (userLocation, pathCoordinates) => {
+  if (!userLocation) return null;
+
+  const distances = pathCoordinates.map(([lat, lon]) =>
+    getDistance(userLocation[0], userLocation[1], lat, lon)
+  );
+
+  // Find minimum distance and corresponding index
+  const minDistance = Math.min(...distances);
+  let closestIndex = distances.indexOf(minDistance);
+
+  // Distances to start and end points for snapping logic
+  const distToStart = getDistance(
+    userLocation[0],
+    userLocation[1],
+    ...pathCoordinates[0]
+  );
+  const distToEnd = getDistance(
+    userLocation[0],
+    userLocation[1],
+    ...pathCoordinates[pathCoordinates.length - 1]
+  );
+
+  // Define snapping thresholds (meters)
+  const snapThreshold = 100; // within 100m considered at start or end
+
+  if (distToStart < snapThreshold) return 0;
+  if (distToEnd < snapThreshold) return pathCoordinates.length - 1;
+
+  // If user is beyond start (before the first step latitude)
+  if (userLocation[0] < pathCoordinates[0][0] - 0.001) return 0;
+
+  // If user is beyond end (after the last step latitude)
+  if (userLocation[0] > pathCoordinates[pathCoordinates.length - 1][0] + 0.001)
+    return pathCoordinates.length - 1;
+
+  return closestIndex;
+};
+
 const FllowBusMap = () => {
   const { path } = useSelector((store) => store.auth);
+  const [userLocation, setUserLocation] = useState(null);
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      console.warn("Geolocation not supported.");
+      return;
+    }
+
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        setUserLocation([position.coords.latitude, position.coords.longitude]);
+      },
+      (err) => {
+        console.error("Error getting location", err);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
 
   if (!path || !path.pathCoordinates || path.pathCoordinates.length === 0) {
     return <div className="text-center text-gray-500">Loading map data...</div>;
@@ -39,6 +152,7 @@ const FllowBusMap = () => {
 
   const { pathCoordinates, pathAddresses, busesUsed } = path;
   const center = pathCoordinates[0];
+  const userStepIndex = getUserStepIndex(userLocation, pathCoordinates);
 
   const extractStreetOrPlace = (fullAddress) => {
     const parts = fullAddress.split(",");
@@ -46,105 +160,130 @@ const FllowBusMap = () => {
   };
 
   return (
-    <div className="w-full">
-      {/* Map Section */}
-      <MapContainer
-        center={center}
-        zoom={13}
-        style={{ height: "70vh", width: "100%" }}
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Routing pathCoordinates={pathCoordinates} />
+    <>
+    <Navbar/>
+      <div className="w-full">
+        <div className="flex justify-center items-center">
+          <MapContainer
+            center={center}
+            zoom={13}
+            style={{ height: "70vh", width: "80%" }}
+          >
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <Routing pathCoordinates={pathCoordinates} />
 
-        {/* Address Markers */}
-        {pathAddresses.slice(1, -1).map((loc, idx) => (
-          <Marker key={idx} position={loc.coordinates}>
-            <Popup>{extractStreetOrPlace(loc.address)}</Popup>
-          </Marker>
-        ))}
+            {/* Address Markers */}
+            {pathAddresses.slice(1, -1).map((loc, idx) => (
+              <Marker key={idx} position={loc.coordinates}>
+                <Popup>{extractStreetOrPlace(loc.address)}</Popup>
+              </Marker>
+            ))}
 
-        {/* Bus Markers */}
-        {busesUsed.map((bus, idx) => {
-          const coordIndex =
-            idx < pathCoordinates.length ? idx : pathCoordinates.length - 1;
-          return (
-            <Marker key={`bus-${idx}`} position={pathCoordinates[coordIndex]}>
-              <Popup>
-                <div>
-                  <strong>Bus Name:</strong> {bus.name}
-                  <br />
-                  <strong>From:</strong> {bus.from}
-                  <br />
-                  <strong>To:</strong> {bus.to}
-                  <br />
-                  <strong>Time:</strong> {bus.nextStartTime?.startTime} to{" "}
-                  {bus.nextStartTime?.endTime}
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
-      </MapContainer>
-
-      {/* Horizontal Journey Timeline */}
-      {/* Vertical Journey Timeline */}
-      <div className="w-full mt-10 flex justify-center">
-        <div className="relative border-l-4 border-gray-300 pl-6">
-          {pathAddresses.map((addr, idx) => {
-            const isStart = idx === 0;
-            const isEnd = idx === pathAddresses.length - 1;
-            const hasBus = busesUsed[idx];
-
-            // Skip rendering if it's not start/end and there's no bus for this step
-            if (!isStart && !isEnd && !hasBus) return null;
-
-            return (
-              <div
-                key={`step-${idx}`}
-                className="flex flex-col items-start space-y-2 relative border-l-2 border-gray-300 pl-6 pb-8"
-              >
-                {/* Timeline Dot */}
-                <div className="w-3 h-3 bg-green-500 rounded-full absolute -left-1 top-1"></div>
-
-                {/* Label */}
-                <div className="text-sm font-semibold text-green-600">
-                  {isStart ? "Start" : isEnd ? "Destination" : "Change Here"}
-                </div>
-
-                {/* Address */}
-                {(isStart || isEnd || hasBus) && (
-                  <div className="text-sm text-gray-700 max-w-md">
-                    {addr.address}
-                  </div>
-                )}
-
-                {/* Bus Info */}
-                {hasBus && (
-                  <div className="bg-white border-2 border-green-400 rounded-xl p-4 shadow-md w-full text-sm">
-                    <div className="font-semibold text-lg mb-1">
-                      Bus: {busesUsed[idx].name}
-                    </div>
-                    <div className="mb-1">
-                      <span className="font-semibold">Route:</span>{" "}
-                      {busesUsed[idx].from} → {busesUsed[idx].to}
-                    </div>
-                    <div className="mb-1">
-                      <span className="font-semibold">Device:</span>{" "}
-                      {busesUsed[idx].deviceID}
-                    </div>
+            {/* Bus Markers */}
+            {busesUsed.map((bus, idx) => {
+              const coordIndex =
+                idx < pathCoordinates.length ? idx : pathCoordinates.length - 1;
+              return (
+                <Marker
+                  key={`bus-${idx}`}
+                  position={pathCoordinates[coordIndex]}
+                >
+                  <Popup>
                     <div>
-                      <span className="font-semibold">Time:</span>{" "}
-                      {busesUsed[idx].nextStartTime?.startTime} to{" "}
-                      {busesUsed[idx].nextStartTime?.endTime}
+                      <strong>Bus Name:</strong> {bus.name}
+                      <br />
+                      <strong>From:</strong> {bus.from}
+                      <br />
+                      <strong>To:</strong> {bus.to}
+                      <br />
+                      <strong>Time:</strong> {bus.nextStartTime?.startTime} to{" "}
+                      {bus.nextStartTime?.endTime}
                     </div>
+                  </Popup>
+                </Marker>
+              );
+            })}
+
+            {/* User Location Marker */}
+            {userLocation && (
+              <Marker position={userLocation} icon={userIcon}>
+                <Popup>Your Current Location</Popup>
+              </Marker>
+            )}
+          </MapContainer>
+        </div>
+        {/* Map Section */}
+
+        {/* Vertical Journey Timeline */}
+        <div className="w-full mt-10 flex justify-center">
+          <div className="relative border-l-4 border-gray-300 pl-6">
+            {pathAddresses.map((addr, idx) => {
+              const isStart = idx === 0;
+              const isEnd = idx === pathAddresses.length - 1;
+              const hasBus = busesUsed[idx];
+              const showBusIcon = userStepIndex === idx;
+
+              // Skip rendering if it's not start/end and there's no bus and user is not here
+              if (!isStart && !isEnd && !hasBus && !showBusIcon) return null;
+
+              return (
+                <div
+                  key={`step-${idx}`}
+                  className="flex flex-col items-start space-y-2 relative border-l-2 border-gray-300 pl-6 pb-8"
+                >
+                  {/* Timeline Dot */}
+                  <div className="w-3 h-3 bg-green-500 rounded-full absolute -left-1 top-1"></div>
+
+                  {/* User Bus Icon */}
+                  {showBusIcon && (
+                    <div
+                      className="absolute -left-8 top-0"
+                      title="Your location"
+                    >
+                      <TimelineBusIcon />
+                    </div>
+                  )}
+
+                  {/* Label */}
+                  <div className="text-sm font-semibold text-green-600">
+                    {isStart ? "Start" : isEnd ? "Destination" : "Change Here"}
                   </div>
-                )}
-              </div>
-            );
-          })}
+
+                  {/* Address */}
+                  {(isStart || isEnd || hasBus) && (
+                    <div className="text-sm text-gray-700 max-w-md">
+                      {addr.address}
+                    </div>
+                  )}
+
+                  {/* Bus Info */}
+                  {hasBus && (
+                    <div className="bg-white border-2 border-green-400 rounded-xl p-4 shadow-md w-full text-sm">
+                      <div className="font-semibold text-lg mb-1">
+                        Bus: {busesUsed[idx].name}
+                      </div>
+                      <div className="mb-1">
+                        <span className="font-semibold">Route:</span>{" "}
+                        {busesUsed[idx].from} → {busesUsed[idx].to}
+                      </div>
+                      <div className="mb-1">
+                        <span className="font-semibold">Device:</span>{" "}
+                        {busesUsed[idx].deviceID}
+                      </div>
+                      <div>
+                        <span className="font-semibold">Time:</span>{" "}
+                        {busesUsed[idx].nextStartTime?.startTime} to{" "}
+                        {busesUsed[idx].nextStartTime?.endTime}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
