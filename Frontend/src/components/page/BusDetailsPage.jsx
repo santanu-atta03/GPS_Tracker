@@ -1,4 +1,3 @@
- 
 import { useRef, useState, useEffect } from "react";
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -19,17 +18,17 @@ import { Button } from "../ui/button";
 // Utility function to calculate distance between two points (Haversine formula)
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
   if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
-  
-  const R = 6371e3; // Earth's radius in meters
-  const φ1 = lat1 * Math.PI / 180;
-  const φ2 = lat2 * Math.PI / 180;
-  const Δφ = (lat2 - lat1) * Math.PI / 180;
-  const Δλ = (lon2 - lon1) * Math.PI / 180;
 
-  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ/2) * Math.sin(Δλ/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const R = 6371e3; // Earth's radius in meters
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   return R * c;
 };
@@ -37,96 +36,126 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 // Calculate speed based on route history
 const calculateSpeed = (route) => {
   if (!route || route.length < 2) return 0;
-  console.log("Route in home page : ",route)
+  console.log("Route in home page : ", route);
   // Get last 3-5 points to calculate average speed (fewer points for more stable calculation)
   const recentPoints = route.slice(-Math.min(5, route.length));
   let totalDistance = 0;
   let totalTime = 0;
   let validCalculations = 0;
-  
+
   for (let i = 1; i < recentPoints.length; i++) {
     const prev = recentPoints[i - 1];
     const curr = recentPoints[i];
-    
-    if (prev.coordinates && curr.coordinates && prev.timestamp && curr.timestamp) {
+
+    if (
+      prev.coordinates &&
+      curr.coordinates &&
+      prev.timestamp &&
+      curr.timestamp
+    ) {
       const distance = calculateDistance(
-        prev.coordinates[0], prev.coordinates[1],
-        curr.coordinates[0], curr.coordinates[1]
+        prev.coordinates[0],
+        prev.coordinates[1],
+        curr.coordinates[0],
+        curr.coordinates[1]
       );
-      
-      const timeDiff = (new Date(curr.timestamp) - new Date(prev.timestamp)) / 1000; // seconds
-      
+
+      const timeDiff =
+        (new Date(curr.timestamp) - new Date(prev.timestamp)) / 1000; // seconds
+
       // Only include if there's reasonable movement and time difference
-      if (timeDiff > 10 && timeDiff < 3600 && distance > 5 && distance < 50000) { // 10s-1hr, 5m-50km limits
+      if (
+        timeDiff > 10 &&
+        timeDiff < 3600 &&
+        distance > 5 &&
+        distance < 50000
+      ) {
+        // 10s-1hr, 5m-50km limits
         totalDistance += distance;
         totalTime += timeDiff;
         validCalculations++;
       }
     }
   }
-  
+
   if (totalTime === 0 || validCalculations === 0) return 0;
-  
+
   // Speed in km/h with reasonable limits
   const speedMs = totalDistance / totalTime;
   const speedKmh = speedMs * 3.6; // Convert m/s to km/h
-  
+
   // Cap speed at realistic values (max 120 km/h for buses)
   return Math.min(Math.max(Math.round(speedKmh), 0), 120);
 };
 
 // Calculate ETA based on current speed and remaining distance
-const calculateETA = (currentLocation, route, destinationTime, currentSpeed) => {
+const calculateETA = (
+  currentLocation,
+  route,
+  destinationTime,
+  currentSpeed
+) => {
   if (!currentLocation || !route || route.length === 0) {
     return "Calculating...";
   }
-  
+
   // If we have a destination coordinate in route, calculate distance to it
   const lastRoutePoint = route[route.length - 1];
   if (!lastRoutePoint || !lastRoutePoint.coordinates) {
     return "Calculating...";
   }
-  
+
   const remainingDistance = calculateDistance(
-    currentLocation[0], currentLocation[1],
-    lastRoutePoint.coordinates[0], lastRoutePoint.coordinates[1]
+    currentLocation[0],
+    currentLocation[1],
+    lastRoutePoint.coordinates[0],
+    lastRoutePoint.coordinates[1]
   );
-  
+
   // Use current speed or reasonable default speed
   let effectiveSpeed = currentSpeed;
   if (currentSpeed === 0 || currentSpeed < 5) {
     effectiveSpeed = 25; // Default 25 km/h for urban areas when stopped or very slow
   }
-  
-  if (remainingDistance < 100) { // Less than 100 meters
+
+  if (remainingDistance < 100) {
+    // Less than 100 meters
     const now = new Date();
     const arrivalTime = new Date(now.getTime() + 2 * 60000); // Add 2 minutes
-    return arrivalTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return arrivalTime.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
-  
-  const etaHours = (remainingDistance / 1000) / effectiveSpeed; // hours
+
+  const etaHours = remainingDistance / 1000 / effectiveSpeed; // hours
   const etaMilliseconds = etaHours * 60 * 60 * 1000; // convert to milliseconds
-  
+
   const currentTime = new Date();
   const arrivalTime = new Date(currentTime.getTime() + etaMilliseconds);
-  
+
   // Return formatted time (HH:MM)
-  return arrivalTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return arrivalTime.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 };
 
 // Calculate remaining stops (simplified - count route points ahead)
 const calculateRemainingStops = (currentLocation, route) => {
   if (!currentLocation || !route || route.length === 0) return 0;
-  
+
   // Find closest point in route to current location
   let closestIndex = 0;
   let minDistance = Infinity;
-  
+
   route.forEach((point, index) => {
     if (point.coordinates) {
       const distance = calculateDistance(
-        currentLocation[0], currentLocation[1],
-        point.coordinates[0], point.coordinates[1]
+        currentLocation[0],
+        currentLocation[1],
+        point.coordinates[0],
+        point.coordinates[1]
       );
       if (distance < minDistance) {
         minDistance = distance;
@@ -134,7 +163,7 @@ const calculateRemainingStops = (currentLocation, route) => {
       }
     }
   });
-  
+
   // Return remaining points in route as approximate stops
   return Math.max(0, route.length - closestIndex - 1);
 };
@@ -142,16 +171,16 @@ const calculateRemainingStops = (currentLocation, route) => {
 // Format start time based on route data
 const getActualStartTime = (route, startTime) => {
   if (!route || route.length === 0) return startTime || "06:00 AM";
-  
+
   // Get first route point timestamp
-  const firstPoint = route.find(point => point.timestamp);
+  const firstPoint = route.find((point) => point.timestamp);
   if (firstPoint && firstPoint.timestamp) {
-    return new Date(firstPoint.timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(firstPoint.timestamp).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   }
-  
+
   return startTime || "06:00 AM";
 };
 
@@ -164,43 +193,50 @@ const BusDetailsPage = () => {
     speed: 0,
     eta: "Calculating...",
     remainingDistance: 0,
-    remainingStops: 0
+    remainingStops: 0,
   });
-  
+
   const previousLocationRef = useRef(null);
   const { deviceID } = useParams();
   const navigate = useNavigate();
 
- 
-
   // Calculate real-time statistics
   const calculateRealTimeStats = (busData) => {
     if (!busData) return;
-    console.log("Bus data in home page : ",busData)
+    console.log("Bus data in home page : ", busData);
     const currentLocation = busData.location?.location?.coordinates;
     const route = busData.route || [];
-    
+
     const currentSpeed = calculateSpeed(route);
-    const eta = calculateETA(currentLocation, route, busData.destinationTime, currentSpeed);
+    const eta = calculateETA(
+      currentLocation,
+      route,
+      busData.destinationTime,
+      currentSpeed
+    );
     const remainingStops = calculateRemainingStops(currentLocation, route);
-    
+
     // Calculate remaining distance to last route point
     let remainingDistance = 0;
     if (currentLocation && route.length > 0) {
       const lastPoint = route[route.length - 1];
       if (lastPoint?.coordinates) {
-        remainingDistance = Math.round(calculateDistance(
-          currentLocation[0], currentLocation[1],
-          lastPoint.coordinates[0], lastPoint.coordinates[1]
-        ) / 1000); // Convert to km
+        remainingDistance = Math.round(
+          calculateDistance(
+            currentLocation[0],
+            currentLocation[1],
+            lastPoint.coordinates[0],
+            lastPoint.coordinates[1]
+          ) / 1000
+        ); // Convert to km
       }
     }
-    
+
     setRealTimeStats({
       speed: currentSpeed,
       eta,
       remainingDistance,
-      remainingStops
+      remainingStops,
     });
   };
 
@@ -211,12 +247,8 @@ const BusDetailsPage = () => {
       return;
     }
 
-     
-
-
     const fetchBusDetails = async () => {
       try {
-      
         const response = await getBusLocationByDeviceId(deviceID);
         console.log("Bus details response:", response);
         // console.log("ayan bus route" , busDetails.location.route)
@@ -289,27 +321,25 @@ const BusDetailsPage = () => {
   );
 
   const LANGUAGES = {
-    en: { name: 'English', flag: '🇺🇸' },
-hi: { name: 'हिन्दी', flag: '🇮🇳' },
-ta: { name: 'தமிழ்', flag: '🇮🇳' },
-te: { name: 'తెలుగు', flag: '🇮🇳' },
-kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
-ml: { name: 'മലയാളം', flag: '🇮🇳' },
-bn: { name: 'বাংলা', flag: '🇮🇳' },
-gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
-mr: { name: 'मराठी', flag: '🇮🇳' },
-pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
-ur: { name: 'اُردُو', flag: '🇵🇰' }, // or 🇮🇳 if preferred
-kok: { name: 'कोंकणी', flag: '🇮🇳' },
-or: { name: 'ଓଡ଼ିଆ', flag: '🇮🇳' },
-ne: { name: 'नेपाली', flag: '🇳🇵' },
-sat: { name: 'ᱥᱟᱱᱛᱟᱲᱤ', flag: '🇮🇳' },
-sd: { name: 'سنڌي', flag: '🇵🇰' }, // or 🇮🇳 if preferred
-mni: { name: 'মেইতেই লোন', flag: '🇮🇳' },
-ks: { name: 'كٲشُر', flag: '🇮🇳' },
-as: { name: 'অসমীয়া', flag: '🇮🇳' },
-
-
+    en: { name: "English", flag: "🇺🇸" },
+    hi: { name: "हिन्दी", flag: "🇮🇳" },
+    ta: { name: "தமிழ்", flag: "🇮🇳" },
+    te: { name: "తెలుగు", flag: "🇮🇳" },
+    kn: { name: "ಕನ್ನಡ", flag: "🇮🇳" },
+    ml: { name: "മലയാളം", flag: "🇮🇳" },
+    bn: { name: "বাংলা", flag: "🇮🇳" },
+    gu: { name: "ગુજરાતી", flag: "🇮🇳" },
+    mr: { name: "मराठी", flag: "🇮🇳" },
+    pa: { name: "ਪੰਜਾਬੀ", flag: "🇮🇳" },
+    ur: { name: "اُردُو", flag: "🇵🇰" }, // or 🇮🇳 if preferred
+    kok: { name: "कोंकणी", flag: "🇮🇳" },
+    or: { name: "ଓଡ଼ିଆ", flag: "🇮🇳" },
+    ne: { name: "नेपाली", flag: "🇳🇵" },
+    sat: { name: "ᱥᱟᱱᱛᱟᱲᱤ", flag: "🇮🇳" },
+    sd: { name: "سنڌي", flag: "🇵🇰" }, // or 🇮🇳 if preferred
+    mni: { name: "মেইতেই লোন", flag: "🇮🇳" },
+    ks: { name: "كٲشُر", flag: "🇮🇳" },
+    as: { name: "অসমীয়া", flag: "🇮🇳" },
   };
 
   // Handle language change with i18next
@@ -341,7 +371,9 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-green-500 mx-auto mb-4" />
-          <p className="text-lg text-gray-600">{t('busDetails.loadingBusDetails')}</p>
+          <p className="text-lg text-gray-600">
+            {t("busDetails.loadingBusDetails")}
+          </p>
         </div>
       </div>
     );
@@ -362,7 +394,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                 <ChevronLeft className="w-6 h-6 text-gray-600" />
               </button>
               <h1 className="text-2xl font-bold text-gray-800 ml-4">
-                {t('busDetails.title')}
+                {t("busDetails.title")}
               </h1>
             </div>
           </div>
@@ -372,7 +404,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
           <div className="text-center py-12">
             <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
             <h3 className="text-xl font-medium text-gray-600 mb-2">
-              {t('busDetails.errorLoading')}
+              {t("busDetails.errorLoading")}
             </h3>
             <p className="text-gray-500 mb-4">{error}</p>
             <div className="flex justify-center space-x-4">
@@ -380,13 +412,13 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                 onClick={() => navigate("/")}
                 className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
               >
-                {t('busDetails.goBack')}
+                {t("busDetails.goBack")}
               </button>
               <button
                 onClick={() => window.location.reload()}
                 className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
               >
-                {t('busDetails.tryAgain')}
+                {t("busDetails.tryAgain")}
               </button>
             </div>
           </div>
@@ -409,7 +441,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                 <ChevronLeft className="w-6 h-6 text-gray-600" />
               </button>
               <h1 className="text-2xl font-bold text-gray-800 ml-4">
-                {t('busDetails.busNotFound')}
+                {t("busDetails.busNotFound")}
               </h1>
             </div>
           </div>
@@ -419,16 +451,16 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
           <div className="text-center py-12">
             <AlertCircle className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
             <h3 className="text-xl font-medium text-gray-600 mb-2">
-              {t('busDetails.busNotFound')}
+              {t("busDetails.busNotFound")}
             </h3>
             <p className="text-gray-500 mb-4">
-              {t('busDetails.noBusWithId')} {deviceID}
+              {t("busDetails.noBusWithId")} {deviceID}
             </p>
             <button
               onClick={() => navigate("/")}
               className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
             >
-              {t('busDetails.searchForBuses')}
+              {t("busDetails.searchForBuses")}
             </button>
           </div>
         </main>
@@ -454,7 +486,6 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
         return "bg-gray-100 text-gray-800";
     }
   };
- 
 
   return (
     <>
@@ -476,7 +507,18 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                     {busDetails.name || busDetails.busName}
                   </h1>
                   <p className="text-gray-600">{busDetails.deviceID}</p>
-                  <Button onClick={()=>navigate(`/bus/review/${busDetails.deviceID}`)} >Review</Button>
+                  <div className="flex gap-2.5">
+                    <Button
+                      onClick={() =>
+                        navigate(`/bus/review/${busDetails.deviceID}`)
+                      }
+                    >
+                      Review
+                    </Button>
+                    <Button onClick={() => navigate(`/makepayment/${busDetails.deviceID}`)}>
+                      get ticket
+                    </Button>
+                  </div>
                 </div>
               </div>
               <div
@@ -507,29 +549,40 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
               {/* Time Information */}
               <div className="bg-white rounded-xl shadow-lg p-6 border border-green-100">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">
-                 {t('busDetails.scheduleInfo')}
+                  {t("busDetails.scheduleInfo")}
                 </h3>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="text-gray-600">{t('busDetails.startTime')}</span>
+                    <span className="text-gray-600">
+                      {t("busDetails.startTime")}
+                    </span>
                     <span className="font-semibold text-gray-800">
-                      {getActualStartTime(busDetails.route, busDetails.startTime)}
+                      {getActualStartTime(
+                        busDetails.route,
+                        busDetails.startTime
+                      )}
                     </span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                    <span className="text-gray-600">{t('busDetails.expectedArrival')}</span>
+                    <span className="text-gray-600">
+                      {t("busDetails.expectedArrival")}
+                    </span>
                     <span className="font-semibold text-green-600">
                       {realTimeStats.eta}
                     </span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <span className="text-gray-600">{t('busDetails.destinationTime')}</span>
+                    <span className="text-gray-600">
+                      {t("busDetails.destinationTime")}
+                    </span>
                     <span className="font-semibold text-gray-800">
                       {busDetails.destinationTime}
                     </span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                    <span className="text-gray-600">{t('busDetails.currentTime')}</span>
+                    <span className="text-gray-600">
+                      {t("busDetails.currentTime")}
+                    </span>
                     <span className="font-semibold text-blue-600">
                       {currentTime.toLocaleTimeString()}
                     </span>
@@ -540,7 +593,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
               {/* Driver Information */}
               <div className="bg-white rounded-xl shadow-lg p-6 border border-green-100">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">
-                  {t('busDetails.driverDetails')}
+                  {t("busDetails.driverDetails")}
                 </h3>
                 <div className="flex items-center space-x-4 mb-4">
                   <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center">
@@ -550,17 +603,21 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                     <h4 className="font-semibold text-gray-800">
                       {busDetails.driverName}
                     </h4>
-                    <p className="text-gray-600 text-sm">{t('busDetails.licensedDriver')}</p>
+                    <p className="text-gray-600 text-sm">
+                      {t("busDetails.licensedDriver")}
+                    </p>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center text-gray-600">
                     <span className="text-sm font-medium">
-                      {t('busDetails.phone')} {busDetails.driverPhone}
+                      {t("busDetails.phone")} {busDetails.driverPhone}
                     </span>
                   </div>
                   <div className="flex items-center text-gray-600">
-                    <span className="text-sm">{t('busDetails.experience')}</span>
+                    <span className="text-sm">
+                      {t("busDetails.experience")}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -568,10 +625,11 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
               {/* Route Information */}
               <div className="bg-white rounded-xl shadow-lg p-6 border border-green-100">
                 <h3 className="text-lg font-bold text-gray-800 mb-4">
-                  {t('busDetails.routeInfo')}
+                  {t("busDetails.routeInfo")}
                 </h3>
                 <div className="space-y-3">
-                  {busDetails.location.route && busDetails.location.route.length > 0 ? (
+                  {busDetails.location.route &&
+                  busDetails.location.route.length > 0 ? (
                     busDetails.route.slice(0, 5).map((stop, index) => (
                       <div key={index} className="flex items-center space-x-3">
                         <div
@@ -584,7 +642,8 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                           }`}
                         ></div>
                         <span className="text-gray-700">
-                          {stop.name || `${t('busDetails.stats.stops')} ${index + 1}`}
+                          {stop.name ||
+                            `${t("busDetails.stats.stops")} ${index + 1}`}
                           {stop.timestamp && (
                             <span className="text-xs text-gray-500 ml-2">
                               {new Date(stop.timestamp).toLocaleTimeString()}
@@ -595,37 +654,49 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                     ))
                   ) : (
                     <div className="text-gray-500 text-sm">
-                      {t('busDetails.routeNotAvailable')}
+                      {t("busDetails.routeNotAvailable")}
                     </div>
                   )}
-                  {busDetails.location.route && busDetails.location.route.length > 5 && (
-                    <div className="text-gray-500 text-sm">
-                      +{busDetails.location.route.length - 5} {t('busDetails.moreStops')}
-                    </div>
-                  )}
+                  {busDetails.location.route &&
+                    busDetails.location.route.length > 5 && (
+                      <div className="text-gray-500 text-sm">
+                        +{busDetails.location.route.length - 5}{" "}
+                        {t("busDetails.moreStops")}
+                      </div>
+                    )}
                 </div>
               </div>
 
               {/* Last Updated Info */}
               <div className="bg-white rounded-xl shadow-lg p-6 border border-green-100">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">{t('busDetails.status')}</h3>
+                <h3 className="text-lg font-bold text-gray-800 mb-4">
+                  {t("busDetails.status")}
+                </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">{t('busDetails.lastUpdated')}</span>
+                    <span className="text-gray-600">
+                      {t("busDetails.lastUpdated")}
+                    </span>
                     <span className="text-sm text-gray-800">
                       {busDetails.location.lastUpdated
-                        ? new Date(busDetails.location.lastUpdated).toLocaleString()
-                        : t('busDetails.unknown')}
+                        ? new Date(
+                            busDetails.location.lastUpdated
+                          ).toLocaleString()
+                        : t("busDetails.unknown")}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">{t('busDetails.location')}</span>
+                    <span className="text-gray-600">
+                      {t("busDetails.location")}
+                    </span>
                     <span className="text-sm text-gray-800">
                       {busDetails.location?.location.coordinates
                         ? `${busDetails.location.location.coordinates[1].toFixed(
                             4
-                          )}, ${busDetails.location.location.coordinates[0].toFixed(4)}`
-                        : t('busDetails.unknown')}
+                          )}, ${busDetails.location.location.coordinates[0].toFixed(
+                            4
+                          )}`
+                        : t("busDetails.unknown")}
                     </span>
                   </div>
                 </div>
@@ -637,12 +708,12 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
               <div className="bg-white rounded-xl shadow-lg p-6 border border-green-100">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-lg font-bold text-gray-800">
-                    {t('busDetails.liveRouteTracking')}
+                    {t("busDetails.liveRouteTracking")}
                   </h3>
                   <div className="flex items-center space-x-2 bg-green-50 rounded-full px-3 py-1">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <span className="text-sm font-medium text-green-700">
-                      {t('busDetails.live')}
+                      {t("busDetails.live")}
                     </span>
                   </div>
                 </div>
@@ -658,7 +729,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                     <div className="text-center">
                       <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-2" />
                       <p className="text-gray-600">
-                        {t('busDetails.locationNotAvailable')}
+                        {t("busDetails.locationNotAvailable")}
                       </p>
                     </div>
                   </div>
@@ -670,29 +741,47 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                     <div className="text-2xl font-bold text-gray-800">
                       {realTimeStats.speed}
                     </div>
-                    <div className="text-sm text-gray-600">{t('busDetails.stats.kmh')}</div>
-                    <div className="text-xs text-gray-500">{t('busDetails.stats.speed')}</div>
+                    <div className="text-sm text-gray-600">
+                      {t("busDetails.stats.kmh")}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {t("busDetails.stats.speed")}
+                    </div>
                   </div>
                   <div className="text-center p-3 bg-green-50 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">
-                      {realTimeStats.eta === "Calculating..." ? "--" : realTimeStats.eta}
+                      {realTimeStats.eta === "Calculating..."
+                        ? "--"
+                        : realTimeStats.eta}
                     </div>
-                    <div className="text-sm text-gray-600">{t('busDetails.stats.min')}</div>
-                    <div className="text-xs text-gray-500">{t('busDetails.stats.eta')}</div>
+                    <div className="text-sm text-gray-600">
+                      {t("busDetails.stats.min")}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {t("busDetails.stats.eta")}
+                    </div>
                   </div>
                   <div className="text-center p-3 bg-blue-50 rounded-lg">
                     <div className="text-2xl font-bold text-blue-600">
                       {realTimeStats.remainingDistance}
                     </div>
-                    <div className="text-sm text-gray-600">{t('busDetails.stats.km')}</div>
-                    <div className="text-xs text-gray-500">{t('busDetails.stats.distance')}</div>
+                    <div className="text-sm text-gray-600">
+                      {t("busDetails.stats.km")}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {t("busDetails.stats.distance")}
+                    </div>
                   </div>
                   <div className="text-center p-3 bg-yellow-50 rounded-lg">
                     <div className="text-2xl font-bold text-yellow-600">
                       {realTimeStats.remainingStops}
                     </div>
-                    <div className="text-sm text-gray-600">{t('busDetails.stats.stops')}</div>
-                    <div className="text-xs text-gray-500">{t('busDetails.stats.remaining')}</div>
+                    <div className="text-sm text-gray-600">
+                      {t("busDetails.stats.stops")}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {t("busDetails.stats.remaining")}
+                    </div>
                   </div>
                 </div>
               </div>

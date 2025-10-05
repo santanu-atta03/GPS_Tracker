@@ -373,7 +373,7 @@ const BusSearch = () => {
             )}
 
             {results.type === "multi-hop" && (
-              <div className="space-y-6">
+              <div className="space-y-6 border-2 border-gray-400 p-2.5">
                 <div className="flex flex-col items-center">
                   <h2 className="text-lg font-bold text-green-700">Start</h2>
                   <p className="text-xs text-gray-500 mt-1">

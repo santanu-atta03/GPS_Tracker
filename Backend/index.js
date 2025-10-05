@@ -12,6 +12,7 @@ import UserRoute from "./routes/User.route.js";
 import findBusRoute from "./routes/MyLocation.route.js";
 import ReviewRoute from "./routes/Review.route.js";
 import Razorpay from "razorpay";
+import crypto from "crypto";
 import bodyParser from "body-parser";
 dotenv.config();
 connectToMongo();
@@ -55,7 +56,7 @@ app.use("/api/v1/Bus", BusRoute);
 app.use("/api/v1/", JourneyRoute);
 app.use("/api/v1/user", UserRoute);
 
-app.use("/api/v1/review",ReviewRoute)
+app.use("/api/v1/review", ReviewRoute);
 
 app.get("/api/v1/search", async (req, res) => {
   try {
@@ -101,7 +102,6 @@ app.get("/api/v1/reverse-geocode", async (req, res) => {
   }
 });
 
-
 app.post("/create-order", async (req, res) => {
   try {
     const options = {
@@ -118,30 +118,29 @@ app.post("/create-order", async (req, res) => {
 });
 app.post("/verify-payment", (req, res) => {
   try {
-    const { order_id, payment_id, signature } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      req.body;
+
     const generated_signature = crypto
       .createHmac("sha256", razorpay.key_secret)
-      .update(order_id + "|" + payment_id)
+      .update(razorpay_order_id + "|" + razorpay_payment_id)
       .digest("hex");
 
-    if (generated_signature === signature) {
-      res.json({ success: true, message: "Payment verified successfully!" });
+    if (generated_signature === razorpay_signature) {
+      res.json({ success: true, message: "✅ Payment verified successfully!" });
     } else {
-      res.json({ success: false, message: "Payment verification failed!" });
+      res.json({ success: false, message: "❌ Payment verification failed!" });
     }
   } catch (error) {
+    console.error("Verification error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
-
-
 app.get("/", (req, res) => {
   return res.status(200).json({
     message: "Hello from backend",
   });
 });
-
- 
 
 app.listen(port, () => {
   console.log(`Website is running at http://localhost:${port}`);

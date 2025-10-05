@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import MicInput from "./MicInput";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
+import { useParams } from "react-router-dom";
 const GEOCODE_API = "https://nominatim.openstreetmap.org/search";
 const markerIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -163,6 +164,7 @@ const RazorpayPayment = () => {
   const [busId, setBusId] = useState("BUS-111");
   const [ticketData, setTicketData] = useState(null);
   const [loadingPrice, setLoadingPrice] = useState(false);
+  const { deviceid } = useParams();
 
   const handleCalculatePrice = async () => {
     if (!from || !to) {
@@ -179,7 +181,7 @@ const RazorpayPayment = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            busId,
+            busId: deviceid,
             fromLat: from.lat,
             fromLng: from.lon,
             toLat: to.lat,
@@ -271,12 +273,19 @@ const RazorpayPayment = () => {
                     {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify(response),
+                      body: JSON.stringify({
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature,
+                      }),
                     }
                   );
+
                   const verifyData = await verifyRes.json();
                   alert(verifyData.message);
+                  console.log("✅ Verify Response:", verifyData);
                 },
+
                 prefill: {
                   name: "Ayan Manna",
                   email: "mannaayan777@gmail.com",

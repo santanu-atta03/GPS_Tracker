@@ -67,7 +67,7 @@ function App() {
       element:<FllowBusMap/>
     },
      {
-      path:"/makepayment",
+      path:"/makepayment/:deviceid",
       element:<RazorpayPayment/>
     }
   ]);
