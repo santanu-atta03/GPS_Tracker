@@ -281,7 +281,11 @@ const RazorpayPayment = () => {
                       razorpay_payment_id: response.razorpay_payment_id,
                       razorpay_signature: response.razorpay_signature,
                       ticketData,
-                      busId:deviceid // include all ticket info
+                      busId: deviceid,
+                      fromLat: from.lat,
+                      fromLng: from.lon,
+                      toLat: to.lat,
+                      toLng: to.lon,
                     },
                     { headers: { Authorization: `Bearer ${token}` } }
                   );

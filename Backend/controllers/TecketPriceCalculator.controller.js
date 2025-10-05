@@ -5,6 +5,7 @@ import Razorpay from "razorpay";
 import User from "../models/User.model.js";
 import Payment from "../models/Payment.model.js";
 import crypto from "crypto";
+import getAddressFromCoordinates from "../utils/utilsgetAddressFromCoordinates.js";
 
 const razorpay = new Razorpay({
   key_id: "rzp_test_RPcZFwp7G16Gjf",
@@ -115,7 +116,11 @@ export const veryfypament = async (req, res) => {
       razorpay_payment_id,
       razorpay_signature,
       ticketData,
-      busId
+      busId,
+      fromLat,
+      fromLng,
+      toLat,
+      toLng,
     } = req.body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
@@ -156,8 +161,10 @@ export const veryfypament = async (req, res) => {
       name: userInfo.name || "Unknown User",
       email: userInfo.email || "N/A",
       busId: busId,
-      fromIndex: ticketData.fromIndex,
-      toIndex: ticketData.toIndex,
+      fromLat: fromLat,
+      fromLng: fromLng,
+      toLat: toLat,
+      toLng: toLng,
       totalDistance: ticketData.totalDistance,
       passengerDistance: ticketData.passengerDistance,
       ticketPrice: ticketData.ticketPrice,
@@ -182,5 +189,85 @@ export const veryfypament = async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "Server error", error: error.message });
+  }
+};
+
+export const getTecket = async (req, res) => {
+  try {
+    const userInfo = await User.findOne({ auth0Id: req.auth.sub });
+    if (!userInfo) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const allTicket = await Payment.find({ user: userInfo._id }).populate(
+      "user"
+    );
+
+    if (!allTicket) {
+      return res.status(404).json({
+        message: "no tickete avalable",
+        success: false,
+      });
+    }
+    return res.status(200).json({
+      message: "this is your tickete",
+      allTicket,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const findTicketById = async (req, res) => {
+  try {
+    const { ticketid } = req.params;
+
+    const ticket = await Payment.findById(ticketid).populate("user");
+    if (!ticket) {
+      return res.status(404).json({
+        message: "Payment not found",
+        success: false,
+      });
+    }
+
+    // ✅ Convert coordinates to address
+    const fromAddressData = await getAddressFromCoordinates(
+      ticket.fromLat,
+      ticket.fromLng
+    );
+    const toAddressData = await getAddressFromCoordinates(
+      ticket.toLat,
+      ticket.toLng
+    );
+
+    // ✅ Add addresses directly into ticket object (without saving to DB)
+    const ticketWithAddress = {
+      ...ticket.toObject(),
+      fromAddress: {
+        english: fromAddressData.english,
+        local: fromAddressData.local,
+        state: fromAddressData.state,
+      },
+      toAddress: {
+        english: toAddressData.english,
+        local: toAddressData.local,
+        state: toAddressData.state,
+      },
+    };
+
+    return res.status(200).json({
+      message: "Ticket retrieved successfully",
+      ticket: ticketWithAddress,
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error in findTicketById:", error);
+    return res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
   }
 };

@@ -25,26 +25,25 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const LANGUAGES = {
-    en: { name: 'English', flag: '🇺🇸' },
-hi: { name: 'हिन्दी', flag: '🇮🇳' },
-ta: { name: 'தமிழ்', flag: '🇮🇳' },
-te: { name: 'తెలుగు', flag: '🇮🇳' },
-kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳' },
-ml: { name: 'മലയാളം', flag: '🇮🇳' },
-bn: { name: 'বাংলা', flag: '🇮🇳' },
-gu: { name: 'ગુજરાતી', flag: '🇮🇳' },
-mr: { name: 'मराठी', flag: '🇮🇳' },
-pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳' },
-ur: { name: 'اُردُو', flag: '🇵🇰' }, // or 🇮🇳 if preferred
-kok: { name: 'कोंकणी', flag: '🇮🇳' },
-or: { name: 'ଓଡ଼ିଆ', flag: '🇮🇳' },
-ne: { name: 'नेपाली', flag: '🇳🇵' },
-sat: { name: 'ᱥᱟᱱᱛᱟᱲᱤ', flag: '🇮🇳' },
-sd: { name: 'سنڌي', flag: '🇵🇰' }, // or 🇮🇳 if preferred
-mni: { name: 'মেইতেই লোন', flag: '🇮🇳' },
-ks: { name: 'كٲشُر', flag: '🇮🇳' },
-as: { name: 'অসমীয়া', flag: '🇮🇳' },
-
+    en: { name: "English", flag: "🇺🇸" },
+    hi: { name: "हिन्दी", flag: "🇮🇳" },
+    ta: { name: "தமிழ்", flag: "🇮🇳" },
+    te: { name: "తెలుగు", flag: "🇮🇳" },
+    kn: { name: "ಕನ್ನಡ", flag: "🇮🇳" },
+    ml: { name: "മലയാളം", flag: "🇮🇳" },
+    bn: { name: "বাংলা", flag: "🇮🇳" },
+    gu: { name: "ગુજરાતી", flag: "🇮🇳" },
+    mr: { name: "मराठी", flag: "🇮🇳" },
+    pa: { name: "ਪੰਜਾਬੀ", flag: "🇮🇳" },
+    ur: { name: "اُردُو", flag: "🇵🇰" }, // or 🇮🇳 if preferred
+    kok: { name: "कोंकणी", flag: "🇮🇳" },
+    or: { name: "ଓଡ଼ିଆ", flag: "🇮🇳" },
+    ne: { name: "नेपाली", flag: "🇳🇵" },
+    sat: { name: "ᱥᱟᱱᱛᱟᱲᱤ", flag: "🇮🇳" },
+    sd: { name: "سنڌي", flag: "🇵🇰" }, // or 🇮🇳 if preferred
+    mni: { name: "মেইতেই লোন", flag: "🇮🇳" },
+    ks: { name: "كٲشُر", flag: "🇮🇳" },
+    as: { name: "অসমীয়া", flag: "🇮🇳" },
   };
 
   // Language Change
@@ -61,7 +60,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
     setIsMobileMenuOpen(false);
   };
 
-   const handleLogout = () => {
+  const handleLogout = () => {
     localStorage.removeItem("loginShown");
     logout({
       logoutParams: { returnTo: window.location.origin },
@@ -113,7 +112,6 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
         </div>
 
         {/* Center Badge (Desktop only) */}
-        
 
         {/* Right Side */}
         <div className="flex items-center gap-2 sm:gap-4">
@@ -136,9 +134,7 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                   {t("navbar.busDetails")}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
                 </div>
-              ) : (
-                 null
-              )}
+              ) : null}
 
               <div
                 onClick={() => handleNavigation("/view/map")}
@@ -148,10 +144,17 @@ as: { name: 'অসমীয়া', flag: '🇮🇳' },
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
               <div
+                onClick={() => handleNavigation("/find/ticket")}
+                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+              >
+                ticket
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+              </div>
+              <div
                 onClick={() => handleNavigation("/nearBy/search")}
                 className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
               >
-                 NearBy
+                NearBy
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
             </div>

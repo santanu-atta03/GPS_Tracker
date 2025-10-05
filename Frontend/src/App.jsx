@@ -15,6 +15,8 @@ import NearbyPOIMap from "./components/page/NearbyPOIMap";
 import ReviewForm from "./components/page/ReviewForm";
 import FllowBusMap from "./components/page/FllowBusMap";
 import RazorpayPayment from "./components/page/RazorpayPayment";
+import MyTickets from "./components/page/MyTickets";
+import TicketDetails from "./components/page/TicketDetails";
 
 function App() {
   const approute = createBrowserRouter([
@@ -55,20 +57,28 @@ function App() {
       element: <UserLogin />,
     },
     {
-      path:"/nearBy/search",
-      element:<NearbyPOIMap/>
+      path: "/nearBy/search",
+      element: <NearbyPOIMap />,
     },
     {
-      path:"/bus/review/:busId",
-      element:<ReviewForm/>
+      path: "/bus/review/:busId",
+      element: <ReviewForm />,
     },
-     {
-      path:"/fllow/path",
-      element:<FllowBusMap/>
+    {
+      path: "/fllow/path",
+      element: <FllowBusMap />,
     },
-     {
-      path:"/makepayment/:deviceid",
-      element:<RazorpayPayment/>
+    {
+      path: "/makepayment/:deviceid",
+      element: <RazorpayPayment />,
+    },
+    {
+      path: "/find/ticket",
+      element: <MyTickets />,
+    },
+    {
+      path:"/ticket/:ticketid",
+      element:<TicketDetails/>
     }
   ]);
 

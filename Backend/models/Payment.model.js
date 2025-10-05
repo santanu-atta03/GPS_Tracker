@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { type } from "os";
 
 const paymentSchema = new mongoose.Schema(
   {
@@ -10,9 +11,11 @@ const paymentSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true },
 
-    busId: { type: String,  },
-    fromIndex: { type: Number, required: true },
-    toIndex: { type: Number, required: true },
+    busId: { type: String },
+    fromLat: { type: Number },
+    fromLng: { type: Number },
+    toLat: { type: Number },
+    toLng: { type: Number },
     totalDistance: { type: String },
     passengerDistance: { type: String },
     ticketPrice: { type: Number, required: true },
