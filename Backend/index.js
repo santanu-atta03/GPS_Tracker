@@ -11,11 +11,18 @@ import JourneyRoute from "./routes/journey.route.js";
 import UserRoute from "./routes/User.route.js";
 import findBusRoute from "./routes/MyLocation.route.js";
 import ReviewRoute from "./routes/Review.route.js";
+import Razorpay from "razorpay";
+import bodyParser from "body-parser";
 dotenv.config();
 connectToMongo();
 
 const app = express();
 const port = process.env.PORT || 8000;
+
+const razorpay = new Razorpay({
+  key_id: "rzp_test_RPcZFwp7G16Gjf",
+  key_secret: "tUB9roW7JPgT4qJutNMxbrAZ",
+});
 
 // ✅ CORS Options
 const corsOptions = {
@@ -93,6 +100,40 @@ app.get("/api/v1/reverse-geocode", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch reverse geocoding data" });
   }
 });
+
+
+app.post("/create-order", async (req, res) => {
+  try {
+    const options = {
+      amount: req.body.amount * 100, // convert to paise
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+    };
+    const order = await razorpay.orders.create(options);
+    res.json(order);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error creating order");
+  }
+});
+app.post("/verify-payment", (req, res) => {
+  try {
+    const { order_id, payment_id, signature } = req.body;
+    const generated_signature = crypto
+      .createHmac("sha256", razorpay.key_secret)
+      .update(order_id + "|" + payment_id)
+      .digest("hex");
+
+    if (generated_signature === signature) {
+      res.json({ success: true, message: "Payment verified successfully!" });
+    } else {
+      res.json({ success: false, message: "Payment verification failed!" });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 
 app.get("/", (req, res) => {
   return res.status(200).json({

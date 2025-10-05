@@ -5,9 +5,9 @@ import Location from "../models/Location.model.js";
 
 export const CreateBus = async (req, res) => {
   try {
-    const { name, deviceID, to, from, timeSlots } = req.body;
+    const { name, deviceID, to, from, timeSlots,ticketprice } = req.body;
 
-    if (!name || !deviceID || !to || !from || !timeSlots?.length) {
+    if (!name || !deviceID || !to || !from || !ticketprice|| !timeSlots?.length) {
       return res.status(400).json({
         message: "All fields including time slots are required",
         success: false,
@@ -42,6 +42,7 @@ export const CreateBus = async (req, res) => {
       from,
       driver: user._id,
       location: newBusLocation._id,
+      ticketprice,
       timeSlots,
     };
 

@@ -26,17 +26,22 @@ const BusDetails = mongoose.Schema({
     required: true,
   },
   ratings: {
-    punctuality: { type: Number, min: 1, max: 5, required: true },
-    comfort: { type: Number, min: 1, max: 5, required: true },
-    cleanliness: { type: Number, min: 1, max: 5, required: true },
-    driverBehavior: { type: Number, min: 1, max: 5, required: true },
-    safety: { type: Number, min: 1, max: 5, required: true },
-    valueForMoney: { type: Number, min: 1, max: 5, required: true },
+    punctuality: { type: Number, min: 1, max: 5, required: true, default:1},
+    comfort: { type: Number, min: 1, max: 5, required: true ,default:1},
+    cleanliness: { type: Number, min: 1, max: 5, required: true,default:1 },
+    driverBehavior: { type: Number, min: 1, max: 5, required: true,default:1 },
+    safety: { type: Number, min: 1, max: 5, required: true,default:1 },
+    valueForMoney: { type: Number, min: 1, max: 5, required: true,default:1 },
+  },
+  ticketprice: {
+    type: Number,
+    min: 1,
+    required: true,
   },
   timeSlots: [
     {
       startTime: {
-        type: String,  
+        type: String,
         required: true,
       },
       endTime: {
