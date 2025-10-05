@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import MicInput from "./MicInput";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 import { useParams } from "react-router-dom";
+import axios from "axios";
+import { useAuth0 } from "@auth0/auth0-react";
 const GEOCODE_API = "https://nominatim.openstreetmap.org/search";
 const markerIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -165,7 +167,7 @@ const RazorpayPayment = () => {
   const [ticketData, setTicketData] = useState(null);
   const [loadingPrice, setLoadingPrice] = useState(false);
   const { deviceid } = useParams();
-
+  const { getAccessTokenSilently } = useAuth0();
   const handleCalculatePrice = async () => {
     if (!from || !to) {
       alert("Please select both From and To locations.");
@@ -268,17 +270,20 @@ const RazorpayPayment = () => {
                 description: `Ticket for Bus ${busId}`,
                 order_id: order.id,
                 handler: async function (response) {
-                  const verifyRes = await fetch(
-                    "http://localhost:5000/verify-payment",
+                  const token = await getAccessTokenSilently({
+                    audience: "http://localhost:5000/api/v3",
+                  });
+                  const verifyRes = await axios.post(
+                    "http://localhost:5000/api/v1/Bus/verify-payment",
+
                     {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({
-                        razorpay_order_id: response.razorpay_order_id,
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        razorpay_signature: response.razorpay_signature,
-                      }),
-                    }
+                      razorpay_order_id: response.razorpay_order_id,
+                      razorpay_payment_id: response.razorpay_payment_id,
+                      razorpay_signature: response.razorpay_signature,
+                      ticketData,
+                      busId:deviceid // include all ticket info
+                    },
+                    { headers: { Authorization: `Bearer ${token}` } }
                   );
 
                   const verifyData = await verifyRes.json();
