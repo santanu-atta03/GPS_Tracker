@@ -65,7 +65,7 @@ export const createReview = async (req, res) => {
     bus.ratings = newRatings;
     await bus.save();
 
-    res.status(201).json({
+    return res.status(200).json({
       success: true,
       message: "Review added successfully & bus ratings updated",
       data: review,

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import Navbar from "../shared/Navbar";
 
 const ReviewForm = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -89,6 +90,8 @@ const ReviewForm = () => {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="bg-white rounded-lg shadow-md p-8">
@@ -194,6 +197,8 @@ const ReviewForm = () => {
         </div>
       </div>
     </div>
+    </>
+    
   );
 };
 
