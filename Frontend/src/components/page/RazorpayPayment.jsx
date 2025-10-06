@@ -259,7 +259,7 @@ const RazorpayPayment = () => {
               onClick={async () => {
                 // Razorpay payment
                 const res = await fetch(
-                  "http://localhost:5000/api/v1/Bus/create-order",
+                  `${import.meta.env.VITE_BASE_URL}/Bus/create-order`,
                   {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -280,7 +280,7 @@ const RazorpayPayment = () => {
                       audience: "http://localhost:5000/api/v3",
                     });
                     const verifyRes = await axios.post(
-                      "http://localhost:5000/api/v1/Bus/verify-payment",
+                      `${import.meta.env.VITE_BASE_URL}/Bus/verify-payment`,
 
                       {
                         razorpay_order_id: response.razorpay_order_id,

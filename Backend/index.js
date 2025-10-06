@@ -47,7 +47,7 @@ app.use("/api/v1/Bus", BusRoute);
 app.use("/api/v1/", JourneyRoute);
 app.use("/api/v1/user", UserRoute);
 app.use("/api/v1/review", ReviewRoute);
-app.use("/api/support", supportBotRoutes);
+app.use("/api/v1/support", supportBotRoutes);
 
 app.get("/", (req, res) => {
   return res.status(200).json({

@@ -16,7 +16,7 @@ const SupportChat = () => {
     setInput("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/support/ask", { question: input });
+      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/support/ask`, { question: input });
       const botMsg = { sender: "bot", text: res.data.answer };
       setMessages((prev) => [...prev, botMsg]);
     } catch (err) {
