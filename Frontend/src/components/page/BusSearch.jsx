@@ -197,7 +197,7 @@ const BusSearch = () => {
         }
         console.log(from);
         console.log(to);
-        res = await axios.post(`http://localhost:5000/api/v1/Myroute/find-bus`, {
+        res = await axios.post(`${import.meta.env.VITE_BASE_URL}/Myroute/find-bus`, {
           fromLat: from.lat,
           fromLng: from.lon,
           toLat: to.lat,
