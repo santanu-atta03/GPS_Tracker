@@ -4,6 +4,7 @@ import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
+import Navbar from "../shared/Navbar";
 const GEOCODE_API = "https://nominatim.openstreetmap.org/search";
 const markerIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -206,112 +207,118 @@ const RazorpayPayment = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <h2 className="text-xl font-semibold mb-4">Book Your Bus Ticket</h2>
+    <>
+      <Navbar />
+      <div className="max-w-md mx-auto p-4">
+        <h2 className="text-xl font-semibold mb-4">Book Your Bus Ticket</h2>
 
-      <div className="mb-6">
-        <PlaceSearch
-          label="From"
-          enableUseMyLocation={true}
-          onSelect={(place) => setFrom({ lat: place.lat, lon: place.lon })}
-        />
-        <PlaceSearch
-          label="To"
-          onSelect={(place) => setTo({ lat: place.lat, lon: place.lon })}
-        />
-      </div>
-
-      <button
-        className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md mb-4"
-        onClick={handleCalculatePrice}
-        disabled={loadingPrice}
-      >
-        {loadingPrice ? "Calculating..." : "Get Ticket Price"}
-      </button>
-
-      {ticketData && (
-        <div className="p-4 bg-gray-100 rounded">
-          <p>
-            <strong>From Index:</strong> {ticketData.fromIndex}
-          </p>
-          <p>
-            <strong>To Index:</strong> {ticketData.toIndex}
-          </p>
-          <p>
-            <strong>Total Distance:</strong> {ticketData.totalDistance} km
-          </p>
-          <p>
-            <strong>Passenger Distance:</strong> {ticketData.passengerDistance}{" "}
-            km
-          </p>
-          <p>
-            <strong>Ticket Price:</strong> ₹{ticketData.ticketPrice}
-          </p>
-          <p>
-            <strong>Price per km:</strong> ₹{ticketData.pricePerKm}
-          </p>
-
-          <button
-            className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg shadow-md mt-4"
-            onClick={async () => {
-              // Razorpay payment
-              const res = await fetch("http://localhost:5000/create-order", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ amount: ticketData.ticketPrice }),
-              });
-              const order = await res.json();
-
-              const options = {
-                key: "rzp_test_RPcZFwp7G16Gjf",
-                amount: order.amount,
-                currency: order.currency,
-                name: "Bus Ticket Booking",
-                description: `Ticket for Bus ${busId}`,
-                order_id: order.id,
-                handler: async function (response) {
-                  const token = await getAccessTokenSilently({
-                    audience: "http://localhost:5000/api/v3",
-                  });
-                  const verifyRes = await axios.post(
-                    "http://localhost:5000/api/v1/Bus/verify-payment",
-
-                    {
-                      razorpay_order_id: response.razorpay_order_id,
-                      razorpay_payment_id: response.razorpay_payment_id,
-                      razorpay_signature: response.razorpay_signature,
-                      ticketData,
-                      busId: deviceid,
-                      fromLat: from.lat,
-                      fromLng: from.lon,
-                      toLat: to.lat,
-                      toLng: to.lon,
-                    },
-                    { headers: { Authorization: `Bearer ${token}` } }
-                  );
-
-                  const verifyData = await verifyRes.json();
-                  alert(verifyData.message);
-                  console.log("✅ Verify Response:", verifyData);
-                },
-
-                prefill: {
-                  name: "Ayan Manna",
-                  email: "mannaayan777@gmail.com",
-                  contact: "9907072795",
-                },
-                theme: { color: "#3399cc" },
-              };
-
-              const rzp1 = new window.Razorpay(options);
-              rzp1.open();
-            }}
-          >
-            Pay ₹{ticketData.ticketPrice}
-          </button>
+        <div className="mb-6">
+          <PlaceSearch
+            label="From"
+            enableUseMyLocation={true}
+            onSelect={(place) => setFrom({ lat: place.lat, lon: place.lon })}
+          />
+          <PlaceSearch
+            label="To"
+            onSelect={(place) => setTo({ lat: place.lat, lon: place.lon })}
+          />
         </div>
-      )}
-    </div>
+
+        <button
+          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md mb-4"
+          onClick={handleCalculatePrice}
+          disabled={loadingPrice}
+        >
+          {loadingPrice ? "Calculating..." : "Get Ticket Price"}
+        </button>
+
+        {ticketData && (
+          <div className="p-4 bg-gray-100 rounded">
+            <p>
+              <strong>From Index:</strong> {ticketData.fromIndex}
+            </p>
+            <p>
+              <strong>To Index:</strong> {ticketData.toIndex}
+            </p>
+            <p>
+              <strong>Total Distance:</strong> {ticketData.totalDistance} km
+            </p>
+            <p>
+              <strong>Passenger Distance:</strong>{" "}
+              {ticketData.passengerDistance} km
+            </p>
+            <p>
+              <strong>Ticket Price:</strong> ₹{ticketData.ticketPrice}
+            </p>
+            <p>
+              <strong>Price per km:</strong> ₹{ticketData.pricePerKm}
+            </p>
+
+            <button
+              className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg shadow-md mt-4"
+              onClick={async () => {
+                // Razorpay payment
+                const res = await fetch(
+                  "http://localhost:5000/api/v1/Bus/create-order",
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ amount: ticketData.ticketPrice }),
+                  }
+                );
+                const order = await res.json();
+
+                const options = {
+                  key: "rzp_test_RPcZFwp7G16Gjf",
+                  amount: order.amount,
+                  currency: order.currency,
+                  name: "Bus Ticket Booking",
+                  description: `Ticket for Bus ${busId}`,
+                  order_id: order.id,
+                  handler: async function (response) {
+                    const token = await getAccessTokenSilently({
+                      audience: "http://localhost:5000/api/v3",
+                    });
+                    const verifyRes = await axios.post(
+                      "http://localhost:5000/api/v1/Bus/verify-payment",
+
+                      {
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature,
+                        ticketData,
+                        busId: deviceid,
+                        fromLat: from.lat,
+                        fromLng: from.lon,
+                        toLat: to.lat,
+                        toLng: to.lon,
+                      },
+                      { headers: { Authorization: `Bearer ${token}` } }
+                    );
+
+                    const verifyData = await verifyRes.json();
+                    alert(verifyData.message);
+                    console.log("✅ Verify Response:", verifyData);
+                  },
+
+                  prefill: {
+                    name: "Ayan Manna",
+                    email: "mannaayan777@gmail.com",
+                    contact: "9907072795",
+                  },
+                  theme: { color: "#3399cc" },
+                };
+
+                const rzp1 = new window.Razorpay(options);
+                rzp1.open();
+              }}
+            >
+              Pay ₹{ticketData.ticketPrice}
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 

@@ -53,7 +53,7 @@ const Profile = () => {
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v3",
       });
-      console.log(token)
+      console.log(token);
       const res = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/driver/update/profile`,
         { name, licenceId, driverExp },
@@ -76,7 +76,6 @@ const Profile = () => {
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Header Section */}
-        
 
         <div className="max-w-2xl mx-auto">
           <Card className="shadow-xl rounded-2xl border border-green-100 bg-white/80 backdrop-blur-sm">
@@ -110,167 +109,6 @@ const Profile = () => {
                 </div>
               </div>
             </CardHeader>
-
-            <CardContent className="space-y-6">
-              {isEditing ? (
-                <div className="space-y-6">
-                  {/* Edit Form */}
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <User className="w-4 h-4 inline mr-2" />
-                        Full Name
-                      </label>
-                      <Input
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                        placeholder="Enter your full name"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <CreditCard className="w-4 h-4 inline mr-2" />
-                        Licence ID
-                      </label>
-                      <Input
-                        value={licenceId}
-                        onChange={(e) => setLicenceId(e.target.value)}
-                        className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                        placeholder="Enter your licence ID"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        <Calendar className="w-4 h-4 inline mr-2" />
-                        Driver Experience (Years)
-                      </label>
-                      <Input
-                        value={driverExp}
-                        onChange={(e) => setDriverExp(e.target.value)}
-                        className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
-                        placeholder="Enter years of experience"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-3 pt-4">
-                    <Button
-                      onClick={handleUpdate}
-                      disabled={loading}
-                      className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center"
-                    >
-                      <Save className="w-4 h-4 mr-2" />
-                      {loading ? "Updating..." : "Save Changes"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsEditing(false)}
-                      disabled={loading}
-                      className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center justify-center"
-                    >
-                      <X className="w-4 h-4 mr-2" />
-                      Cancel
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {/* Profile Information */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <div className="flex items-center mb-2">
-                        <Shield className="w-5 h-5 text-blue-600 mr-2" />
-                        <span className="font-semibold text-gray-700">
-                          Auth0 ID
-                        </span>
-                      </div>
-                      <p className="text-gray-600 text-sm break-all">
-                        {usere.auth0Id}
-                      </p>
-                    </div>
-
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <div className="flex items-center mb-2">
-                        <CreditCard className="w-5 h-5 text-green-600 mr-2" />
-                        <span className="font-semibold text-gray-700">
-                          Licence ID
-                        </span>
-                      </div>
-                      <p className="text-gray-600">
-                        {usere.licenceId || "Not provided"}
-                      </p>
-                    </div>
-
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <div className="flex items-center mb-2">
-                        <Calendar className="w-5 h-5 text-purple-600 mr-2" />
-                        <span className="font-semibold text-gray-700">
-                          Experience
-                        </span>
-                      </div>
-                      <p className="text-gray-600">
-                        {usere.driverExp
-                          ? `${usere.driverExp} years`
-                          : "Not specified"}
-                      </p>
-                    </div>
-
-                    <div className="bg-gray-50 rounded-xl p-4">
-                      <div className="flex items-center mb-2">
-                        <Clock className="w-5 h-5 text-orange-600 mr-2" />
-                        <span className="font-semibold text-gray-700">
-                          Last Updated
-                        </span>
-                      </div>
-                      <p className="text-gray-600 text-sm">
-                        {new Date(usere.lastUpdated).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* System ID (Full Width) */}
-                  <div className="bg-gray-50 rounded-xl p-4">
-                    <div className="flex items-center mb-2">
-                      <Hash className="w-5 h-5 text-red-600 mr-2" />
-                      <span className="font-semibold text-gray-700">
-                        System ID
-                      </span>
-                    </div>
-                    <p className="text-gray-600 text-sm break-all">
-                      {usere._id}
-                    </p>
-                  </div>
-
-                  {/* Edit Button */}
-                  <div className="pt-4">
-                    <Button
-                      onClick={() => setIsEditing(true)}
-                      className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center"
-                    >
-                      <Edit3 className="w-4 h-4 mr-2" />
-                      Update Profile
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Success/Error Message */}
-              {message && (
-                <div
-                  className={`rounded-xl p-4 text-center ${
-                    message.includes("successfully")
-                      ? "bg-green-50 border border-green-200 text-green-700"
-                      : "bg-red-50 border border-red-200 text-red-700"
-                  }`}
-                >
-                  <p className="font-medium">{message}</p>
-                </div>
-              )}
-            </CardContent>
           </Card>
 
           {/* Additional Info Cards */}

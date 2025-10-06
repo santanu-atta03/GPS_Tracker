@@ -221,6 +221,21 @@ export const getTecket = async (req, res) => {
   }
 };
 
+export const createTickete = async (req, res) => {
+  try {
+    const options = {
+      amount: req.body.amount * 100, // convert to paise
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+    };
+    const order = await razorpay.orders.create(options);
+    res.json(order);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error creating order");
+  }
+};
+
 export const findTicketById = async (req, res) => {
   try {
     const { ticketid } = req.params;

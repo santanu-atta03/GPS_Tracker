@@ -3,6 +3,7 @@ import isAuthenticated from "../middleware/isAuthenticated.js";
 import { CreateBus, getAllBUs } from "../controllers/Bus.controller.js";
 import {
   calculateTicketPrice,
+  createTickete,
   findTicketById,
   getTecket,
   veryfypament,
@@ -14,4 +15,5 @@ BusRoute.post("/calculate/price", calculateTicketPrice);
 BusRoute.post("/verify-payment", isAuthenticated, veryfypament);
 BusRoute.get("/user/all-ticket", isAuthenticated, getTecket);
 BusRoute.get("/get-ticket/:ticketid", isAuthenticated, findTicketById);
+BusRoute.post("/create-order",createTickete)
 export default BusRoute;
