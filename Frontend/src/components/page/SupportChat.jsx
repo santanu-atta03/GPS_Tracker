@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { MessageCircle, Send, Bot, User } from "lucide-react";
 
 const SupportChat = () => {
   // Initialize with a greeting message from the bot
@@ -27,39 +28,73 @@ const SupportChat = () => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  };
+
   return (
-    <div className="fixed bottom-4 right-4 w-80 bg-white shadow-lg rounded-lg border border-gray-200">
-      <div className="p-3 bg-blue-600 text-white font-semibold rounded-t-lg">
-        💬 Customer Support
+    <div className="fixed bottom-4 right-4 w-96 bg-white shadow-xl rounded-2xl border border-green-100 overflow-hidden">
+      {/* Header */}
+      <div className="p-4 bg-gradient-to-r from-green-500 to-green-600 text-white flex items-center gap-3">
+        <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+          <MessageCircle className="w-5 h-5" />
+        </div>
+        <div>
+          <h3 className="font-bold text-lg">Customer Support</h3>
+          <p className="text-xs text-green-50">We're here to help</p>
+        </div>
       </div>
 
-      <div className="h-64 overflow-y-auto p-3">
+      {/* Messages */}
+      <div className="h-80 overflow-y-auto p-4 bg-gradient-to-br from-green-50 via-white to-green-50">
         {messages.map((m, i) => (
-          <div key={i} className={`my-2 ${m.sender === "user" ? "text-right" : "text-left"}`}>
-            <span
-              className={`inline-block px-3 py-2 rounded-lg ${
-                m.sender === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-800"
-              }`}
-            >
-              {m.text}
-            </span>
+          <div key={i} className={`mb-4 flex ${m.sender === "user" ? "justify-end" : "justify-start"}`}>
+            <div className={`flex items-start gap-2 max-w-[80%] ${m.sender === "user" ? "flex-row-reverse" : "flex-row"}`}>
+              {/* Avatar */}
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                m.sender === "user" 
+                  ? "bg-gradient-to-br from-green-500 to-green-600" 
+                  : "bg-gray-200"
+              }`}>
+                {m.sender === "user" ? (
+                  <User className="w-4 h-4 text-white" />
+                ) : (
+                  <Bot className="w-4 h-4 text-gray-600" />
+                )}
+              </div>
+              
+              {/* Message bubble */}
+              <div
+                className={`px-4 py-2.5 rounded-2xl shadow-sm ${
+                  m.sender === "user"
+                    ? "bg-gradient-to-r from-green-500 to-green-600 text-white rounded-tr-sm"
+                    : "bg-white text-gray-800 border border-gray-200 rounded-tl-sm"
+                }`}
+              >
+                <p className="text-sm leading-relaxed">{m.text}</p>
+              </div>
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="flex border-t border-gray-200">
+      {/* Input */}
+      <div className="flex border-t border-green-100 bg-white p-3 gap-2">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask something..."
-          className="flex-grow p-2 outline-none"
+          onKeyPress={handleKeyPress}
+          placeholder="Type your message..."
+          className="flex-grow px-4 py-2.5 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none text-gray-800 placeholder-gray-400 transition-all duration-300"
         />
         <button
           onClick={sendMessage}
-          className="bg-blue-500 text-white px-4 hover:bg-blue-600"
+          className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
         >
-          Send
+          <Send className="w-4 h-4" />
         </button>
       </div>
     </div>
