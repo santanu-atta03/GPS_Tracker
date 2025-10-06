@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const SupportChat = () => {
-  const [messages, setMessages] = useState([]);
+  // Initialize with a greeting message from the bot
+  const [messages, setMessages] = useState([
+    { sender: "bot", text: "Hi! How can I help you?" },
+  ]);
   const [input, setInput] = useState("");
 
   const sendMessage = async () => {
