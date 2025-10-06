@@ -1,0 +1,18 @@
+[
+  {
+    "question": "how to search a bus",
+    "answer": "Go to the Home screen, select the 'Route' option, enter the From and To addresses, and tap the 'Search Bus' button."
+  },
+  {
+    "question": "how to book a ticket",
+    "answer": "After selecting your bus, tap 'Book Now'. Then fill in passenger details and complete payment via Razorpay."
+  },
+  {
+    "question": "bus not showing",
+    "answer": "Please check your internet connection and ensure the route exists. If the issue continues, refresh the page or clear your cache."
+  },
+  {
+    "question": "how to cancel ticket",
+    "answer": "Go to 'My Tickets' in your profile, select the ticket you want to cancel, and tap 'Cancel'."
+  }
+]

@@ -85,7 +85,7 @@ const TicketDetails = () => {
         {/* Ticket Number */}
         <div className="mb-4 text-blue-900">
           <p className="text-sm font-bold">
-            UTS NO.: {ticket._id.slice(-12).toUpperCase()}
+             Payment Id.: {ticket.razorpay_payment_id}
           </p>
         </div>
 

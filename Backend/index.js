@@ -14,6 +14,8 @@ import ReviewRoute from "./routes/Review.route.js";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import bodyParser from "body-parser";
+import supportBotRoutes from "./routes/supportBot.routes.js";
+import { initSupportBot } from "./controllers/supportBot.controller.js";
 dotenv.config();
 connectToMongo();
 
@@ -136,12 +138,16 @@ app.post("/verify-payment", (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+
+app.use("/api/support", supportBotRoutes);
+
 app.get("/", (req, res) => {
   return res.status(200).json({
     message: "Hello from backend",
   });
 });
 
-app.listen(port, () => {
+app.listen(port,async () => {
+   await initSupportBot();
   console.log(`Website is running at http://localhost:${port}`);
 });

@@ -17,6 +17,7 @@ import FllowBusMap from "./components/page/FllowBusMap";
 import RazorpayPayment from "./components/page/RazorpayPayment";
 import MyTickets from "./components/page/MyTickets";
 import TicketDetails from "./components/page/TicketDetails";
+import SupportChat from "./components/page/SupportChat";
 
 function App() {
   const approute = createBrowserRouter([
@@ -77,9 +78,13 @@ function App() {
       element: <MyTickets />,
     },
     {
-      path:"/ticket/:ticketid",
-      element:<TicketDetails/>
-    }
+      path: "/ticket/:ticketid",
+      element: <TicketDetails />,
+    },
+    {
+      path: "/Suport-chat-bot",
+      element: <SupportChat />,
+    },
   ]);
 
   return (
