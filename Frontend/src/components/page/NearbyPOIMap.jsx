@@ -4,6 +4,19 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
 import Navbar from "../shared/Navbar";
 
+// ✅ FIX for missing marker icons on Vercel
+import iconUrl from "leaflet/dist/images/marker-icon.png";
+import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
+import shadowUrl from "leaflet/dist/images/marker-shadow.png";
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl,
+  iconUrl,
+  shadowUrl,
+});
+;
+
 const POI_TYPES = [
   { label: "Hospital", tag: "hospital", icon: "🏥" },
   { label: "Clinic", tag: "clinic", icon: "🩺" },
