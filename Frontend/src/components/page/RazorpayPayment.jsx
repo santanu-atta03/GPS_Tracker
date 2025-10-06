@@ -268,7 +268,7 @@ const RazorpayPayment = () => {
                   }
                 );
                 const order = await res.json();
-                 toast(res.data.message);
+                 
                 const options = {
                   key: "rzp_test_RPcZFwp7G16Gjf",
                   amount: order.amount,
@@ -296,7 +296,7 @@ const RazorpayPayment = () => {
                       },
                       { headers: { Authorization: `Bearer ${token}` } }
                     );
-                     toast(verifyRes.data.message);
+                     
                     const verifyData = await verifyRes.json();
                     alert(verifyData.message);
                     console.log("✅ Verify Response:", verifyData);
