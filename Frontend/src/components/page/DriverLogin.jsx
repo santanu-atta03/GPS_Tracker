@@ -46,7 +46,7 @@ const DriverLogin = () => {
       });
       console.log(token);
       const res = await axios.post(
-        "https://gps-tracker-kq2q.vercel.app/api/v1/driver/createUser",
+        `${import.meta.env.VITE_BASE_URL}/driver/createUser`,
         {
           fullname: user.name,
           email: user.email,

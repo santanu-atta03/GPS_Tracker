@@ -17,7 +17,7 @@ const TicketDetails = () => {
       try {
         const token = await getAccessTokenSilently();
         const res = await axios.get(
-          `http://localhost:5000/api/v1/Bus/get-ticket/${ticketid}`,
+          `${import.meta.env.VITE_BASE_URL}/Bus/get-ticket/${ticketid}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

@@ -38,7 +38,7 @@ const ReviewForm = () => {
       });
 
       const res = await axios.post(
-        "http://localhost:5000/api/v1/review/reviews",
+        `${import.meta.env.VITE_BASE_URL}/review/reviews`,
         {
           busId,
           ratings: {

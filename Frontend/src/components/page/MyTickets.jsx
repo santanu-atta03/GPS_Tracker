@@ -18,7 +18,7 @@ const MyTickets = () => {
         });
 
         const res = await axios.get(
-          "http://localhost:5000/api/v1/Bus/user/all-ticket",
+          `${import.meta.env.VITE_BASE_URL}/Bus/user/all-ticket`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

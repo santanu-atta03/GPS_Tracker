@@ -7,7 +7,7 @@ import axios from "axios";
 import MicInput from "./MicInput";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = "http://localhost:5000/api/v1/Myroute";
+const API_BASE = `${import.meta.env.VITE_BASE_URL}/Myroute`;
 const GEOCODE_API = "https://nominatim.openstreetmap.org/search";
 
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
