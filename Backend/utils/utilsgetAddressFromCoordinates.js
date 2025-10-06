@@ -1,6 +1,9 @@
+// utils/getAddressFromCoordinates.js
 import axios from "axios";
 
-// Indian states → Local language mapping
+const OPENCAGE_API_KEY = "9aef89cb32dd491d8b961021dafaff47";
+
+// 🗺️ Map of Indian states → Local language code + local name
 const STATE_LANGUAGE_MAP = {
   "West Bengal": { lang: "bn", local: "পশ্চিমবঙ্গ" },
   "Tripura": { lang: "bn", local: "ত্রিপুরা" },
@@ -32,13 +35,13 @@ const STATE_LANGUAGE_MAP = {
   "Assam": { lang: "as", local: "অসম" },
 };
 
-const OPENCAGE_API_KEY = "9aef89cb32dd491d8b961021dafaff47";
-
-const getAddressFromCoordinates = async ([lat, lon]) => {
+// 🌍 Get full address from coordinates (in local language)
+const getAddressFromCoordinates = async (lat, lng) => {
   try {
+    // Step 1: Reverse geocode using OpenCage
     const res = await axios.get("https://api.opencagedata.com/geocode/v1/json", {
       params: {
-        q: `${lat}+${lon}`,
+        q: `${lat}+${lng}`, // fixed typo
         key: OPENCAGE_API_KEY,
         language: "en",
         pretty: 1,
@@ -46,25 +49,56 @@ const getAddressFromCoordinates = async ([lat, lon]) => {
     });
 
     const result = res.data.results[0];
-    if (!result) return "Unknown location";
+    const components = result?.components || {};
 
-    const components = result.components || {};
-    const stateName = components.state || components.region || "Unknown";
+    const stateName = components.state || components.region || components.country || "Unknown";
 
-    // Build English full address
-    const englishAddress = result.formatted;
+    // Build English full address string
+    const englishAddress = [
+      components.house_number,
+      components.road,
+      components.suburb,
+      components.city || components.town || components.village,
+      stateName,
+      components.postcode,
+      components.country,
+    ]
+      .filter(Boolean)
+      .join(", ");
 
-    // Get local state name
-    const localStateName = STATE_LANGUAGE_MAP[stateName]?.local || stateName;
+    // Step 2: Determine local language based on state
+    const langCode = STATE_LANGUAGE_MAP[stateName]?.lang || "hi"; // fallback Hindi
+
+    // Step 3: Translate the full address to local language
+    const translateRes = await axios.get(
+      "https://translate.googleapis.com/translate_a/single",
+      {
+        params: {
+          client: "gtx",
+          sl: "en",
+          tl: langCode,
+          dt: "t",
+          q: englishAddress,
+        },
+      }
+    );
+
+    const translatedAddress =
+      translateRes.data?.[0]?.map((a) => a[0]).join("") || englishAddress;
 
     return {
       english: englishAddress,
-      state: { english: stateName, local: localStateName },
+      local: translatedAddress,
+      state: {
+        english: stateName,
+        local: STATE_LANGUAGE_MAP[stateName]?.local || stateName,
+      },
     };
-  } catch (err) {
-    console.error("Geocoding error:", err.response?.status, err.message);
+  } catch (error) {
+    console.error("Error converting coordinates to address:", error.response?.status, error.message);
     return {
-      english: "Unknown location",
+      english: "Unknown place",
+      local: "অজানা স্থান",
       state: { english: "Unknown", local: "অজানা" },
     };
   }
