@@ -20,6 +20,7 @@ import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { setuser } from "../../Redux/auth.reducer";
 import Navbar from "../shared/Navbar";
+import { toast } from "sonner";
 
 const Profile = () => {
   const { usere } = useSelector((store) => store.auth);
@@ -62,9 +63,13 @@ const Profile = () => {
       dispatch(setuser(res.data.newDetails));
       setMessage("Profile updated successfully!");
       setIsEditing(false);
+       toast(res.data.message);
     } catch (err) {
       console.error(err);
       setMessage("Failed to update profile.");
+       const errorMessage =
+        error.response?.data?.message || error.message || "An error occurred";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

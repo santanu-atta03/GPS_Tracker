@@ -2,23 +2,24 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import axios from "axios";
-import { 
-  MapPin, 
-  Navigation, 
-  Clock, 
-  User, 
+import {
+  MapPin,
+  Navigation,
+  Clock,
+  User,
   Route,
   AlertTriangle,
   RefreshCw,
-  Locate
-} from 'lucide-react';
+  Locate,
+} from "lucide-react";
 import Navbar from "../shared/Navbar";
+import { toast } from "sonner";
 
 // Helper to create a custom marker with bus emoji
 const createBusIcon = (isActive = true) => {
   return L.divIcon({
     html: `<div style="
-      background-color: ${isActive ? '#16a34a' : '#6b7280'}; 
+      background-color: ${isActive ? "#16a34a" : "#6b7280"}; 
       color: white; 
       font-size: 20px; 
       width: 32px; 
@@ -79,7 +80,9 @@ const BusMap = () => {
         },
         (err) => {
           console.error("Error getting location:", err);
-          setLocationError("Could not get your location. Using default location (Kolkata).");
+          setLocationError(
+            "Could not get your location. Using default location (Kolkata)."
+          );
         }
       );
     } else {
@@ -92,14 +95,20 @@ const BusMap = () => {
     const fetchBusLocations = async () => {
       try {
         setError(null);
-        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/AllLocation`);
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/AllLocation`
+        );
         setBusLocations(res.data.buses || []);
         setLastUpdated(new Date());
         setIsLoading(false);
+        toast(res.data.message);
       } catch (error) {
         console.error("Error fetching bus locations:", error);
         setError("Failed to load bus locations. Please try again.");
         setIsLoading(false);
+        const errorMessage =
+          error.response?.data?.message || error.message || "An error occurred";
+        toast.error(errorMessage);
       }
     };
 
@@ -117,7 +126,9 @@ const BusMap = () => {
   const handleRefresh = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/AllLocation`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/AllLocation`
+      );
       setBusLocations(res.data.buses || []);
       setLastUpdated(new Date());
       setError(null);
@@ -149,7 +160,7 @@ const BusMap = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
       <Navbar />
-      
+
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Header Section */}
         <div className="text-center mb-6">
@@ -157,8 +168,8 @@ const BusMap = () => {
             Live Bus Map
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Track all buses in real-time on the interactive map. See their current locations, 
-            routes, and driver information.
+            Track all buses in real-time on the interactive map. See their
+            current locations, routes, and driver information.
           </p>
         </div>
 
@@ -168,7 +179,8 @@ const BusMap = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center text-sm text-gray-600">
                 <MapPin className="w-4 h-4 mr-1 text-green-500" />
-                <span className="font-medium">{busLocations.length}</span> buses tracked
+                <span className="font-medium">{busLocations.length}</span> buses
+                tracked
               </div>
               {lastUpdated && (
                 <div className="flex items-center text-sm text-gray-500">
@@ -177,7 +189,7 @@ const BusMap = () => {
                 </div>
               )}
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <button
                 onClick={handleGetCurrentLocation}
@@ -186,18 +198,20 @@ const BusMap = () => {
                 <Locate className="w-4 h-4 mr-1" />
                 My Location
               </button>
-              
+
               <button
                 onClick={handleRefresh}
                 disabled={isLoading}
                 className={`px-4 py-2 rounded-lg transition-colors duration-200 flex items-center text-sm ${
-                  isLoading 
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                    : 'bg-green-500 text-white hover:bg-green-600'
+                  isLoading
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-green-500 text-white hover:bg-green-600"
                 }`}
               >
-                <RefreshCw className={`w-4 h-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
-                {isLoading ? 'Refreshing...' : 'Refresh'}
+                <RefreshCw
+                  className={`w-4 h-4 mr-1 ${isLoading ? "animate-spin" : ""}`}
+                />
+                {isLoading ? "Refreshing..." : "Refresh"}
               </button>
             </div>
           </div>
@@ -221,7 +235,9 @@ const BusMap = () => {
             <div className="flex items-start">
               <AlertTriangle className="w-5 h-5 text-yellow-500 mt-0.5 mr-3 flex-shrink-0" />
               <div>
-                <h3 className="text-yellow-800 font-medium mb-1">Location Notice</h3>
+                <h3 className="text-yellow-800 font-medium mb-1">
+                  Location Notice
+                </h3>
                 <p className="text-yellow-700 text-sm">{locationError}</p>
               </div>
             </div>
@@ -237,7 +253,7 @@ const BusMap = () => {
                 <span className="text-sm text-gray-600">Loading buses...</span>
               </div>
             )}
-            
+
             <MapContainer
               center={userLocation}
               zoom={13}
@@ -254,7 +270,9 @@ const BusMap = () => {
               <Marker position={userLocation} icon={createUserIcon()}>
                 <Popup className="custom-popup">
                   <div className="p-2">
-                    <h3 className="font-bold text-blue-600 mb-1">📍 Your Location</h3>
+                    <h3 className="font-bold text-blue-600 mb-1">
+                      📍 Your Location
+                    </h3>
                     <p className="text-sm text-gray-600">You are here</p>
                   </div>
                 </Popup>
@@ -264,7 +282,9 @@ const BusMap = () => {
               {busLocations.map((bus, index) => {
                 const lastUpdatedTime = new Date(bus.location.lastUpdated);
                 const now = new Date();
-                const minutesAgo = Math.floor((now - lastUpdatedTime) / (1000 * 60));
+                const minutesAgo = Math.floor(
+                  (now - lastUpdatedTime) / (1000 * 60)
+                );
                 const isRecent = minutesAgo < 10; // Consider bus active if updated within 10 minutes
 
                 return (
@@ -286,45 +306,57 @@ const BusMap = () => {
                             </span>
                           )}
                         </h3>
-                        
+
                         <div className="space-y-2 text-sm">
                           <div className="flex items-start">
                             <Route className="w-4 h-4 text-purple-500 mr-2 mt-0.5 flex-shrink-0" />
                             <div>
-                              <span className="font-medium text-gray-700">Route:</span>
-                              <p className="text-gray-600">{bus.from} → {bus.to}</p>
+                              <span className="font-medium text-gray-700">
+                                Route:
+                              </span>
+                              <p className="text-gray-600">
+                                {bus.from} → {bus.to}
+                              </p>
                             </div>
                           </div>
-                          
+
                           {bus.driver && (
                             <div className="flex items-start">
                               <User className="w-4 h-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
                               <div>
-                                <span className="font-medium text-gray-700">Driver:</span>
+                                <span className="font-medium text-gray-700">
+                                  Driver:
+                                </span>
                                 <p className="text-gray-600">
                                   {bus.driver.name} ({bus.driver.experience})
                                 </p>
                               </div>
                             </div>
                           )}
-                          
+
                           <div className="flex items-start">
                             <Clock className="w-4 h-4 text-orange-500 mr-2 mt-0.5 flex-shrink-0" />
                             <div>
-                              <span className="font-medium text-gray-700">Last Updated:</span>
+                              <span className="font-medium text-gray-700">
+                                Last Updated:
+                              </span>
                               <p className="text-gray-600">
-                                {minutesAgo === 0 ? 'Just now' : `${minutesAgo} min ago`}
+                                {minutesAgo === 0
+                                  ? "Just now"
+                                  : `${minutesAgo} min ago`}
                               </p>
                               <p className="text-xs text-gray-500">
                                 {lastUpdatedTime.toLocaleString()}
                               </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-start">
                             <Navigation className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
                             <div>
-                              <span className="font-medium text-gray-700">Coordinates:</span>
+                              <span className="font-medium text-gray-700">
+                                Coordinates:
+                              </span>
                               <p className="text-gray-600 font-mono text-xs">
                                 {bus.location.coordinates.join(", ")}
                               </p>
@@ -359,24 +391,28 @@ const BusMap = () => {
                 <p className="text-sm text-gray-500">Current GPS position</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm">
                 🚌
               </div>
               <div>
                 <p className="font-medium text-gray-700">Active Bus</p>
-                <p className="text-sm text-gray-500">Updated within 10 minutes</p>
+                <p className="text-sm text-gray-500">
+                  Updated within 10 minutes
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-white text-sm">
                 🚌
               </div>
               <div>
                 <p className="font-medium text-gray-700">Inactive Bus</p>
-                <p className="text-sm text-gray-500">Last seen over 10 minutes ago</p>
+                <p className="text-sm text-gray-500">
+                  Last seen over 10 minutes ago
+                </p>
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 const ReviewForm = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -65,10 +66,14 @@ const ReviewForm = () => {
         valueForMoney: 3,
         comment: "",
       });
+       toast(res.data.message);
       navigate("/");
     } catch (err) {
       console.error(err);
       setMessage("Failed to submit review.");
+       const errorMessage =
+        err.response?.data?.message || err.message || "An error occurred";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

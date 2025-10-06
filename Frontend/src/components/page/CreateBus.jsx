@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
+import { toast } from "sonner";
 
 const CreateBus = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -69,10 +70,15 @@ const CreateBus = () => {
       setFromSearchQuery("");
       setToSearchQuery("");
       setTimeSlots([{ startTime: "", endTime: "" }]);
+         toast(res.data.message);
       navigate("/Bus");
+
     } catch (error) {
       console.error("Error creating bus:", error);
       setSuccess("Failed to create bus.");
+       const errorMessage =
+        error.response?.data?.message || error.message || "An error occurred";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

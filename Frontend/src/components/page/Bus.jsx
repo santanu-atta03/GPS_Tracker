@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
+import { toast } from "sonner";
 
 const Bus = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -35,7 +36,7 @@ const Bus = () => {
         const token = await getAccessTokenSilently({
           audience: "http://localhost:5000/api/v3",
         });
-        console.log(token)
+        console.log(token);
 
         const res = await axios.get(
           `${import.meta.env.VITE_BASE_URL}/driver/allBus`,
@@ -43,11 +44,14 @@ const Bus = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-
+        toast(res.data.message);
         setBuses(res.data.AllBus || []);
       } catch (error) {
         console.error("Error fetching buses:", error);
         setError("Failed to fetch buses. Please try again later.");
+        const errorMessage =
+          error.response?.data?.message || error.message || "An error occurred";
+        toast.error(errorMessage);
       } finally {
         setLoading(false);
       }

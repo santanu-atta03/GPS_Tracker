@@ -11,6 +11,7 @@ import L from "leaflet";
 import { useDispatch } from "react-redux";
 import { setpath } from "@/Redux/auth.reducer";
 import MicInput from "./MicInput";
+import { toast } from "sonner";
 
 const API_BASE = `${import.meta.env.VITE_BASE_URL}/Myroute`;
 const GEOCODE_API = "https://nominatim.openstreetmap.org/search";
@@ -122,7 +123,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
       )}
 
       {loading && <p className="text-sm text-gray-500 mt-2">Searching...</p>}
-      
+
       {suggestions.length > 0 && (
         <ul className="absolute z-10 w-full bg-white shadow-xl rounded-xl mt-2 max-h-60 overflow-y-auto border border-gray-200">
           {suggestions.map((s, idx) => (
@@ -197,25 +198,34 @@ const BusSearch = () => {
         }
         console.log(from);
         console.log(to);
-        res = await axios.post(`${import.meta.env.VITE_BASE_URL}/Myroute/find-bus`, {
-          fromLat: from.lat,
-          fromLng: from.lon,
-          toLat: to.lat,
-          toLng: to.lon,
-        });
+        res = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/Myroute/find-bus`,
+          {
+            fromLat: from.lat,
+            fromLng: from.lon,
+            toLat: to.lat,
+            toLng: to.lon,
+          }
+        );
         console.log(res);
       } else if (searchType === "device") {
         if (!deviceId) return alert("Please enter Device ID");
-        res = await axios.post(`${import.meta.env.VITE_BASE_URL}/Myroute/find-bus-By-id`, {
-          DeviceId: deviceId,
-        });
+        res = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/Myroute/find-bus-By-id`,
+          {
+            DeviceId: deviceId,
+          }
+        );
       } else if (searchType === "name") {
         if (!busName) return alert("Please enter Bus Name");
-        res = await axios.post(`${import.meta.env.VITE_BASE_URL}/Myroute/find-bus-bu-name`, {
-          BusName: busName,
-        });
+        res = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/Myroute/find-bus-bu-name`,
+          {
+            BusName: busName,
+          }
+        );
       }
-
+      toast(res.data.message);
       const data = res.data;
       dispatch(setpath(data));
       if (data.success) {
@@ -227,6 +237,9 @@ const BusSearch = () => {
       }
     } catch (error) {
       console.error("Error:", error);
+      const errorMessage =
+        error.response?.data?.message || error.message || "An error occurred";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -303,7 +316,9 @@ const BusSearch = () => {
               <PlaceSearch
                 label="From"
                 enableUseMyLocation={true}
-                onSelect={(place) => setFrom({ lat: place.lat, lon: place.lon })}
+                onSelect={(place) =>
+                  setFrom({ lat: place.lat, lon: place.lon })
+                }
               />
               <PlaceSearch
                 label="To"
@@ -370,8 +385,10 @@ const BusSearch = () => {
           {/* Search Tips */}
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-500">
-              {searchType === "route" && "Select both starting point and destination"}
-              {searchType === "device" && "Enter the exact device ID of the bus"}
+              {searchType === "route" &&
+                "Select both starting point and destination"}
+              {searchType === "device" &&
+                "Enter the exact device ID of the bus"}
               {searchType === "name" && "Enter the bus route name or number"}
             </p>
           </div>
@@ -386,7 +403,8 @@ const BusSearch = () => {
                   <div className="flex flex-col items-center">
                     <h2 className="text-lg font-bold text-green-700">Start</h2>
                     <p className="text-xs text-gray-500 mt-1">
-                      {results.pathAddresses?.[0]?.address || "Unknown start location"}
+                      {results.pathAddresses?.[0]?.address ||
+                        "Unknown start location"}
                     </p>
                   </div>
 
@@ -400,14 +418,19 @@ const BusSearch = () => {
                         <div className="flex items-center gap-4">
                           <Bus className="w-8 h-8 text-green-600" />
                           <div>
-                            <h3 className="font-semibold text-lg">{bus.name || "N/A"}</h3>
+                            <h3 className="font-semibold text-lg">
+                              {bus.name || "N/A"}
+                            </h3>
                             <p className="text-sm text-gray-600">
                               Route: {bus.from || "N/A"} → {bus.to || "N/A"}
                             </p>
-                            <p className="text-sm text-gray-500">Device: {bus.deviceID}</p>
+                            <p className="text-sm text-gray-500">
+                              Device: {bus.deviceID}
+                            </p>
                             {bus.nextStartTime && (
                               <p className="text-sm text-gray-500">
-                                Time: {bus.nextStartTime.startTime} to {bus.nextStartTime.endTime}
+                                Time: {bus.nextStartTime.startTime} to{" "}
+                                {bus.nextStartTime.endTime}
                               </p>
                             )}
                           </div>
@@ -417,9 +440,12 @@ const BusSearch = () => {
                   ))}
 
                   <div className="flex flex-col items-center">
-                    <h2 className="text-lg font-bold text-red-700">Destination</h2>
+                    <h2 className="text-lg font-bold text-red-700">
+                      Destination
+                    </h2>
                     <p className="text-xs text-gray-500 mt-1">
-                      {results.pathAddresses?.[results.pathAddresses.length - 1]?.address || "Unknown destination"}
+                      {results.pathAddresses?.[results.pathAddresses.length - 1]
+                        ?.address || "Unknown destination"}
                     </p>
                   </div>
                 </div>
@@ -462,13 +488,18 @@ const BusSearch = () => {
                             <div className="flex items-center gap-4">
                               <Bus className="w-8 h-8 text-green-600" />
                               <div>
-                                <h3 className="font-semibold text-lg">Bus: {bus.name}</h3>
+                                <h3 className="font-semibold text-lg">
+                                  Bus: {bus.name}
+                                </h3>
                                 <p className="text-sm text-gray-600">
                                   Route: {bus.from} → {bus.to}
                                 </p>
-                                <p className="text-sm text-gray-500">Device: {bus.deviceID}</p>
                                 <p className="text-sm text-gray-500">
-                                  Time: {bus.nextStartTime.startTime} to {bus.nextStartTime.endTime}
+                                  Device: {bus.deviceID}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  Time: {bus.nextStartTime.startTime} to{" "}
+                                  {bus.nextStartTime.endTime}
                                 </p>
                               </div>
                             </div>
@@ -496,12 +527,16 @@ const BusSearch = () => {
                       <h2 className="text-lg font-semibold text-gray-800">
                         Bus Name: {bus.name || "N/A"}
                       </h2>
-                      <p className="text-sm text-gray-600">Device ID: {bus.deviceID}</p>
+                      <p className="text-sm text-gray-600">
+                        Device ID: {bus.deviceID}
+                      </p>
                       <p className="text-sm text-gray-600">
                         Route: {bus.from} → {bus.to}
                       </p>
                       {bus.driver && (
-                        <p className="text-sm text-gray-500">Driver ID: {bus.driver}</p>
+                        <p className="text-sm text-gray-500">
+                          Driver ID: {bus.driver}
+                        </p>
                       )}
                     </div>
                     <MapPin className="w-6 h-6 text-blue-500" />
@@ -510,11 +545,14 @@ const BusSearch = () => {
               ))}
             </div>
           ) : (
-            !loading && results === null && (
+            !loading &&
+            results === null && (
               <div className="bg-white rounded-2xl shadow-xl p-12 text-center border border-gray-200">
                 <Bus className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500 text-lg">No buses found</p>
-                <p className="text-gray-400 text-sm mt-2">Try adjusting your search criteria</p>
+                <p className="text-gray-400 text-sm mt-2">
+                  Try adjusting your search criteria
+                </p>
               </div>
             )
           )}

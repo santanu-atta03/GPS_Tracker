@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "../shared/Navbar";
+import { toast } from "sonner";
 const GEOCODE_API = "https://nominatim.openstreetmap.org/search";
 const markerIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -267,7 +268,7 @@ const RazorpayPayment = () => {
                   }
                 );
                 const order = await res.json();
-
+                 toast(res.data.message);
                 const options = {
                   key: "rzp_test_RPcZFwp7G16Gjf",
                   amount: order.amount,
@@ -295,7 +296,7 @@ const RazorpayPayment = () => {
                       },
                       { headers: { Authorization: `Bearer ${token}` } }
                     );
-
+                     toast(verifyRes.data.message);
                     const verifyData = await verifyRes.json();
                     alert(verifyData.message);
                     console.log("✅ Verify Response:", verifyData);
