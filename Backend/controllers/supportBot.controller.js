@@ -39,6 +39,7 @@ export const askSupportBot = async (req, res) => {
 
     res.json({ answer: bestMatch });
   } catch (err) {
+    console.log(err)
     console.error("SupportBot error:", err);
     res.status(500).json({ error: "Server error" });
   }
