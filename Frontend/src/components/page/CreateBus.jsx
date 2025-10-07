@@ -12,6 +12,7 @@ import { toast } from "sonner";
 const CreateBus = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [deviceID, setDeviceID] = useState("");
+  const [ticketPrice, setticketPrice] = useState("");
   const [to, setTo] = useState("");
   const [from, setFrom] = useState("");
   const [name, setName] = useState("");
@@ -58,7 +59,7 @@ const CreateBus = () => {
 
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/Bus/createbus`,
-        { name, deviceID, from, to, timeSlots },
+        { name, deviceID, from, to, timeSlots,ticketPrice },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -190,6 +191,22 @@ const CreateBus = () => {
                   value={deviceID}
                   onChange={(e) => setDeviceID(e.target.value)}
                   placeholder="Enter device ID"
+                  className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  required
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor="deviceID"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  ticket Price
+                </Label>
+                <Input
+                  id="ticket-Price"
+                  value={ticketPrice}
+                  onChange={(e) => setticketPrice(e.target.value)}
+                  placeholder="Enterticket price"
                   className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                   required
                 />
