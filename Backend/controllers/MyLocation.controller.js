@@ -327,3 +327,127 @@ export const findByBusName = async (req, res) => {
     console.log(error);
   }
 };
+
+// 🌍 Haversine formula for distance (km)
+function haversineDistance(coord1, coord2) {
+  const R = 6371; // km
+  const [lat1, lon1] = coord1;
+  const [lat2, lon2] = coord2;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+export const getBusByDeviceID = async (req, res) => {
+  try {
+    const { deviceID } = req.params;
+
+    // 🔍 Find Bus and populate driver + location
+    const bus = await Bus.findOne({ deviceID })
+      .populate("driver")
+      .populate("location");
+
+    if (!bus) return res.status(404).json({ message: "Bus not found" });
+
+    const location = await Location.findById(bus.location);
+    if (!location)
+      return res.status(404).json({ message: "Location not found" });
+
+    // 🧮 Calculate Speed using prevlocation & location
+    let speed = 0;
+    if (location.prevlocation && location.location) {
+      const dist = haversineDistance(
+        location.prevlocation.coordinates,
+        location.location.coordinates
+      );
+      const timeDiff =
+        (new Date(location.location.timestamp) -
+          new Date(location.prevlocation.timestamp)) /
+        3600000; // hours
+      speed = timeDiff > 0 ? dist / timeDiff : 0;
+    }
+
+    // 📏 Calculate total distance (entire route)
+    let totalDistance = 0;
+    if (location.route && location.route.length > 1) {
+      for (let i = 1; i < location.route.length; i++) {
+        totalDistance += haversineDistance(
+          location.route[i - 1].coordinates,
+          location.route[i].coordinates
+        );
+      }
+    }
+
+    // 📏 Calculate covered distance (up to current location)
+    let coveredDistance = 0;
+    if (location.route && location.route.length > 0) {
+      for (let i = 1; i < location.route.length; i++) {
+        const segmentDist = haversineDistance(
+          location.route[i - 1].coordinates,
+          location.route[i].coordinates
+        );
+        const [currLat, currLon] = location.location.coordinates;
+
+        // check if current location is near this segment
+        const distToCurr = haversineDistance(
+          location.route[i].coordinates,
+          location.location.coordinates
+        );
+        if (distToCurr < 0.3) {
+          coveredDistance += segmentDist;
+          break;
+        } else {
+          coveredDistance += segmentDist;
+        }
+      }
+    }
+
+    // 🧭 Remaining Distance
+    const remainingDistance = Math.max(totalDistance - coveredDistance, 0);
+
+    // ⏱️ ETA
+    let ETA = "N/A";
+    if (speed > 0 && remainingDistance > 0) {
+      const hours = remainingDistance / speed;
+      ETA = `${(hours * 60).toFixed(1)} min`;
+    }
+
+    // 🧾 Final result
+    const result = {
+      deviceID: bus.deviceID,
+      name: bus.name,
+      from: bus.from,
+      to: bus.to,
+      path: location.route,
+      ticketprice: bus.ticketprice,
+      timeSlots: bus.timeSlots,
+      driver: {
+        name: bus.driver?.name,
+        email: bus.driver?.email,
+        licenceId: bus.driver?.licenceId,
+        driverExp: bus.driver?.driverExp,
+        picture: bus.driver?.picture,
+      },
+      liveLocation: {
+        coordinates: location.location.coordinates,
+        timestamp: location.location.timestamp,
+      },
+      speed: Number(speed.toFixed(2)),
+      totalDistance: Number(totalDistance.toFixed(2)),
+      coveredDistance: Number(coveredDistance.toFixed(2)),
+      remainingDistance: Number(remainingDistance.toFixed(2)),
+      ETA,
+    };
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error fetching bus:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};

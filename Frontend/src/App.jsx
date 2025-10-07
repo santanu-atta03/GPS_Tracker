@@ -19,6 +19,7 @@ import MyTickets from "./components/page/MyTickets";
 import TicketDetails from "./components/page/TicketDetails";
 import SupportChat from "./components/page/SupportChat";
 import History from "./components/page/History";
+import BusDetailsPage2 from "./components/page/BusDetailsPage2";
 
 function App() {
   const approute = createBrowserRouter([
@@ -28,7 +29,7 @@ function App() {
     },
     {
       path: "/bus/:deviceID",
-      element: <BusDetailsPage />,
+      element: <BusDetailsPage2/>
     },
     {
       path: "/complete/profile",
