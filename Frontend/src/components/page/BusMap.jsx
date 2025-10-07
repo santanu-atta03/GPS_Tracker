@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 // Helper to create a custom marker with bus emoji
 const createBusIcon = (isActive = true) => {
@@ -66,7 +67,7 @@ const BusMap = () => {
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [locationError, setLocationError] = useState(null);
-
+  const navigate = useNavigate();
   // Get user location
   useEffect(() => {
     if (navigator.geolocation) {
@@ -101,7 +102,6 @@ const BusMap = () => {
         setBusLocations(res.data.buses || []);
         setLastUpdated(new Date());
         setIsLoading(false);
-        toast(res.data.message);
       } catch (error) {
         console.error("Error fetching bus locations:", error);
         setError("Failed to load bus locations. Please try again.");
@@ -132,8 +132,12 @@ const BusMap = () => {
       setBusLocations(res.data.buses || []);
       setLastUpdated(new Date());
       setError(null);
+      toast(res.data.message);
     } catch (error) {
       setError("Failed to refresh bus locations.");
+      const errorMessage =
+        error.response?.data?.message || error.message || "An error occurred";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -365,7 +369,10 @@ const BusMap = () => {
                         </div>
 
                         <div className="mt-3 pt-2 border-t border-gray-200">
-                          <button className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-200">
+                          <button
+                            className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-200"
+                            onClick={() => navigate(`/bus/${bus.deviceID}`)}
+                          >
                             Track This Bus
                           </button>
                         </div>
