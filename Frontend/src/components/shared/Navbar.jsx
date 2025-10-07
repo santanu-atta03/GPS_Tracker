@@ -271,26 +271,41 @@ const Navbar = () => {
             <div className="space-y-3">
               <div
                 onClick={() => handleNavigation("/")}
-                className="block cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-green-50"
+                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
               >
                 {t("navbar.home")}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
               {usere?.status === "driver" ? (
                 <div
                   onClick={() => handleNavigation("/Bus")}
-                  className="block cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-green-50"
+                  className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
                 >
                   {t("navbar.busDetails")}
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
                 </div>
-              ) : (
-                <div></div>
-              )}
+              ) : null}
 
               <div
                 onClick={() => handleNavigation("/view/map")}
-                className="block cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-green-50"
+                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
               >
                 {t("navbar.map")}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+              </div>
+              <div
+                onClick={() => handleNavigation("/find/ticket")}
+                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+              >
+                ticket
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+              </div>
+              <div
+                onClick={() => handleNavigation("/nearBy/search")}
+                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+              >
+                NearBy
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
             </div>
 
