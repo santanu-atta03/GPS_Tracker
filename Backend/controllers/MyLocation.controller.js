@@ -2,6 +2,7 @@ import haversine from "haversine-distance";
 import Location from "../models/Location.model.js";
 import Bus from "../models/Bus.model.js";
 import getAddressFromCoordinates from "../utils/getAddressFromCoordinates.js";
+import redisClient from "../utils/redis.js";
 
 // helper: check if a point is within 1km of any route coordinate → return index
 const findNearbyIndex = (point, routeCoords) => {
@@ -51,6 +52,16 @@ export const findBusByRoute = async (req, res) => {
         success: false,
       });
     }
+    const roundTo2 = (num) => Number.parseFloat(num).toFixed(4);
+
+    const cacheKey = `routeSearch:${roundTo2(fromLat)},${roundTo2(
+      fromLng
+    )}->${roundTo2(toLat)},${roundTo2(toLng)}`;
+
+    const cachedRoute = await redisClient.get(cacheKey);
+    if (cachedRoute) {
+      return res.status(200).json(JSON.parse(cachedRoute));
+    }
 
     const buses = await Location.find(
       {},
@@ -84,54 +95,56 @@ export const findBusByRoute = async (req, res) => {
     }
 
     if (directBusIDs.length > 0) {
-  let matchedBuses = await Bus.find({
-    deviceID: { $in: directBusIDs },
-  });
-  matchedBuses = matchedBuses.map((bus) => ({
-    ...bus.toObject(),
-    nextStartTime: getNextStartTime(bus.timeSlots),
-  }));
+      let matchedBuses = await Bus.find({
+        deviceID: { $in: directBusIDs },
+      });
+      matchedBuses = matchedBuses.map((bus) => ({
+        ...bus.toObject(),
+        nextStartTime: getNextStartTime(bus.timeSlots),
+      }));
 
-  // Find the first direct bus and its route
-  const directBus = buses.find((bus) => directBusIDs.includes(bus.deviceID));
-  const directBusRoute = directBus?.route || [];
+      // Find the first direct bus and its route
+      const directBus = buses.find((bus) =>
+        directBusIDs.includes(bus.deviceID)
+      );
+      const directBusRoute = directBus?.route || [];
 
-  // Find indices of from and to on the route
-  const fromIndex = findNearbyIndex([fromLat, fromLng], directBusRoute);
-  const toIndex = findNearbyIndex([toLat, toLng], directBusRoute);
+      // Find indices of from and to on the route
+      const fromIndex = findNearbyIndex([fromLat, fromLng], directBusRoute);
+      const toIndex = findNearbyIndex([toLat, toLng], directBusRoute);
 
-  // Ensure fromIndex < toIndex to get segment
-  const startIndex = Math.min(fromIndex, toIndex);
-  const endIndex = Math.max(fromIndex, toIndex);
+      // Ensure fromIndex < toIndex to get segment
+      const startIndex = Math.min(fromIndex, toIndex);
+      const endIndex = Math.max(fromIndex, toIndex);
 
-  // Extract coordinates between from and to indices (inclusive)
-  const middleCoords = directBusRoute
-    .slice(startIndex, endIndex + 1)
-    .map((p) => [p.coordinates[0], p.coordinates[1]]);
+      // Extract coordinates between from and to indices (inclusive)
+      const middleCoords = directBusRoute
+        .slice(startIndex, endIndex + 1)
+        .map((p) => [p.coordinates[0], p.coordinates[1]]);
 
-  // Compose full pathCoordinates: from user input, middle segment, to user input
-  const pathCoordinates = [
-    [parseFloat(fromLat), parseFloat(fromLng)], // user start
-    ...middleCoords,
-    [parseFloat(toLat), parseFloat(toLng)],     // user end
-  ];
+      // Compose full pathCoordinates: from user input, middle segment, to user input
+      const pathCoordinates = [
+        [parseFloat(fromLat), parseFloat(fromLng)], // user start
+        ...middleCoords,
+        [parseFloat(toLat), parseFloat(toLng)], // user end
+      ];
 
-  const pathAddresses = [];
-  for (const coord of pathCoordinates) {
-    const address = await getAddressFromCoordinates(coord);
-    pathAddresses.push({ coordinates: coord, address });
-  }
+      const pathAddresses = [];
+      for (const coord of pathCoordinates) {
+        const address = await getAddressFromCoordinates(coord);
+        pathAddresses.push({ coordinates: coord, address });
+      }
 
-  return res.status(200).json({
-    message: "Direct route found",
-    success: true,
-    type: "direct",
-    total: matchedBuses.length,
-    busesUsed: matchedBuses,
-    pathCoordinates,
-    pathAddresses,
-  });
-}
+      return res.status(200).json({
+        message: "Direct route found",
+        success: true,
+        type: "direct",
+        total: matchedBuses.length,
+        busesUsed: matchedBuses,
+        pathCoordinates,
+        pathAddresses,
+      });
+    }
 
     // 2. Multi-hop: build stop → (bus, index) map
     const stopToBuses = new Map();
@@ -245,6 +258,16 @@ export const findBusByRoute = async (req, res) => {
       const address = await getAddressFromCoordinates(coord);
       pathAddresses.push({ coordinates: coord, address });
     }
+    const responsePayload = {
+      message: "Multi-hop route found",
+      success: true,
+      type: "multi-hop",
+      busesUsed: matchedBuses,
+      pathCoordinates: foundPath.path,
+      pathAddresses,
+    };
+
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(responsePayload));
 
     return res.status(200).json({
       message: "Multi-hop route found",
