@@ -9,6 +9,7 @@ import {
   Calendar,
   MapPin,
   DollarSign,
+  IndianRupee,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
@@ -163,7 +164,7 @@ const MyTickets = () => {
               {/* Price */}
               <div className="flex items-center justify-between bg-green-50 rounded-xl p-4 mb-4">
                 <div className="flex items-center gap-2">
-                  <DollarSign className="w-5 h-5 text-green-600" />
+                  <IndianRupee className="w-5 h-5 text-green-600" />
                   <span className="text-sm text-gray-600">Total Fare</span>
                 </div>
                 <span className="text-xl font-bold text-green-700">

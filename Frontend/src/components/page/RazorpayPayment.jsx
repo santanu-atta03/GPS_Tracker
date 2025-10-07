@@ -180,7 +180,7 @@ const RazorpayPayment = () => {
       setLoadingPrice(true);
 
       const res = await fetch(
-        `http://localhost:5000/api/v1/Bus/calculate/price`,
+        `${import.meta.env.VITE_BASE_URL}/Bus/calculate/price`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
