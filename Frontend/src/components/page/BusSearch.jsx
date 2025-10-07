@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { setpath } from "@/Redux/auth.reducer";
 import MicInput from "./MicInput";
 import { toast } from "sonner";
+import { addToHistory } from "@/Redux/history.reducer";
 
 const API_BASE = `${import.meta.env.VITE_BASE_URL}/Myroute`;
 const GEOCODE_API = "https://nominatim.openstreetmap.org/search";
@@ -227,8 +228,22 @@ const BusSearch = () => {
       }
       toast(res.data.message);
       const data = res.data;
-      dispatch(setpath(data));
+
       if (data.success) {
+        if (searchType === "route") {
+          dispatch(setpath(data));
+          dispatch(
+            addToHistory({
+              type: res.data.type,
+              pathCoordinates: res.data.pathCoordinates,
+              pathAddresses: res.data.pathAddresses,
+              busesUsed: res.data.busesUsed,
+            })
+          );
+        }
+
+        console.log(data);
+
         if (searchType === "route") setResults(data);
         else if (searchType === "device") setResults([data.allbus]);
         else setResults(data.allBus || []);

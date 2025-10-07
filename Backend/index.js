@@ -57,5 +57,5 @@ app.get("/", (req, res) => {
 
 app.listen(port,async () => {
    await initSupportBot();
-  console.log(`Website is running at http://localhost:${port}`);
+  console.log(`✅ Website is running at http://localhost:${port}`);
 });

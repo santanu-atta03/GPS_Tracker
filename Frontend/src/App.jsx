@@ -18,6 +18,7 @@ import RazorpayPayment from "./components/page/RazorpayPayment";
 import MyTickets from "./components/page/MyTickets";
 import TicketDetails from "./components/page/TicketDetails";
 import SupportChat from "./components/page/SupportChat";
+import History from "./components/page/History";
 
 function App() {
   const approute = createBrowserRouter([
@@ -84,6 +85,10 @@ function App() {
     {
       path: "/Suport-chat-bot",
       element: <SupportChat />,
+    },
+    {
+      path: "/see-history",
+      element: <History />,
     },
   ]);
 
