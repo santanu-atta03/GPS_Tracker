@@ -5,7 +5,19 @@ import L from "leaflet";
 import "leaflet-routing-machine";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
+import {
+  MapPin,
+  Clock,
+  Gauge,
+  Route as RouteIcon,
+  User,
+  Mail,
+  CreditCard,
+  Award,
+} from "lucide-react";
+import Navbar from "../shared/Navbar";
 
+// 🚌 Custom bus icon
 const busIcon = new L.DivIcon({
   html: "🚌",
   className: "text-3xl",
@@ -13,6 +25,7 @@ const busIcon = new L.DivIcon({
   iconAnchor: [20, 20],
 });
 
+// 🗺️ Routing component
 function Routing({ path }) {
   const map = useMap();
 
@@ -23,7 +36,7 @@ function Routing({ path }) {
       waypoints: path.map((p) => L.latLng(p.coordinates[0], p.coordinates[1])),
       addWaypoints: false,
       lineOptions: { styles: [{ color: "blue", weight: 4 }] },
-      show: false,
+      show: false, // disable popup route summary
       createMarker: () => null,
     }).addTo(map);
 
@@ -66,99 +79,161 @@ const BusDetailsPage2 = () => {
   }, [bus]);
 
   if (!bus)
-    return <div className="p-6 text-center text-gray-600">Loading...</div>;
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 flex items-center justify-center">
+          <div className="bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center border border-green-100">
+            <div className="animate-spin w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full mb-4"></div>
+            <span className="text-gray-600 text-lg font-medium">
+              Loading bus details...
+            </span>
+          </div>
+        </div>
+      </>
+    );
 
   return (
-    <div className="p-6 space-y-6">
-      {/* 🔝 Header */}
-      <div className="bg-blue-100 p-4 rounded-xl text-center shadow-md">
-        <h2 className="text-2xl font-bold text-blue-700">
-          Bus {bus.name} ({bus.deviceID})
-        </h2>
-        <p className="text-gray-600">
-          Route: {bus.from} → {bus.to}
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* 🕒 Time Slots */}
-        <div className="bg-white rounded-xl shadow-md p-4">
-          <h3 className="text-lg font-semibold mb-3">Driver Details</h3>
-          <div className="flex items-center space-x-3">
-            <img
-              src={bus.driver.picture}
-              alt={bus.driver.name}
-              className="w-16 h-16 rounded-full border"
-            />
-            <div>
-              <p className="font-semibold">{bus.driver.name}</p>
-              <p className="text-sm text-gray-600">{bus.driver.email}</p>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
+        <main className="max-w-7xl mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-green-100">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                Bus {bus.name} ({bus.deviceID})
+              </h1>
+              <div className="flex items-center justify-center gap-2 text-gray-600">
+                <MapPin className="w-5 h-5 text-green-600" />
+                <p className="text-lg">
+                  <span className="font-semibold">{bus.from}</span>
+                  <span className="mx-2">→</span>
+                  <span className="font-semibold">{bus.to}</span>
+                </p>
+              </div>
             </div>
           </div>
-          <div className="mt-3 text-sm text-gray-700">
-            <p>License ID: {bus.driver.licenceId}</p>
-            <p>Experience: {bus.driver.driverExp} years</p>
-          </div>
-        </div>
 
-        {/* 🗺️ Map */}
-        <div className="col-span-2 bg-white rounded-xl shadow-md p-2">
-          <MapContainer
-            center={bus.liveLocation.coordinates}
-            zoom={14}
-            style={{ height: "400px", width: "100%", borderRadius: "12px" }}
-          >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <Routing path={bus.path} />
-            <Marker position={bus.liveLocation.coordinates} icon={busIcon}>
-              <Popup>
-                <b>Bus Live Location</b>
-                <br />
-                {bus.name}
-              </Popup>
-            </Marker>
-          </MapContainer>
+          {/* Main Grid Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* LEFT COLUMN → Driver + Time Slots */}
+            <div className="flex flex-col gap-4">
+              {/* Driver Details */}
+              <div className="bg-white rounded-2xl shadow-lg p-4 border border-green-100 h-fit">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <User className="w-5 h-5 text-green-600" />
+                  Driver Details
+                </h3>
+                <div className="flex items-center space-x-4 mb-4">
+                  <img
+                    src={bus.driver.picture}
+                    alt={bus.driver.name}
+                    className="w-16 h-16 rounded-full border-2 border-green-200 shadow-md"
+                  />
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-800 text-lg">
+                      {bus.driver.name}
+                    </p>
+                    <div className="flex items-center gap-1 text-sm text-gray-600 mt-1">
+                      <Mail className="w-3 h-3" />
+                      <p>{bus.driver.email}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3 bg-gray-50 rounded-xl p-4">
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                    <CreditCard className="w-4 h-4 text-green-600" />
+                    <span className="font-medium">License ID:</span>
+                    <span>{bus.driver.licenceId}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                    <Award className="w-4 h-4 text-green-600" />
+                    <span className="font-medium">Experience:</span>
+                    <span>{bus.driver.driverExp} years</span>
+                  </div>
+                </div>
+              </div>
 
-          {/* 📊 Stats Below Map */}
-          <div className="flex flex-wrap justify-around mt-4 text-center text-sm text-gray-700">
-            <div>
-              Speed: <b>{bus.speed} km/h</b>
+              {/* Time Slots */}
+              <div className="bg-white rounded-2xl shadow-lg p-6 border border-green-100">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-green-600" />
+                  Time Slots
+                </h3>
+                <ul className="space-y-3">
+                  {bus.timeSlots.map((slot) => (
+                    <li
+                      key={slot._id}
+                      className={`p-4 rounded-xl text-center font-medium shadow-sm transition-all duration-300 ${
+                        activeSlot && activeSlot._id === slot._id
+                          ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg scale-105"
+                          : "bg-gray-50 text-gray-700 border border-gray-200"
+                      }`}
+                    >
+                      {slot.startTime} - {slot.endTime}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-            <div>
-              Total Distance: <b>{bus.totalDistance} km</b>
-            </div>
-            <div>
-              Covered: <b>{bus.coveredDistance} km</b>
-            </div>
-            <div>
-              Remaining: <b>{bus.remainingDistance} km</b>
-            </div>
-            <div>
-              ETA: <b>{bus.ETA}</b>
-            </div>
-          </div>
-        </div>
 
-        {/* 🧍 Driver Info */}
-        <div className="bg-white rounded-xl shadow-md p-4">
-          <h3 className="text-lg font-semibold mb-3">Time Slots</h3>
-          <ul className="space-y-2">
-            {bus.timeSlots.map((slot) => (
-              <li
-                key={slot._id}
-                className={`p-2 rounded-lg text-center font-medium ${
-                  activeSlot && activeSlot._id === slot._id
-                    ? "bg-green-100 text-green-700"
-                    : "bg-gray-100 text-gray-700"
-                }`}
+            {/* RIGHT COLUMN → Map + Stats */}
+            <div className="col-span-1 lg:col-span-2 bg-white rounded-2xl shadow-lg p-4 border border-green-100">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-green-600" />
+                Live Location
+              </h3>
+
+              <MapContainer
+                center={bus.liveLocation.coordinates}
+                zoom={14}
+                style={{ height: "400px", width: "100%", borderRadius: "12px" }}
               >
-                {slot.startTime} - {slot.endTime}
-              </li>
-            ))}
-          </ul>
-        </div>
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <Routing path={bus.path} />
+                <Marker position={bus.liveLocation.coordinates} icon={busIcon}>
+                  <Popup>
+                    <b>Bus Live Location</b>
+                    <br />
+                    {bus.name}
+                  </Popup>
+                </Marker>
+              </MapContainer>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-4">
+                <div className="bg-green-50 rounded-xl p-3 text-center border border-green-100">
+                  <Gauge className="w-5 h-5 text-green-600 mx-auto mb-1" />
+                  <p className="text-xs text-gray-600 mb-1">Speed</p>
+                  <p className="font-bold text-gray-800">{bus.speed} km/h</p>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-3 text-center border border-gray-200">
+                  <RouteIcon className="w-5 h-5 text-gray-600 mx-auto mb-1" />
+                  <p className="text-xs text-gray-600 mb-1">Total</p>
+                  <p className="font-bold text-gray-800">{bus.totalDistance} km</p>
+                </div>
+                <div className="bg-blue-50 rounded-xl p-3 text-center border border-blue-100">
+                  <MapPin className="w-5 h-5 text-blue-600 mx-auto mb-1" />
+                  <p className="text-xs text-gray-600 mb-1">Covered</p>
+                  <p className="font-bold text-gray-800">{bus.coveredDistance} km</p>
+                </div>
+                <div className="bg-orange-50 rounded-xl p-3 text-center border border-orange-100">
+                  <RouteIcon className="w-5 h-5 text-orange-600 mx-auto mb-1" />
+                  <p className="text-xs text-gray-600 mb-1">Remaining</p>
+                  <p className="font-bold text-gray-800">{bus.remainingDistance} km</p>
+                </div>
+                <div className="bg-purple-50 rounded-xl p-3 text-center border border-purple-100">
+                  <Clock className="w-5 h-5 text-purple-600 mx-auto mb-1" />
+                  <p className="text-xs text-gray-600 mb-1">ETA</p>
+                  <p className="font-bold text-gray-800">{bus.ETA}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
-    </div>
+    </>
   );
 };
 
