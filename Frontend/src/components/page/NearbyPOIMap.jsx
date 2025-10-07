@@ -228,16 +228,16 @@ const NearbyPOIMap = () => {
      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
       {/* Header */}
       <div className="bg-white border-b border-green-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-2xl">🗺️</span>
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-xl sm:text-2xl">🗺️</span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
                 Explore Nearby
               </h1>
-              <p className="text-sm text-gray-600">
+              <p className="text-xs sm:text-sm text-gray-600">
                 Discover places around you
               </p>
             </div>
@@ -245,33 +245,33 @@ const NearbyPOIMap = () => {
         </div>
       </div>
 
-      {/* Main Content - Split Layout */}
-      <div className="flex h-[calc(100vh-88px)]">
+      {/* Main Content - Split Layout (Desktop) / Stacked (Mobile) */}
+      <div className="flex flex-col lg:flex-row lg:h-[calc(100vh-88px)]">
         {/* Left Sidebar */}
-        <div className="w-2/5 p-6 overflow-y-auto">
+        <div className="w-full lg:w-2/5 p-4 sm:p-6 overflow-y-auto">
           {/* POI Categories - Top */}
-          <div className="mb-6">
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-green-100">
-              <div className="flex items-center gap-2 mb-5">
-                <span className="text-xl">📌</span>
-                <h2 className="text-xl font-bold text-gray-800">
+          <div className="mb-4 sm:mb-6">
+            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-green-100">
+              <div className="flex items-center gap-2 mb-4 sm:mb-5">
+                <span className="text-lg sm:text-xl">📌</span>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800">
                   Nearby Places
                 </h2>
               </div>
 
-              <div className="flex flex-wrap gap-2.5">
+              <div className="flex flex-wrap gap-2 sm:gap-2.5">
                 {POI_TYPES.map((type) => (
                   <button
                     key={type.tag}
-                    className={`px-4 py-2.5 rounded-xl border-2 text-sm font-semibold transition-all duration-300 transform hover:scale-105 ${
+                    className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl border-2 text-xs sm:text-sm font-semibold transition-all duration-300 transform hover:scale-105 ${
                       selectedType === type.tag
                         ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-transparent shadow-lg"
                         : "bg-white text-gray-700 border-gray-200 hover:border-green-300 hover:shadow-md"
                     }`}
                     onClick={() => handleBadgeClick(type.tag)}
                   >
-                    <span className="flex items-center gap-2">
-                      <span className="text-base">{type.icon}</span>
+                    <span className="flex items-center gap-1.5 sm:gap-2">
+                      <span className="text-sm sm:text-base">{type.icon}</span>
                       <span>{type.label}</span>
                     </span>
                   </button>
@@ -282,10 +282,10 @@ const NearbyPOIMap = () => {
 
           {/* Search Section - Bottom */}
           <div>
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-green-100">
-              <div className="flex items-center gap-2 mb-5">
-                <span className="text-xl">🔍</span>
-                <h2 className="text-xl font-bold text-gray-800">
+            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-green-100">
+              <div className="flex items-center gap-2 mb-4 sm:mb-5">
+                <span className="text-lg sm:text-xl">🔍</span>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800">
                   Search Location
                 </h2>
               </div>
@@ -296,11 +296,11 @@ const NearbyPOIMap = () => {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder="Search for any location..."
-                  className="w-full border-2 border-gray-200 p-4 pr-12 rounded-xl focus:outline-none focus:border-green-500 text-gray-800 placeholder-gray-400 bg-white transition-all duration-300 hover:shadow-md"
+                  className="w-full border-2 border-gray-200 p-3 sm:p-4 pr-10 sm:pr-12 rounded-xl focus:outline-none focus:border-green-500 text-sm sm:text-base text-gray-800 placeholder-gray-400 bg-white transition-all duration-300 hover:shadow-md"
                 />
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-400">
                   <svg
-                    className="w-5 h-5"
+                    className="w-4 h-4 sm:w-5 sm:h-5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -320,9 +320,9 @@ const NearbyPOIMap = () => {
                       <li
                         key={place.place_id}
                         onClick={() => handleSuggestionClick(place)}
-                        className="p-4 cursor-pointer text-sm text-gray-700 border-b border-gray-100 last:border-b-0 flex items-start gap-3 hover:bg-green-50 transition-all duration-200"
+                        className="p-3 sm:p-4 cursor-pointer text-xs sm:text-sm text-gray-700 border-b border-gray-100 last:border-b-0 flex items-start gap-2 sm:gap-3 hover:bg-green-50 transition-all duration-200"
                       >
-                        <span className="text-lg mt-0.5">📍</span>
+                        <span className="text-base sm:text-lg mt-0.5">📍</span>
                         <span className="flex-1">{place.display_name}</span>
                       </li>
                     ))}
@@ -334,11 +334,11 @@ const NearbyPOIMap = () => {
         </div>
 
         {/* Right Side - Map */}
-        <div className="w-3/5 p-6">
-          <div className="bg-white rounded-2xl p-6 shadow-xl h-full border border-green-100">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-xl">🌍</span>
-              <h2 className="text-xl font-bold text-gray-800">
+        <div className="w-full lg:w-3/5 p-4 sm:p-6">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-xl h-[400px] sm:h-[500px] lg:h-full border border-green-100">
+            <div className="flex items-center gap-2 mb-3 sm:mb-4">
+              <span className="text-lg sm:text-xl">🌍</span>
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800">
                 Interactive Map
               </h2>
             </div>
@@ -346,7 +346,7 @@ const NearbyPOIMap = () => {
             <div
               ref={mapContainerRef}
               id="map"
-              className="h-[calc(100%-48px)] w-full rounded-xl border-2 border-gray-200 shadow-md overflow-hidden"
+              className="h-[calc(100%-40px)] sm:h-[calc(100%-48px)] w-full rounded-xl border-2 border-gray-200 shadow-md overflow-hidden"
             ></div>
           </div>
         </div>
