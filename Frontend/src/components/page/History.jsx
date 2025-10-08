@@ -10,6 +10,7 @@ const History = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { items } = useSelector((store) => store.history);
+  const { darktheme } = useSelector((store) => store.auth);
 
   const handelClick = (index) => {
     dispatch(setpath(items[index]));
@@ -24,16 +25,26 @@ const History = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
+        <div className={`min-h-screen ${
+          darktheme 
+            ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
+            : 'bg-gradient-to-br from-green-50 via-white to-green-100'
+        }`}>
           <div className="flex flex-col justify-center items-center min-h-[80vh]">
-            <div className="bg-white rounded-2xl shadow-xl p-12 text-center border border-gray-200">
-              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Clock className="w-10 h-10 text-gray-400" />
+            <div className={`rounded-2xl shadow-xl p-12 text-center border ${
+              darktheme 
+                ? 'bg-gray-800 border-gray-700' 
+                : 'bg-white border-gray-200'
+            }`}>
+              <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
+                darktheme ? 'bg-gray-700' : 'bg-gray-100'
+              }`}>
+                <Clock className={`w-10 h-10 ${darktheme ? 'text-gray-500' : 'text-gray-400'}`} />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              <h2 className={`text-2xl font-bold mb-2 ${darktheme ? 'text-white' : 'text-gray-800'}`}>
                 No History Yet
               </h2>
-              <p className="text-gray-600 mb-6">
+              <p className={`mb-6 ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
                 You haven't searched any routes yet.
               </p>
             </div>
@@ -46,14 +57,18 @@ const History = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
+      <div className={`min-h-screen ${
+        darktheme 
+          ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
+          : 'bg-gradient-to-br from-green-50 via-white to-green-100'
+      }`}>
         <main className="max-w-7xl mx-auto px-4 py-8">
           {/* Header */}
           <div className="text-center mb-8 relative">
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">
+            <h1 className={`text-4xl font-bold mb-4 ${darktheme ? 'text-white' : 'text-gray-800'}`}>
               Route History
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className={`text-lg ${darktheme ? 'text-gray-300' : 'text-gray-600'}`}>
               View and access your previously searched routes
             </p>
             
@@ -78,48 +93,68 @@ const History = () => {
               return (
                 <div
                   key={index}
-                  className="bg-white shadow-lg rounded-2xl p-6 border border-green-100 hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105"
+                  className={`shadow-lg rounded-2xl p-6 border hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${
+                    darktheme 
+                      ? 'bg-gray-800 border-gray-700' 
+                      : 'bg-white border-green-100'
+                  }`}
                   onClick={() => handelClick(index)}
                 >
                   {/* Header with Route Icon */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        darktheme ? 'bg-green-900' : 'bg-green-100'
+                      }`}>
                         <Route className="w-5 h-5 text-green-600" />
                       </div>
-                      <h2 className="text-lg font-semibold text-gray-800">
+                      <h2 className={`text-lg font-semibold ${darktheme ? 'text-white' : 'text-gray-800'}`}>
                         Route #{index + 1}
                       </h2>
                     </div>
-                    <div className="bg-green-50 px-3 py-1 rounded-full">
-                      <span className="text-xs font-medium text-green-700 capitalize">
+                    <div className={`px-3 py-1 rounded-full ${
+                      darktheme ? 'bg-green-900' : 'bg-green-50'
+                    }`}>
+                      <span className={`text-xs font-medium capitalize ${
+                        darktheme ? 'text-green-400' : 'text-green-700'
+                      }`}>
                         {item.type}
                       </span>
                     </div>
                   </div>
 
                   {/* Route Information */}
-                  <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                  <div className={`rounded-xl p-4 mb-4 ${
+                    darktheme ? 'bg-gray-700' : 'bg-gray-50'
+                  }`}>
                     <div className="space-y-3">
                       <div className="flex items-start gap-2">
                         <MapPin className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
                         <div className="flex-1">
-                          <p className="text-xs text-gray-500 mb-1">From</p>
-                          <p className="text-sm font-semibold text-gray-800 line-clamp-2">
+                          <p className={`text-xs mb-1 ${darktheme ? 'text-gray-400' : 'text-gray-500'}`}>
+                            From
+                          </p>
+                          <p className={`text-sm font-semibold line-clamp-2 ${
+                            darktheme ? 'text-gray-200' : 'text-gray-800'
+                          }`}>
                             {from}
                           </p>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-center">
-                        <ArrowRight className="w-5 h-5 text-gray-400" />
+                        <ArrowRight className={`w-5 h-5 ${darktheme ? 'text-gray-500' : 'text-gray-400'}`} />
                       </div>
 
                       <div className="flex items-start gap-2">
                         <MapPin className="w-4 h-4 text-red-600 mt-1 flex-shrink-0" />
                         <div className="flex-1">
-                          <p className="text-xs text-gray-500 mb-1">To</p>
-                          <p className="text-sm font-semibold text-gray-800 line-clamp-2">
+                          <p className={`text-xs mb-1 ${darktheme ? 'text-gray-400' : 'text-gray-500'}`}>
+                            To
+                          </p>
+                          <p className={`text-sm font-semibold line-clamp-2 ${
+                            darktheme ? 'text-gray-200' : 'text-gray-800'
+                          }`}>
                             {to}
                           </p>
                         </div>

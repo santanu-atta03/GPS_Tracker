@@ -15,6 +15,7 @@ import {
 import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 // Helper to create a custom marker with bus emoji
 const createBusIcon = (isActive = true) => {
@@ -68,6 +69,8 @@ const BusMap = () => {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const navigate = useNavigate();
+  const { darktheme } = useSelector((store) => store.auth);
+
   // Get user location
   useEffect(() => {
     if (navigator.geolocation) {
@@ -162,32 +165,32 @@ const BusMap = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
+    <div className={`min-h-screen ${darktheme ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' : 'bg-gradient-to-br from-green-50 via-white to-green-100'}`}>
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Header Section */}
         <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">
+          <h1 className={`text-4xl font-bold mb-4 ${darktheme ? 'text-white' : 'text-gray-800'}`}>
             Live Bus Map
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className={`text-lg max-w-2xl mx-auto ${darktheme ? 'text-gray-300' : 'text-gray-600'}`}>
             Track all buses in real-time on the interactive map. See their
             current locations, routes, and driver information.
           </p>
         </div>
 
         {/* Controls Section */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-green-100">
+        <div className={`rounded-2xl shadow-xl p-6 mb-6 ${darktheme ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-green-100'}`}>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center text-sm text-gray-600">
+              <div className={`flex items-center text-sm ${darktheme ? 'text-gray-300' : 'text-gray-600'}`}>
                 <MapPin className="w-4 h-4 mr-1 text-green-500" />
                 <span className="font-medium">{busLocations.length}</span> buses
                 tracked
               </div>
               {lastUpdated && (
-                <div className="flex items-center text-sm text-gray-500">
+                <div className={`flex items-center text-sm ${darktheme ? 'text-gray-400' : 'text-gray-500'}`}>
                   <Clock className="w-4 h-4 mr-1" />
                   Last updated: {lastUpdated.toLocaleTimeString()}
                 </div>
@@ -223,38 +226,38 @@ const BusMap = () => {
 
         {/* Error Messages */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+          <div className={`rounded-xl p-4 mb-6 ${darktheme ? 'bg-red-900/50 border border-red-800' : 'bg-red-50 border border-red-200'}`}>
             <div className="flex items-start">
               <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
               <div>
-                <h3 className="text-red-800 font-medium mb-1">Error</h3>
-                <p className="text-red-700 text-sm">{error}</p>
+                <h3 className={`font-medium mb-1 ${darktheme ? 'text-red-300' : 'text-red-800'}`}>Error</h3>
+                <p className={`text-sm ${darktheme ? 'text-red-400' : 'text-red-700'}`}>{error}</p>
               </div>
             </div>
           </div>
         )}
 
         {locationError && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+          <div className={`rounded-xl p-4 mb-6 ${darktheme ? 'bg-yellow-900/50 border border-yellow-800' : 'bg-yellow-50 border border-yellow-200'}`}>
             <div className="flex items-start">
               <AlertTriangle className="w-5 h-5 text-yellow-500 mt-0.5 mr-3 flex-shrink-0" />
               <div>
-                <h3 className="text-yellow-800 font-medium mb-1">
+                <h3 className={`font-medium mb-1 ${darktheme ? 'text-yellow-300' : 'text-yellow-800'}`}>
                   Location Notice
                 </h3>
-                <p className="text-yellow-700 text-sm">{locationError}</p>
+                <p className={`text-sm ${darktheme ? 'text-yellow-400' : 'text-yellow-700'}`}>{locationError}</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Map Container */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-green-100">
+        <div className={`rounded-2xl shadow-xl overflow-hidden ${darktheme ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-green-100'}`}>
           <div className="relative">
             {isLoading && (
-              <div className="absolute top-4 left-4 z-[1000] bg-white rounded-lg shadow-lg px-3 py-2 flex items-center">
+              <div className={`absolute top-4 left-4 z-[1000] rounded-lg shadow-lg px-3 py-2 flex items-center ${darktheme ? 'bg-gray-800 border border-gray-700' : 'bg-white'}`}>
                 <RefreshCw className="w-4 h-4 mr-2 animate-spin text-green-500" />
-                <span className="text-sm text-gray-600">Loading buses...</span>
+                <span className={`text-sm ${darktheme ? 'text-gray-300' : 'text-gray-600'}`}>Loading buses...</span>
               </div>
             )}
 
@@ -266,7 +269,7 @@ const BusMap = () => {
               className="rounded-2xl"
             >
               <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                url={darktheme ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"}
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
 
@@ -386,16 +389,16 @@ const BusMap = () => {
         </div>
 
         {/* Legend */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mt-6 border border-green-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Map Legend</h3>
+        <div className={`rounded-2xl shadow-lg p-6 mt-6 ${darktheme ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-green-100'}`}>
+          <h3 className={`text-lg font-bold mb-4 ${darktheme ? 'text-white' : 'text-gray-800'}`}>Map Legend</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm">
                 📍
               </div>
               <div>
-                <p className="font-medium text-gray-700">Your Location</p>
-                <p className="text-sm text-gray-500">Current GPS position</p>
+                <p className={`font-medium ${darktheme ? 'text-gray-200' : 'text-gray-700'}`}>Your Location</p>
+                <p className={`text-sm ${darktheme ? 'text-gray-400' : 'text-gray-500'}`}>Current GPS position</p>
               </div>
             </div>
 
@@ -404,8 +407,8 @@ const BusMap = () => {
                 🚌
               </div>
               <div>
-                <p className="font-medium text-gray-700">Active Bus</p>
-                <p className="text-sm text-gray-500">
+                <p className={`font-medium ${darktheme ? 'text-gray-200' : 'text-gray-700'}`}>Active Bus</p>
+                <p className={`text-sm ${darktheme ? 'text-gray-400' : 'text-gray-500'}`}>
                   Updated within 10 minutes
                 </p>
               </div>
@@ -416,8 +419,8 @@ const BusMap = () => {
                 🚌
               </div>
               <div>
-                <p className="font-medium text-gray-700">Inactive Bus</p>
-                <p className="text-sm text-gray-500">
+                <p className={`font-medium ${darktheme ? 'text-gray-200' : 'text-gray-700'}`}>Inactive Bus</p>
+                <p className={`text-sm ${darktheme ? 'text-gray-400' : 'text-gray-500'}`}>
                   Last seen over 10 minutes ago
                 </p>
               </div>
@@ -426,7 +429,7 @@ const BusMap = () => {
         </div>
 
         {/* Footer */}
-        <footer className="mt-16 text-center text-gray-500 text-sm">
+        <footer className={`mt-16 text-center text-sm ${darktheme ? 'text-gray-400' : 'text-gray-500'}`}>
           <p>&copy; 2024 Bus Sewa. All rights reserved.</p>
         </footer>
       </main>

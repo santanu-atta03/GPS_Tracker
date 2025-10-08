@@ -12,10 +12,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ThemeToggle } from "../page/theme-toggle";
 
 const Navbar = () => {
   const { logout, loginWithRedirect, isAuthenticated, user } = useAuth0();
-  const { usere } = useSelector((store) => store.auth);
+  const { usere, darktheme } = useSelector((store) => store.auth);
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
@@ -35,12 +36,12 @@ const Navbar = () => {
     gu: { name: "ગુજરાતી", flag: "🇮🇳" },
     mr: { name: "मराठी", flag: "🇮🇳" },
     pa: { name: "ਪੰਜਾਬੀ", flag: "🇮🇳" },
-    ur: { name: "اُردُو", flag: "🇵🇰" }, // or 🇮🇳 if preferred
+    ur: { name: "اُردُو", flag: "🇵🇰" },
     kok: { name: "कोंकणी", flag: "🇮🇳" },
     or: { name: "ଓଡ଼ିଆ", flag: "🇮🇳" },
     ne: { name: "नेपाली", flag: "🇳🇵" },
     sat: { name: "ᱥᱟᱱᱛᱟᱲᱤ", flag: "🇮🇳" },
-    sd: { name: "سنڌي", flag: "🇵🇰" }, // or 🇮🇳 if preferred
+    sd: { name: "سنڌي", flag: "🇵🇰" },
     mni: { name: "মেইতেই লোন", flag: "🇮🇳" },
     ks: { name: "كٲشُر", flag: "🇮🇳" },
     as: { name: "অসমীয়া", flag: "🇮🇳" },
@@ -87,7 +88,7 @@ const Navbar = () => {
   }, [isMobileMenuOpen]);
 
   return (
-    <div className="w-full bg-white/80 backdrop-blur-md shadow-lg border-b border-green-100 px-4 sm:px-6 py-3 relative">
+    <div className={`w-full backdrop-blur-md shadow-lg px-4 sm:px-6 py-3 relative ${darktheme ? 'bg-gray-800/80 border-b border-gray-700' : 'bg-white/80 border-b border-green-100'}`}>
       <header className="max-w-7xl mx-auto flex justify-between items-center">
         {/* Left Side - Logo & App Name */}
         <div className="flex items-center space-x-3 flex-shrink-0">
@@ -99,7 +100,7 @@ const Navbar = () => {
             <h1 className="text-2xl sm:text-2xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
               {t("navbar.appName")}
             </h1>
-            <p className="text-gray-600 text-xs sm:text-sm">
+            <p className={`text-xs sm:text-sm ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
               {t("navbar.tagline")}
             </p>
           </div>
@@ -121,7 +122,7 @@ const Navbar = () => {
             <div className="flex items-center gap-6">
               <div
                 onClick={() => handleNavigation("/")}
-                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
               >
                 {t("navbar.home")}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
@@ -129,7 +130,7 @@ const Navbar = () => {
               {usere?.status === "driver" ? (
                 <div
                   onClick={() => handleNavigation("/Bus")}
-                  className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                  className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
                 >
                   {t("navbar.busDetails")}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
@@ -138,28 +139,28 @@ const Navbar = () => {
 
               <div
                 onClick={() => handleNavigation("/view/map")}
-                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
               >
                 {t("navbar.map")}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
               <div
                 onClick={() => handleNavigation("/find/ticket")}
-                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
               >
                 ticket
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
               <div
                 onClick={() => handleNavigation("/nearBy/search")}
-                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
               >
                 NearBy
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
                <div
                 onClick={() => handleNavigation("/see-history")}
-                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
               >
                 History
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
@@ -172,7 +173,7 @@ const Navbar = () => {
               <select
                 value={selectedLang}
                 onChange={(e) => handleLanguageChange(e.target.value)}
-                className="bg-white/70 border border-green-200 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-white transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500"
+                className={`border rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 ${darktheme ? 'bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600' : 'bg-white/70 border-green-200 text-gray-700 hover:bg-white'}`}
               >
                 {Object.entries(LANGUAGES).map(([code, { name, flag }]) => (
                   <option key={code} value={code}>
@@ -186,7 +187,7 @@ const Navbar = () => {
             {isAuthenticated ? (
               <Popover>
                 <PopoverTrigger asChild>
-                  <div className="flex items-center cursor-pointer space-x-3 bg-white/50 rounded-full px-3 py-2 hover:bg-white/80 transition-all duration-200 border border-gray-200 hover:border-green-200">
+                  <div className={`flex items-center cursor-pointer space-x-3 rounded-full px-3 py-2 transition-all duration-200 border ${darktheme ? 'bg-gray-700/50 hover:bg-gray-700 border-gray-600 hover:border-gray-500' : 'bg-white/50 hover:bg-white/80 border-gray-200 hover:border-green-200'}`}>
                     {user?.picture ? (
                       <Avatar className="w-10 h-10 border-2 border-green-200">
                         <AvatarImage
@@ -206,7 +207,7 @@ const Navbar = () => {
                         </AvatarFallback>
                       </Avatar>
                     )}
-                    <span className="text-gray-800 font-medium hidden xl:block">
+                    <span className={`font-medium hidden xl:block ${darktheme ? 'text-gray-200' : 'text-gray-800'}`}>
                       {user?.name}
                     </span>
                   </div>
@@ -214,11 +215,11 @@ const Navbar = () => {
 
                 <PopoverContent
                   align="end"
-                  className="w-48 bg-white/95 backdrop-blur-md border border-green-100 shadow-xl"
+                  className={`w-48 backdrop-blur-md shadow-xl ${darktheme ? 'bg-gray-800/95 border border-gray-700' : 'bg-white/95 border border-green-100'}`}
                 >
                   <Button
                     variant="outline"
-                    className="w-full mb-2 border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300"
+                    className={`w-full mb-2 ${darktheme ? 'border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-gray-500' : 'border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300'}`}
                     onClick={() => navigate("/profile")}
                   >
                     {t("navbar.viewProfile")}
@@ -240,12 +241,13 @@ const Navbar = () => {
                 {t("navbar.login")}
               </Button>
             )}
+            <ThemeToggle/>
           </div>
 
           {/* Mobile Live Badge */}
-          <div className="lg:hidden flex items-center space-x-2 bg-gradient-to-r from-green-50 to-green-100 rounded-full px-3 py-1.5 border border-green-200">
+          <div className={`lg:hidden flex items-center space-x-2 rounded-full px-3 py-1.5 border ${darktheme ? 'bg-gradient-to-r from-green-900/50 to-green-800/50 border-green-700' : 'bg-gradient-to-r from-green-50 to-green-100 border-green-200'}`}>
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-xs sm:text-sm font-medium text-green-700 whitespace-nowrap">
+            <span className={`text-xs sm:text-sm font-medium whitespace-nowrap ${darktheme ? 'text-green-400' : 'text-green-700'}`}>
               Live
             </span>
           </div>
@@ -254,13 +256,13 @@ const Navbar = () => {
           <div className="lg:hidden mobile-menu-container">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-lg bg-white/50 border border-gray-200 hover:bg-white/80 transition-all duration-200"
+              className={`p-2 rounded-lg border transition-all duration-200 ${darktheme ? 'bg-gray-700/50 border-gray-600 hover:bg-gray-700' : 'bg-white/50 border-gray-200 hover:bg-white/80'}`}
               aria-label="Toggle mobile menu"
             >
               {isMobileMenuOpen ? (
-                <X className="w-6 h-6 text-gray-700" />
+                <X className={`w-6 h-6 ${darktheme ? 'text-gray-300' : 'text-gray-700'}`} />
               ) : (
-                <Menu className="w-6 h-6 text-gray-700" />
+                <Menu className={`w-6 h-6 ${darktheme ? 'text-gray-300' : 'text-gray-700'}`} />
               )}
             </button>
           </div>
@@ -270,15 +272,14 @@ const Navbar = () => {
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="lg:hidden w-full bg-white backdrop-blur-md shadow-xl
-                  border-b border-green-100 z-50 mobile-menu-container"
+          className={`lg:hidden w-full backdrop-blur-md shadow-xl border-b z-50 mobile-menu-container ${darktheme ? 'bg-gray-800 border-gray-700' : 'bg-white border-green-100'}`}
         >
           <div className="px-4 py-4 space-y-4">
             {/* Links */}
             <div className="space-y-3">
               <div
                 onClick={() => handleNavigation("/")}
-                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
               >
                 {t("navbar.home")}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
@@ -286,7 +287,7 @@ const Navbar = () => {
               {usere?.status === "driver" ? (
                 <div
                   onClick={() => handleNavigation("/Bus")}
-                  className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                  className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
                 >
                   {t("navbar.busDetails")}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
@@ -295,28 +296,28 @@ const Navbar = () => {
 
               <div
                 onClick={() => handleNavigation("/view/map")}
-                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
               >
                 {t("navbar.map")}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
               <div
                 onClick={() => handleNavigation("/find/ticket")}
-                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
               >
                 ticket
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
               <div
                 onClick={() => handleNavigation("/nearBy/search")}
-                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
               >
                 NearBy
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
               </div>
               <div
                 onClick={() => handleNavigation("/see-history")}
-                className="cursor-pointer font-semibold text-gray-700 hover:text-green-600 transition-colors duration-200 relative group"
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
               >
                 History
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
@@ -329,7 +330,7 @@ const Navbar = () => {
               <select
                 value={selectedLang}
                 onChange={(e) => handleLanguageChange(e.target.value)}
-                className="flex-1 bg-white/70 border border-green-200 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-white transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500"
+                className={`flex-1 border rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 ${darktheme ? 'bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600' : 'bg-white/70 border-green-200 text-gray-700 hover:bg-white'}`}
               >
                 {Object.entries(LANGUAGES).map(([code, { name, flag }]) => (
                   <option key={code} value={code}>
@@ -340,10 +341,10 @@ const Navbar = () => {
             </div>
 
             {/* Auth */}
-            <div className="px-3 pt-2 bg-white">
+            <div className={`px-3 pt-2 ${darktheme ? 'bg-gray-800' : 'bg-white'}`}>
               {isAuthenticated ? (
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-3 bg-white/50 rounded-lg px-3 py-3 border border-gray-200">
+                  <div className={`flex items-center space-x-3 rounded-lg px-3 py-3 border ${darktheme ? 'bg-gray-700/50 border-gray-600' : 'bg-white/50 border-gray-200'}`}>
                     {user?.picture ? (
                       <Avatar className="w-10 h-10 border-2 border-green-200">
                         <AvatarImage
@@ -363,13 +364,13 @@ const Navbar = () => {
                         </AvatarFallback>
                       </Avatar>
                     )}
-                    <span className="text-gray-800 font-medium">
+                    <span className={`font-medium ${darktheme ? 'text-gray-200' : 'text-gray-800'}`}>
                       {user?.name}
                     </span>
                   </div>
                   <Button
                     variant="outline"
-                    className="w-full mb-2 border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300"
+                    className={`w-full mb-2 ${darktheme ? 'border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-gray-500' : 'border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300'}`}
                     onClick={() => {
                       navigate("/profile");
                       setIsMobileMenuOpen(false);
@@ -398,7 +399,9 @@ const Navbar = () => {
               )}
             </div>
           </div>
+           <ThemeToggle/>
         </div>
+       
       )}
     </div>
   );

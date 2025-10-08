@@ -16,6 +16,7 @@ import {
   Award,
 } from "lucide-react";
 import Navbar from "../shared/Navbar";
+import { useSelector } from "react-redux";
 
 // 🚌 Custom bus icon
 const busIcon = new L.DivIcon({
@@ -48,6 +49,7 @@ function Routing({ path }) {
 
 const BusDetailsPage2 = () => {
   const { deviceID } = useParams();
+  const { darktheme } = useSelector((store) => store.auth);
   const [bus, setBus] = useState(null);
   const [activeSlot, setActiveSlot] = useState(null);
 
@@ -82,10 +84,10 @@ const BusDetailsPage2 = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 flex items-center justify-center">
-          <div className="bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center border border-green-100">
+        <div className={`min-h-screen flex items-center justify-center ${darktheme ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' : 'bg-gradient-to-br from-green-50 via-white to-green-100'}`}>
+          <div className={`rounded-2xl shadow-xl p-8 flex flex-col items-center ${darktheme ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-green-100'}`}>
             <div className="animate-spin w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full mb-4"></div>
-            <span className="text-gray-600 text-lg font-medium">
+            <span className={`text-lg font-medium ${darktheme ? 'text-gray-300' : 'text-gray-600'}`}>
               Loading bus details...
             </span>
           </div>
@@ -96,15 +98,15 @@ const BusDetailsPage2 = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
+      <div className={`min-h-screen ${darktheme ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' : 'bg-gradient-to-br from-green-50 via-white to-green-100'}`}>
         <main className="max-w-7xl mx-auto px-4 py-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-green-100">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            <div className={`rounded-2xl shadow-lg p-6 ${darktheme ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-green-100'}`}>
+              <h1 className={`text-3xl font-bold mb-2 ${darktheme ? 'text-white' : 'text-gray-800'}`}>
                 Bus {bus.name} ({bus.deviceID})
               </h1>
-              <div className="flex items-center justify-center gap-2 text-gray-600">
+              <div className={`flex items-center justify-center gap-2 ${darktheme ? 'text-gray-300' : 'text-gray-600'}`}>
                 <MapPin className="w-5 h-5 text-green-600" />
                 <p className="text-lg">
                   <span className="font-semibold">{bus.from}</span>
@@ -120,8 +122,8 @@ const BusDetailsPage2 = () => {
             {/* LEFT COLUMN → Driver + Time Slots */}
             <div className="flex flex-col gap-4">
               {/* Driver Details */}
-              <div className="bg-white rounded-2xl shadow-lg p-4 border border-green-100 h-fit">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <div className={`rounded-2xl shadow-lg p-4 h-fit ${darktheme ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-green-100'}`}>
+                <h3 className={`text-xl font-semibold mb-4 flex items-center gap-2 ${darktheme ? 'text-white' : 'text-gray-800'}`}>
                   <User className="w-5 h-5 text-green-600" />
                   Driver Details
                 </h3>
@@ -132,22 +134,22 @@ const BusDetailsPage2 = () => {
                     className="w-16 h-16 rounded-full border-2 border-green-200 shadow-md"
                   />
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-800 text-lg">
+                    <p className={`font-semibold text-lg ${darktheme ? 'text-white' : 'text-gray-800'}`}>
                       {bus.driver.name}
                     </p>
-                    <div className="flex items-center gap-1 text-sm text-gray-600 mt-1">
+                    <div className={`flex items-center gap-1 text-sm mt-1 ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
                       <Mail className="w-3 h-3" />
                       <p>{bus.driver.email}</p>
                     </div>
                   </div>
                 </div>
-                <div className="space-y-3 bg-gray-50 rounded-xl p-4">
-                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                <div className={`space-y-3 rounded-xl p-4 ${darktheme ? 'bg-gray-900/50' : 'bg-gray-50'}`}>
+                  <div className={`flex items-center gap-2 text-sm ${darktheme ? 'text-gray-300' : 'text-gray-700'}`}>
                     <CreditCard className="w-4 h-4 text-green-600" />
                     <span className="font-medium">License ID:</span>
                     <span>{bus.driver.licenceId}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <div className={`flex items-center gap-2 text-sm ${darktheme ? 'text-gray-300' : 'text-gray-700'}`}>
                     <Award className="w-4 h-4 text-green-600" />
                     <span className="font-medium">Experience:</span>
                     <span>{bus.driver.driverExp} years</span>
@@ -156,8 +158,8 @@ const BusDetailsPage2 = () => {
               </div>
 
               {/* Time Slots */}
-              <div className="bg-white rounded-2xl shadow-lg p-6 border border-green-100">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <div className={`rounded-2xl shadow-lg p-6 ${darktheme ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-green-100'}`}>
+                <h3 className={`text-xl font-semibold mb-4 flex items-center gap-2 ${darktheme ? 'text-white' : 'text-gray-800'}`}>
                   <Clock className="w-5 h-5 text-green-600" />
                   Time Slots
                 </h3>
@@ -168,7 +170,9 @@ const BusDetailsPage2 = () => {
                       className={`p-4 rounded-xl text-center font-medium shadow-sm transition-all duration-300 ${
                         activeSlot && activeSlot._id === slot._id
                           ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg scale-105"
-                          : "bg-gray-50 text-gray-700 border border-gray-200"
+                          : darktheme 
+                            ? "bg-gray-900/50 text-gray-300 border border-gray-700"
+                            : "bg-gray-50 text-gray-700 border border-gray-200"
                       }`}
                     >
                       {slot.startTime} - {slot.endTime}
@@ -179,8 +183,8 @@ const BusDetailsPage2 = () => {
             </div>
 
             {/* RIGHT COLUMN → Map + Stats */}
-            <div className="col-span-1 lg:col-span-2 bg-white rounded-2xl shadow-lg p-4 border border-green-100">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <div className={`col-span-1 lg:col-span-2 rounded-2xl shadow-lg p-4 ${darktheme ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-green-100'}`}>
+              <h3 className={`text-xl font-semibold mb-4 flex items-center gap-2 ${darktheme ? 'text-white' : 'text-gray-800'}`}>
                 <MapPin className="w-5 h-5 text-green-600" />
                 Live Location
               </h3>
@@ -190,7 +194,7 @@ const BusDetailsPage2 = () => {
                 zoom={14}
                 style={{ height: "400px", width: "100%", borderRadius: "12px" }}
               >
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <TileLayer url={darktheme ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"} />
                 <Routing path={bus.path} />
                 <Marker position={bus.liveLocation.coordinates} icon={busIcon}>
                   <Popup>
@@ -203,30 +207,30 @@ const BusDetailsPage2 = () => {
 
               {/* Stats Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-4">
-                <div className="bg-green-50 rounded-xl p-3 text-center border border-green-100">
+                <div className={`rounded-xl p-3 text-center ${darktheme ? 'bg-green-900/30 border border-green-800' : 'bg-green-50 border border-green-100'}`}>
                   <Gauge className="w-5 h-5 text-green-600 mx-auto mb-1" />
-                  <p className="text-xs text-gray-600 mb-1">Speed</p>
-                  <p className="font-bold text-gray-800">{bus.speed} km/h</p>
+                  <p className={`text-xs mb-1 ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>Speed</p>
+                  <p className={`font-bold ${darktheme ? 'text-white' : 'text-gray-800'}`}>{bus.speed} km/h</p>
                 </div>
-                <div className="bg-gray-50 rounded-xl p-3 text-center border border-gray-200">
-                  <RouteIcon className="w-5 h-5 text-gray-600 mx-auto mb-1" />
-                  <p className="text-xs text-gray-600 mb-1">Total</p>
-                  <p className="font-bold text-gray-800">{bus.totalDistance} km</p>
+                <div className={`rounded-xl p-3 text-center ${darktheme ? 'bg-gray-900/50 border border-gray-700' : 'bg-gray-50 border border-gray-200'}`}>
+                  <RouteIcon className={`w-5 h-5 mx-auto mb-1 ${darktheme ? 'text-gray-400' : 'text-gray-600'}`} />
+                  <p className={`text-xs mb-1 ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>Total</p>
+                  <p className={`font-bold ${darktheme ? 'text-white' : 'text-gray-800'}`}>{bus.totalDistance} km</p>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-3 text-center border border-blue-100">
+                <div className={`rounded-xl p-3 text-center ${darktheme ? 'bg-blue-900/30 border border-blue-800' : 'bg-blue-50 border border-blue-100'}`}>
                   <MapPin className="w-5 h-5 text-blue-600 mx-auto mb-1" />
-                  <p className="text-xs text-gray-600 mb-1">Covered</p>
-                  <p className="font-bold text-gray-800">{bus.coveredDistance} km</p>
+                  <p className={`text-xs mb-1 ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>Covered</p>
+                  <p className={`font-bold ${darktheme ? 'text-white' : 'text-gray-800'}`}>{bus.coveredDistance} km</p>
                 </div>
-                <div className="bg-orange-50 rounded-xl p-3 text-center border border-orange-100">
+                <div className={`rounded-xl p-3 text-center ${darktheme ? 'bg-orange-900/30 border border-orange-800' : 'bg-orange-50 border border-orange-100'}`}>
                   <RouteIcon className="w-5 h-5 text-orange-600 mx-auto mb-1" />
-                  <p className="text-xs text-gray-600 mb-1">Remaining</p>
-                  <p className="font-bold text-gray-800">{bus.remainingDistance} km</p>
+                  <p className={`text-xs mb-1 ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>Remaining</p>
+                  <p className={`font-bold ${darktheme ? 'text-white' : 'text-gray-800'}`}>{bus.remainingDistance} km</p>
                 </div>
-                <div className="bg-purple-50 rounded-xl p-3 text-center border border-purple-100">
+                <div className={`rounded-xl p-3 text-center ${darktheme ? 'bg-purple-900/30 border border-purple-800' : 'bg-purple-50 border border-purple-100'}`}>
                   <Clock className="w-5 h-5 text-purple-600 mx-auto mb-1" />
-                  <p className="text-xs text-gray-600 mb-1">ETA</p>
-                  <p className="font-bold text-gray-800">{bus.ETA}</p>
+                  <p className={`text-xs mb-1 ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>ETA</p>
+                  <p className={`font-bold ${darktheme ? 'text-white' : 'text-gray-800'}`}>{bus.ETA}</p>
                 </div>
               </div>
             </div>

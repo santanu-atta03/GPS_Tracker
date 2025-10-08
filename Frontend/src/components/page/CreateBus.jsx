@@ -8,9 +8,11 @@ import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 const CreateBus = () => {
   const { getAccessTokenSilently } = useAuth0();
+  const { darktheme } = useSelector((store) => store.auth);
   const [deviceID, setDeviceID] = useState("");
   const [ticketPrice, setticketPrice] = useState("");
   const [to, setTo] = useState("");
@@ -148,13 +150,23 @@ const CreateBus = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
+    <div className={`min-h-screen ${
+      darktheme 
+        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
+        : 'bg-gradient-to-br from-green-50 via-white to-green-100'
+    }`}>
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <Card className="max-w-md mx-auto mt-6 shadow-xl rounded-2xl border border-green-100">
+        <Card className={`max-w-md mx-auto mt-6 shadow-xl rounded-2xl border ${
+          darktheme 
+            ? 'bg-gray-800 border-gray-700' 
+            : 'bg-white border-green-100'
+        }`}>
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-gray-800 text-center">
+            <CardTitle className={`text-2xl font-bold text-center ${
+              darktheme ? 'text-white' : 'text-gray-800'
+            }`}>
               Create New Bus
             </CardTitle>
           </CardHeader>
@@ -164,7 +176,9 @@ const CreateBus = () => {
               <div>
                 <Label
                   htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className={`block text-sm font-medium mb-2 ${
+                    darktheme ? 'text-gray-300' : 'text-gray-700'
+                  }`}
                 >
                   Bus Name
                 </Label>
@@ -173,7 +187,11 @@ const CreateBus = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter Bus name"
-                  className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
+                    darktheme 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                   required
                 />
               </div>
@@ -182,7 +200,9 @@ const CreateBus = () => {
               <div>
                 <Label
                   htmlFor="deviceID"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className={`block text-sm font-medium mb-2 ${
+                    darktheme ? 'text-gray-300' : 'text-gray-700'
+                  }`}
                 >
                   Device ID
                 </Label>
@@ -191,33 +211,51 @@ const CreateBus = () => {
                   value={deviceID}
                   onChange={(e) => setDeviceID(e.target.value)}
                   placeholder="Enter device ID"
-                  className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
+                    darktheme 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                   required
                 />
               </div>
+              
+              {/* Ticket Price */}
               <div>
                 <Label
-                  htmlFor="deviceID"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  htmlFor="ticket-Price"
+                  className={`block text-sm font-medium mb-2 ${
+                    darktheme ? 'text-gray-300' : 'text-gray-700'
+                  }`}
                 >
-                  ticket Price
+                  Ticket Price
                 </Label>
                 <Input
                   id="ticket-Price"
                   value={ticketPrice}
                   onChange={(e) => setticketPrice(e.target.value)}
-                  placeholder="Enterticket price"
-                  className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  placeholder="Enter ticket price"
+                  className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
+                    darktheme 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                   required
                 />
               </div>
 
               {/* From Location */}
               <div>
-                <div className="rounded-2xl p-6 shadow-lg bg-white border border-gray-200">
+                <div className={`rounded-2xl p-6 shadow-lg border ${
+                  darktheme 
+                    ? 'bg-gray-700 border-gray-600' 
+                    : 'bg-white border-gray-200'
+                }`}>
                   <div className="flex items-center gap-2 mb-5">
                     <span className="text-xl">🔍</span>
-                    <h2 className="text-xl font-bold text-gray-800">From</h2>
+                    <h2 className={`text-xl font-bold ${
+                      darktheme ? 'text-white' : 'text-gray-800'
+                    }`}>From</h2>
                   </div>
 
                   <div className="relative">
@@ -226,10 +264,16 @@ const CreateBus = () => {
                       value={fromSearchQuery}
                       onChange={handleFromSearchChange}
                       placeholder="Search for starting location..."
-                      className="w-full border-2 border-gray-200 p-4 pr-12 rounded-xl focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-400 bg-white"
+                      className={`w-full border-2 p-4 pr-12 rounded-xl focus:outline-none focus:border-blue-500 transition-all ${
+                        darktheme 
+                          ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
+                          : 'bg-white border-gray-200 text-gray-800 placeholder-gray-400'
+                      }`}
                       required
                     />
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    <div className={`absolute right-4 top-1/2 -translate-y-1/2 ${
+                      darktheme ? 'text-gray-500' : 'text-gray-400'
+                    }`}>
                       <svg
                         className="w-5 h-5"
                         fill="none"
@@ -246,12 +290,20 @@ const CreateBus = () => {
                     </div>
 
                     {showFromSuggestions && fromSuggestions.length > 0 && (
-                      <ul className="absolute bg-white border-2 border-gray-200 rounded-xl shadow-2xl w-full mt-2 max-h-64 overflow-y-auto z-50">
+                      <ul className={`absolute border-2 rounded-xl shadow-2xl w-full mt-2 max-h-64 overflow-y-auto z-50 ${
+                        darktheme 
+                          ? 'bg-gray-800 border-gray-600' 
+                          : 'bg-white border-gray-200'
+                      }`}>
                         {fromSuggestions.map((place, index) => (
                           <li
                             key={place.place_id}
                             onClick={() => handleFromSuggestionClick(place)}
-                            className="p-4 cursor-pointer text-sm text-gray-700 border-b border-gray-100 last:border-b-0 flex items-start gap-3 hover:bg-gray-50 transition-colors"
+                            className={`p-4 cursor-pointer text-sm border-b last:border-b-0 flex items-start gap-3 transition-colors ${
+                              darktheme 
+                                ? 'text-gray-200 border-gray-700 hover:bg-gray-700' 
+                                : 'text-gray-700 border-gray-100 hover:bg-gray-50'
+                            }`}
                           >
                             <span className="text-lg mt-0.5">📍</span>
                             <span className="flex-1">{place.display_name}</span>
@@ -265,10 +317,16 @@ const CreateBus = () => {
 
               {/* To Location */}
               <div>
-                <div className="rounded-2xl p-6 shadow-lg bg-white border border-gray-200">
+                <div className={`rounded-2xl p-6 shadow-lg border ${
+                  darktheme 
+                    ? 'bg-gray-700 border-gray-600' 
+                    : 'bg-white border-gray-200'
+                }`}>
                   <div className="flex items-center gap-2 mb-5">
                     <span className="text-xl">🔍</span>
-                    <h2 className="text-xl font-bold text-gray-800">To</h2>
+                    <h2 className={`text-xl font-bold ${
+                      darktheme ? 'text-white' : 'text-gray-800'
+                    }`}>To</h2>
                   </div>
 
                   <div className="relative">
@@ -277,10 +335,16 @@ const CreateBus = () => {
                       value={toSearchQuery}
                       onChange={handleToSearchChange}
                       placeholder="Search for destination..."
-                      className="w-full border-2 border-gray-200 p-4 pr-12 rounded-xl focus:outline-none focus:border-blue-500 text-gray-800 placeholder-gray-400 bg-white"
+                      className={`w-full border-2 p-4 pr-12 rounded-xl focus:outline-none focus:border-blue-500 transition-all ${
+                        darktheme 
+                          ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
+                          : 'bg-white border-gray-200 text-gray-800 placeholder-gray-400'
+                      }`}
                       required
                     />
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    <div className={`absolute right-4 top-1/2 -translate-y-1/2 ${
+                      darktheme ? 'text-gray-500' : 'text-gray-400'
+                    }`}>
                       <svg
                         className="w-5 h-5"
                         fill="none"
@@ -297,12 +361,20 @@ const CreateBus = () => {
                     </div>
 
                     {showToSuggestions && toSuggestions.length > 0 && (
-                      <ul className="absolute bg-white border-2 border-gray-200 rounded-xl shadow-2xl w-full mt-2 max-h-64 overflow-y-auto z-50">
+                      <ul className={`absolute border-2 rounded-xl shadow-2xl w-full mt-2 max-h-64 overflow-y-auto z-50 ${
+                        darktheme 
+                          ? 'bg-gray-800 border-gray-600' 
+                          : 'bg-white border-gray-200'
+                      }`}>
                         {toSuggestions.map((place, index) => (
                           <li
                             key={place.place_id}
                             onClick={() => handleToSuggestionClick(place)}
-                            className="p-4 cursor-pointer text-sm text-gray-700 border-b border-gray-100 last:border-b-0 flex items-start gap-3 hover:bg-gray-50 transition-colors"
+                            className={`p-4 cursor-pointer text-sm border-b last:border-b-0 flex items-start gap-3 transition-colors ${
+                              darktheme 
+                                ? 'text-gray-200 border-gray-700 hover:bg-gray-700' 
+                                : 'text-gray-700 border-gray-100 hover:bg-gray-50'
+                            }`}
                           >
                             <span className="text-lg mt-0.5">📍</span>
                             <span className="flex-1">{place.display_name}</span>
@@ -316,7 +388,9 @@ const CreateBus = () => {
 
               {/* Time Slots */}
               <div>
-                <Label className="block text-sm font-medium text-gray-700 mb-2">
+                <Label className={`block text-sm font-medium mb-2 ${
+                  darktheme ? 'text-gray-300' : 'text-gray-700'
+                }`}>
                   Time Slots
                 </Label>
                 {timeSlots.map((slot, index) => (
@@ -328,9 +402,13 @@ const CreateBus = () => {
                         handleTimeSlotChange(index, "startTime", e.target.value)
                       }
                       required
-                      className="flex-1 p-3 border border-gray-300 rounded-xl"
+                      className={`flex-1 p-3 border rounded-xl ${
+                        darktheme 
+                          ? 'bg-gray-700 border-gray-600 text-white' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
                     />
-                    <span className="mx-1">to</span>
+                    <span className={darktheme ? 'text-gray-400' : 'text-gray-600'}>to</span>
                     <Input
                       type="time"
                       value={slot.endTime}
@@ -338,7 +416,11 @@ const CreateBus = () => {
                         handleTimeSlotChange(index, "endTime", e.target.value)
                       }
                       required
-                      className="flex-1 p-3 border border-gray-300 rounded-xl"
+                      className={`flex-1 p-3 border rounded-xl ${
+                        darktheme 
+                          ? 'bg-gray-700 border-gray-600 text-white' 
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
                     />
                     {timeSlots.length > 1 && (
                       <Button
@@ -371,7 +453,9 @@ const CreateBus = () => {
             </form>
 
             {success && (
-              <p className="mt-4 text-center text-green-700 font-medium">
+              <p className={`mt-4 text-center font-medium ${
+                darktheme ? 'text-green-400' : 'text-green-700'
+              }`}>
                 {success}
               </p>
             )}
@@ -379,8 +463,10 @@ const CreateBus = () => {
         </Card>
 
         {/* Footer */}
-        <footer className="mt-16 text-center text-gray-500 text-sm">
-          <p>&copy; 2024 Bus Sewa. All rights reserved.</p>
+        <footer className="mt-16 text-center text-sm">
+          <p className={darktheme ? 'text-gray-500' : 'text-gray-500'}>
+            &copy; 2024 Bus Sewa. All rights reserved.
+          </p>
         </footer>
       </main>
     </div>

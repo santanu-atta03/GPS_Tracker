@@ -131,7 +131,7 @@ const getUserStepIndex = (userLocation, pathCoordinates) => {
 };
 
 const FllowBusMap = () => {
-  const { path } = useSelector((store) => store.auth);
+  const { path, darktheme } = useSelector((store) => store.auth);
   const [userLocation, setUserLocation] = useState(null);
 
   useEffect(() => {
@@ -158,7 +158,17 @@ const FllowBusMap = () => {
   }, []);
 
   if (!path || !path.pathCoordinates || path.pathCoordinates.length === 0) {
-    return <div className="text-center text-gray-500">Loading map data...</div>;
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${
+        darktheme 
+          ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
+          : 'bg-gradient-to-br from-green-50 via-white to-green-100'
+      }`}>
+        <div className={`text-center ${darktheme ? 'text-gray-400' : 'text-gray-500'}`}>
+          Loading map data...
+        </div>
+      </div>
+    );
   }
 
   const { pathCoordinates, pathAddresses, busesUsed } = path;
@@ -173,8 +183,12 @@ const FllowBusMap = () => {
   return (
     <>
       <Navbar />
-      <div className="w-full">
-        <div className="flex justify-center items-center">
+      <div className={`w-full min-h-screen ${
+        darktheme 
+          ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
+          : 'bg-gradient-to-br from-green-50 via-white to-green-100'
+      }`}>
+        <div className="flex justify-center items-center pt-8">
           <MapContainer
             center={center}
             zoom={13}
@@ -226,8 +240,10 @@ const FllowBusMap = () => {
         {/* Map Section */}
 
         {/* Vertical Journey Timeline */}
-        <div className="w-full mt-10 flex justify-center">
-          <div className="relative border-l-4 border-gray-300 pl-6">
+        <div className="w-full mt-10 pb-10 flex justify-center">
+          <div className={`relative border-l-4 pl-6 ${
+            darktheme ? 'border-gray-600' : 'border-gray-300'
+          }`}>
             {pathAddresses.map((addr, idx) => {
               const isStart = idx === 0;
               const isEnd = idx === pathAddresses.length - 1;
@@ -240,7 +256,9 @@ const FllowBusMap = () => {
               return (
                 <div
                   key={`step-${idx}`}
-                  className="flex flex-col items-start space-y-2 relative border-l-2 border-gray-300 pl-6 pb-8"
+                  className={`flex flex-col items-start space-y-2 relative border-l-2 pl-6 pb-8 ${
+                    darktheme ? 'border-gray-600' : 'border-gray-300'
+                  }`}
                 >
                   {/* Timeline Dot */}
                   <div className="w-3 h-3 bg-green-500 rounded-full absolute -left-1 top-1"></div>
@@ -256,32 +274,42 @@ const FllowBusMap = () => {
                   )}
 
                   {/* Label */}
-                  <div className="text-sm font-semibold text-green-600">
+                  <div className={`text-sm font-semibold ${
+                    darktheme ? 'text-green-400' : 'text-green-600'
+                  }`}>
                     {isStart ? "Start" : isEnd ? "Destination" : "Change Here"}
                   </div>
 
                   {/* Address */}
                   {(isStart || isEnd || hasBus) && (
-                    <div className="text-sm text-gray-700 max-w-md">
+                    <div className={`text-sm max-w-md ${
+                      darktheme ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
                       {addr.address}
                     </div>
                   )}
 
                   {/* Bus Info */}
                   {hasBus && (
-                    <div className="bg-white border-2 border-green-400 rounded-xl p-4 shadow-md w-full text-sm">
-                      <div className="font-semibold text-lg mb-1">
+                    <div className={`border-2 rounded-xl p-4 shadow-md w-full text-sm ${
+                      darktheme 
+                        ? 'bg-gray-800 border-green-600' 
+                        : 'bg-white border-green-400'
+                    }`}>
+                      <div className={`font-semibold text-lg mb-1 ${
+                        darktheme ? 'text-white' : 'text-gray-900'
+                      }`}>
                         Bus: {busesUsed[idx].name}
                       </div>
-                      <div className="mb-1">
+                      <div className={`mb-1 ${darktheme ? 'text-gray-300' : 'text-gray-800'}`}>
                         <span className="font-semibold">Route:</span>{" "}
                         {busesUsed[idx].from} → {busesUsed[idx].to}
                       </div>
-                      <div className="mb-1">
+                      <div className={`mb-1 ${darktheme ? 'text-gray-300' : 'text-gray-800'}`}>
                         <span className="font-semibold">Device:</span>{" "}
                         {busesUsed[idx].deviceID}
                       </div>
-                      <div>
+                      <div className={darktheme ? 'text-gray-300' : 'text-gray-800'}>
                         <span className="font-semibold">Time:</span>{" "}
                         {busesUsed[idx].nextStartTime?.startTime} to{" "}
                         {busesUsed[idx].nextStartTime?.endTime}

@@ -9,6 +9,7 @@ import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 import Navbar from "../shared/Navbar";
 import MicInput from "./MicInput";
+import { useSelector } from "react-redux";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -43,6 +44,7 @@ const NearbyPOIMap = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [markersLayer, setMarkersLayer] = useState(null);
   const routingControlRef = useRef(null);
+  const { darktheme } = useSelector((store) => store.auth);
 
   // 🔎 Search states
   const [searchQuery, setSearchQuery] = useState("");
@@ -226,19 +228,31 @@ const NearbyPOIMap = () => {
   return (
     <>
     <Navbar/>
-     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
+     <div className={`min-h-screen ${
+       darktheme 
+         ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
+         : 'bg-gradient-to-br from-green-50 via-white to-green-100'
+     }`}>
       {/* Header */}
-      <div className="bg-white border-b border-green-100 shadow-sm">
+      <div className={`border-b shadow-sm ${
+        darktheme 
+          ? 'bg-gray-800 border-gray-700' 
+          : 'bg-white border-green-100'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
               <span className="text-xl sm:text-2xl">🗺️</span>
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
+              <h1 className={`text-xl sm:text-2xl font-bold ${
+                darktheme ? 'text-white' : 'text-gray-800'
+              }`}>
                 Explore Nearby
               </h1>
-              <p className="text-xs sm:text-sm text-gray-600">
+              <p className={`text-xs sm:text-sm ${
+                darktheme ? 'text-gray-400' : 'text-gray-600'
+              }`}>
                 Discover places around you
               </p>
             </div>
@@ -252,10 +266,16 @@ const NearbyPOIMap = () => {
         <div className="w-full lg:w-2/5 p-4 sm:p-6 overflow-y-auto">
           {/* POI Categories - Top */}
           <div className="mb-4 sm:mb-6">
-            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-green-100">
+            <div className={`rounded-2xl p-4 sm:p-6 shadow-lg border ${
+              darktheme 
+                ? 'bg-gray-800 border-gray-700' 
+                : 'bg-white border-green-100'
+            }`}>
               <div className="flex items-center gap-2 mb-4 sm:mb-5">
                 <span className="text-lg sm:text-xl">📌</span>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+                <h2 className={`text-lg sm:text-xl font-bold ${
+                  darktheme ? 'text-white' : 'text-gray-800'
+                }`}>
                   Nearby Places
                 </h2>
               </div>
@@ -267,7 +287,9 @@ const NearbyPOIMap = () => {
                     className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl border-2 text-xs sm:text-sm font-semibold transition-all duration-300 transform hover:scale-105 ${
                       selectedType === type.tag
                         ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-transparent shadow-lg"
-                        : "bg-white text-gray-700 border-gray-200 hover:border-green-300 hover:shadow-md"
+                        : darktheme 
+                          ? "bg-gray-700 text-gray-200 border-gray-600 hover:border-green-500 hover:shadow-md" 
+                          : "bg-white text-gray-700 border-gray-200 hover:border-green-300 hover:shadow-md"
                     }`}
                     onClick={() => handleBadgeClick(type.tag)}
                   >
@@ -283,10 +305,16 @@ const NearbyPOIMap = () => {
 
           {/* Search Section - Bottom */}
           <div>
-            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-green-100">
+            <div className={`rounded-2xl p-4 sm:p-6 shadow-lg border ${
+              darktheme 
+                ? 'bg-gray-800 border-gray-700' 
+                : 'bg-white border-green-100'
+            }`}>
               <div className="flex items-center gap-2 mb-4 sm:mb-5">
                 <span className="text-lg sm:text-xl">🔍</span>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+                <h2 className={`text-lg sm:text-xl font-bold ${
+                  darktheme ? 'text-white' : 'text-gray-800'
+                }`}>
                   Search Location
                 </h2>
               </div>
@@ -297,17 +325,29 @@ const NearbyPOIMap = () => {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder="Search for any location..."
-                  className="w-full border-2 border-gray-200 p-3 sm:p-4 pr-10 sm:pr-12 rounded-xl focus:outline-none focus:border-green-500 text-sm sm:text-base text-gray-800 placeholder-gray-400 bg-white transition-all duration-300 hover:shadow-md"
+                  className={`w-full border-2 p-3 sm:p-4 pr-10 sm:pr-12 rounded-xl focus:outline-none focus:border-green-500 text-sm sm:text-base transition-all duration-300 hover:shadow-md ${
+                    darktheme 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                      : 'bg-white border-gray-200 text-gray-800 placeholder-gray-400'
+                  }`}
                 />
                  
 
                 {suggestions.length > 0 && (
-                  <ul className="absolute bg-white border-2 border-green-100 rounded-xl shadow-2xl w-full mt-2 max-h-64 overflow-y-auto z-50">
+                  <ul className={`absolute border-2 rounded-xl shadow-2xl w-full mt-2 max-h-64 overflow-y-auto z-50 ${
+                    darktheme 
+                      ? 'bg-gray-800 border-gray-600' 
+                      : 'bg-white border-green-100'
+                  }`}>
                     {suggestions.map((place) => (
                       <li
                         key={place.place_id}
                         onClick={() => handleSuggestionClick(place)}
-                        className="p-3 sm:p-4 cursor-pointer text-xs sm:text-sm text-gray-700 border-b border-gray-100 last:border-b-0 flex items-start gap-2 sm:gap-3 hover:bg-green-50 transition-all duration-200"
+                        className={`p-3 sm:p-4 cursor-pointer text-xs sm:text-sm border-b last:border-b-0 flex items-start gap-2 sm:gap-3 transition-all duration-200 ${
+                          darktheme 
+                            ? 'text-gray-200 border-gray-700 hover:bg-gray-700' 
+                            : 'text-gray-700 border-gray-100 hover:bg-green-50'
+                        }`}
                       >
                         <span className="text-base sm:text-lg mt-0.5">📍</span>
                         <span className="flex-1">{place.display_name}</span>
@@ -322,10 +362,16 @@ const NearbyPOIMap = () => {
 
         {/* Right Side - Map */}
         <div className="w-full lg:w-3/5 p-4 sm:p-6">
-          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-xl h-[400px] sm:h-[500px] lg:h-full border border-green-100">
+          <div className={`rounded-2xl p-4 sm:p-6 shadow-xl h-[400px] sm:h-[500px] lg:h-full border ${
+            darktheme 
+              ? 'bg-gray-800 border-gray-700' 
+              : 'bg-white border-green-100'
+          }`}>
             <div className="flex items-center gap-2 mb-3 sm:mb-4">
               <span className="text-lg sm:text-xl">🌍</span>
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+              <h2 className={`text-lg sm:text-xl font-bold ${
+                darktheme ? 'text-white' : 'text-gray-800'
+              }`}>
                 Interactive Map
               </h2>
             </div>
@@ -333,7 +379,9 @@ const NearbyPOIMap = () => {
             <div
               ref={mapContainerRef}
               id="map"
-              className="h-[calc(100%-40px)] sm:h-[calc(100%-48px)] w-full rounded-xl border-2 border-gray-200 shadow-md overflow-hidden"
+              className={`h-[calc(100%-40px)] sm:h-[calc(100%-48px)] w-full rounded-xl border-2 shadow-md overflow-hidden ${
+                darktheme ? 'border-gray-600' : 'border-gray-200'
+              }`}
             ></div>
           </div>
         </div>

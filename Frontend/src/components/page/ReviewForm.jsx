@@ -4,9 +4,11 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import Navbar from "../shared/Navbar";
+import { useSelector } from "react-redux";
 
 const ReviewForm = () => {
   const { getAccessTokenSilently } = useAuth0();
+  const { darktheme } = useSelector((store) => store.auth);
 
   const [formData, setFormData] = useState({
     punctuality: 3,
@@ -92,12 +94,24 @@ const ReviewForm = () => {
   return (
     <>
     <Navbar/>
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className={`min-h-screen py-8 px-4 ${
+      darktheme 
+        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
+        : 'bg-gray-50'
+    }`}>
       <div className="max-w-5xl mx-auto">
-        <div className="bg-white rounded-lg shadow-md p-8">
+        <div className={`rounded-lg shadow-md p-8 ${
+          darktheme 
+            ? 'bg-gray-800 border border-gray-700' 
+            : 'bg-white'
+        }`}>
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Submit a Review</h2>
-            <p className="text-gray-600">Share your experience with this bus service</p>
+            <h2 className={`text-2xl font-bold mb-2 ${
+              darktheme ? 'text-white' : 'text-gray-800'
+            }`}>Submit a Review</h2>
+            <p className={darktheme ? 'text-gray-400' : 'text-gray-600'}>
+              Share your experience with this bus service
+            </p>
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -105,7 +119,9 @@ const ReviewForm = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {Object.entries(ratingLabels).map(([field, label]) => (
                 <div key={field} className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label className={`block text-sm font-medium ${
+                    darktheme ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
                     {label}
                   </label>
                   <div className="flex items-center gap-3">
@@ -113,7 +129,11 @@ const ReviewForm = () => {
                       name={field}
                       value={formData[field]}
                       onChange={handleChange}
-                      className="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                      className={`flex-1 border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition ${
+                        darktheme 
+                          ? 'bg-gray-700 border-gray-600 text-white' 
+                          : 'bg-white border-gray-300 text-gray-700'
+                      }`}
                     >
                       {[1, 2, 3, 4, 5].map((val) => (
                         <option key={val} value={val}>
@@ -128,7 +148,9 @@ const ReviewForm = () => {
                           className={`w-5 h-5 ${
                             star <= formData[field]
                               ? "text-yellow-400 fill-current"
-                              : "text-gray-300"
+                              : darktheme 
+                                ? "text-gray-600" 
+                                : "text-gray-300"
                           }`}
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 20 20"
@@ -145,14 +167,20 @@ const ReviewForm = () => {
 
             {/* Comment Section - Full Width */}
             <div className="space-y-2 mb-8">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className={`block text-sm font-medium ${
+                darktheme ? 'text-gray-300' : 'text-gray-700'
+              }`}>
                 Comment
               </label>
               <textarea
                 name="comment"
                 value={formData.comment}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition resize-none"
+                className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition resize-none ${
+                  darktheme 
+                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                    : 'bg-white border-gray-300 text-gray-700 placeholder-gray-400'
+                }`}
                 rows="4"
                 placeholder="Share your experience with this bus service..."
               ></textarea>
@@ -186,8 +214,12 @@ const ReviewForm = () => {
               <div
                 className={`mt-4 p-4 rounded-lg text-center font-medium ${
                   message.includes("success")
-                    ? "bg-green-50 text-green-700 border border-green-200"
-                    : "bg-red-50 text-red-700 border border-red-200"
+                    ? darktheme 
+                      ? "bg-green-900 text-green-300 border border-green-700" 
+                      : "bg-green-50 text-green-700 border border-green-200"
+                    : darktheme 
+                      ? "bg-red-900 text-red-300 border border-red-700" 
+                      : "bg-red-50 text-red-700 border border-red-200"
                 }`}
               >
                 {message}

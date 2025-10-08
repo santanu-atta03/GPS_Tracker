@@ -18,10 +18,12 @@ import {
 import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 const Bus = () => {
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
+  const { darktheme } = useSelector((store) => store.auth);
 
   const [buses, setBuses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +72,7 @@ const Bus = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100">
+    <div className={`min-h-screen ${darktheme ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' : 'bg-gradient-to-br from-green-50 via-white to-green-100'}`}>
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
@@ -78,13 +80,13 @@ const Bus = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="absolute left-4 p-2 text-gray-600 hover:text-gray-800 transition-colors"
+            className={`absolute left-4 p-2 transition-colors ${darktheme ? 'text-gray-400 hover:text-gray-200' : 'text-gray-600 hover:text-gray-800'}`}
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
           <div>
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">All Buses</h1>
-            <p className="text-lg text-gray-600">
+            <h1 className={`text-4xl font-bold mb-2 ${darktheme ? 'text-white' : 'text-gray-800'}`}>All Buses</h1>
+            <p className={`text-lg ${darktheme ? 'text-gray-300' : 'text-gray-600'}`}>
               Manage and monitor your fleet of buses
             </p>
           </div>
@@ -101,34 +103,34 @@ const Bus = () => {
         {/* Stats Section */}
         {!loading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-green-100 text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className={`rounded-xl p-6 shadow-lg text-center ${darktheme ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-green-100'}`}>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 ${darktheme ? 'bg-green-900/50' : 'bg-green-100'}`}>
                 <BusIcon className="w-6 h-6 text-green-600" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-1">
+              <h3 className={`text-2xl font-bold mb-1 ${darktheme ? 'text-white' : 'text-gray-800'}`}>
                 {buses.length}
               </h3>
-              <p className="text-gray-600 text-sm">Total Buses</p>
+              <p className={`text-sm ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>Total Buses</p>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-green-100 text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className={`rounded-xl p-6 shadow-lg text-center ${darktheme ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-green-100'}`}>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 ${darktheme ? 'bg-blue-900/50' : 'bg-blue-100'}`}>
                 <User className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-1">
+              <h3 className={`text-2xl font-bold mb-1 ${darktheme ? 'text-white' : 'text-gray-800'}`}>
                 {buses.filter((bus) => bus.driver).length}
               </h3>
-              <p className="text-gray-600 text-sm">Assigned Drivers</p>
+              <p className={`text-sm ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>Assigned Drivers</p>
             </div>
 
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-green-100 text-center">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className={`rounded-xl p-6 shadow-lg text-center ${darktheme ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-green-100'}`}>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 ${darktheme ? 'bg-purple-900/50' : 'bg-purple-100'}`}>
                 <Route className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-1">
+              <h3 className={`text-2xl font-bold mb-1 ${darktheme ? 'text-white' : 'text-gray-800'}`}>
                 {new Set(buses.map((bus) => `${bus.from}-${bus.to}`)).size}
               </h3>
-              <p className="text-gray-600 text-sm">Active Routes</p>
+              <p className={`text-sm ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>Active Routes</p>
             </div>
           </div>
         )}
@@ -137,23 +139,23 @@ const Bus = () => {
         {loading && (
           <div className="flex flex-col items-center justify-center py-16">
             <Loader2 className="w-12 h-12 text-green-500 animate-spin mb-4" />
-            <p className="text-gray-600 text-lg">Loading buses...</p>
+            <p className={`text-lg ${darktheme ? 'text-gray-300' : 'text-gray-600'}`}>Loading buses...</p>
           </div>
         )}
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-8">
+          <div className={`rounded-xl p-6 mb-8 ${darktheme ? 'bg-red-900/50 border border-red-800' : 'bg-red-50 border border-red-200'}`}>
             <div className="flex items-start">
               <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
               <div>
-                <h3 className="text-red-800 font-medium mb-1">
+                <h3 className={`font-medium mb-1 ${darktheme ? 'text-red-300' : 'text-red-800'}`}>
                   Error Loading Buses
                 </h3>
-                <p className="text-red-700 text-sm">{error}</p>
+                <p className={`text-sm ${darktheme ? 'text-red-400' : 'text-red-700'}`}>{error}</p>
                 <button
                   onClick={() => window.location.reload()}
-                  className="mt-3 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm"
+                  className={`mt-3 px-4 py-2 rounded-lg transition-colors text-sm ${darktheme ? 'bg-red-900 text-red-300 hover:bg-red-800' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
                 >
                   Try Again
                 </button>
@@ -170,23 +172,23 @@ const Bus = () => {
                 <div
                   key={bus._id}
                   onClick={() => handleBusClick(bus)}
-                  className="bg-white rounded-2xl shadow-lg border border-green-100 p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer"
+                  className={`rounded-2xl shadow-lg p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer ${darktheme ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-green-100'}`}
                 >
                   {/* Bus Header */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${darktheme ? 'bg-green-900/50' : 'bg-green-100'}`}>
                         <BusIcon className="w-5 h-5 text-green-600" />
                       </div>
-                      <h3 className="text-lg font-bold text-gray-800">
+                      <h3 className={`text-lg font-bold ${darktheme ? 'text-white' : 'text-gray-800'}`}>
                         {bus.deviceID}
                       </h3>
                     </div>
                     <div
                       className={`px-3 py-1 rounded-full text-xs font-medium ${
                         bus.driver
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
+                          ? darktheme ? "bg-green-900/50 text-green-400" : "bg-green-100 text-green-700"
+                          : darktheme ? "bg-yellow-900/50 text-yellow-400" : "bg-yellow-100 text-yellow-700"
                       }`}
                     >
                       {bus.driver ? "Active" : "Unassigned"}
@@ -195,7 +197,7 @@ const Bus = () => {
 
                   {/* Route Information */}
                   <div className="space-y-3 mb-4">
-                    <div className="flex items-center text-gray-700">
+                    <div className={`flex items-center ${darktheme ? 'text-gray-300' : 'text-gray-700'}`}>
                       <MapPin className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <span className="text-sm font-medium">From:</span>
@@ -203,7 +205,7 @@ const Bus = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center text-gray-700">
+                    <div className={`flex items-center ${darktheme ? 'text-gray-300' : 'text-gray-700'}`}>
                       <Navigation className="w-4 h-4 text-blue-500 mr-2 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
                         <span className="text-sm font-medium">To:</span>
@@ -214,27 +216,27 @@ const Bus = () => {
 
                   {/* Driver Information */}
                   {bus.driver ? (
-                    <div className="border-t pt-4 mt-4 bg-gray-50 -mx-6 px-6 -mb-6 pb-6 rounded-b-2xl">
-                      <h4 className="text-sm font-semibold text-gray-800 mb-3 flex items-center">
+                    <div className={`border-t pt-4 mt-4 -mx-6 px-6 -mb-6 pb-6 rounded-b-2xl ${darktheme ? 'bg-gray-900/50 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
+                      <h4 className={`text-sm font-semibold mb-3 flex items-center ${darktheme ? 'text-gray-200' : 'text-gray-800'}`}>
                         <User className="w-4 h-4 mr-2" />
                         Driver Details
                       </h4>
 
                       <div className="space-y-2">
-                        <div className="flex items-center text-gray-600">
-                          <User className="w-3 h-3 mr-2 text-gray-400" />
+                        <div className={`flex items-center ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
+                          <User className={`w-3 h-3 mr-2 ${darktheme ? 'text-gray-500' : 'text-gray-400'}`} />
                           <span className="text-sm">{bus.driver.name}</span>
                         </div>
 
-                        <div className="flex items-center text-gray-600">
-                          <Mail className="w-3 h-3 mr-2 text-gray-400" />
+                        <div className={`flex items-center ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
+                          <Mail className={`w-3 h-3 mr-2 ${darktheme ? 'text-gray-500' : 'text-gray-400'}`} />
                           <span className="text-sm truncate">
                             {bus.driver.email}
                           </span>
                         </div>
 
-                        <div className="flex items-center text-gray-600">
-                          <CreditCard className="w-3 h-3 mr-2 text-gray-400" />
+                        <div className={`flex items-center ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
+                          <CreditCard className={`w-3 h-3 mr-2 ${darktheme ? 'text-gray-500' : 'text-gray-400'}`} />
                           <span className="text-sm">
                             License: {bus.driver.licenceId}
                           </span>
@@ -242,8 +244,8 @@ const Bus = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="border-t pt-4 mt-4 text-center">
-                      <p className="text-sm text-gray-500 italic">
+                    <div className={`border-t pt-4 mt-4 text-center ${darktheme ? 'border-gray-700' : 'border-gray-200'}`}>
+                      <p className={`text-sm italic ${darktheme ? 'text-gray-500' : 'text-gray-500'}`}>
                         No driver assigned
                       </p>
                     </div>
@@ -253,13 +255,13 @@ const Bus = () => {
             ) : (
               <div className="col-span-full">
                 <div className="text-center py-16">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <BusIcon className="w-8 h-8 text-gray-400" />
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${darktheme ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                    <BusIcon className={`w-8 h-8 ${darktheme ? 'text-gray-600' : 'text-gray-400'}`} />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  <h3 className={`text-xl font-semibold mb-2 ${darktheme ? 'text-white' : 'text-gray-800'}`}>
                     No Buses Found
                   </h3>
-                  <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                  <p className={`mb-6 max-w-md mx-auto ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
                     You haven't created any buses yet. Click the button below to
                     add your first bus.
                   </p>
@@ -277,7 +279,7 @@ const Bus = () => {
         )}
 
         {/* Footer */}
-        <footer className="mt-16 text-center text-gray-500 text-sm">
+        <footer className={`mt-16 text-center text-sm ${darktheme ? 'text-gray-400' : 'text-gray-500'}`}>
           <p>&copy; 2024 Bus Sewa. All rights reserved.</p>
         </footer>
       </main>

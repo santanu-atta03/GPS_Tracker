@@ -6,6 +6,9 @@ import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
+import L from "leaflet";
+
 const GEOCODE_API = "https://nominatim.openstreetmap.org/search";
 const markerIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -21,12 +24,14 @@ const LocationPicker = ({ onSelect }) => {
   });
   return null;
 };
+
 const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [selectedPos, setSelectedPos] = useState(null);
+  const { darktheme } = useSelector((store) => store.auth);
 
   const handleSearch = async (value) => {
     setQuery(value);
@@ -90,20 +95,28 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
 
   return (
     <div className="mb-4 relative">
-      <label className="block mb-1 font-medium">{label}</label>
+      <label className={`block mb-1 font-medium ${
+        darktheme ? 'text-gray-300' : 'text-gray-700'
+      }`}>{label}</label>
 
       <MicInput
         type="text"
         value={query}
         placeholder="Type a place..."
         onChange={(e) => handleSearch(e.target.value)}
-        className="border p-2 w-full rounded"
+        className={`border p-2 w-full rounded ${
+          darktheme 
+            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+            : 'bg-white border-gray-300 text-gray-900'
+        }`}
       />
 
       {enableUseMyLocation && (
         <button
           type="button"
-          className="text-blue-600 text-sm mt-1 underline"
+          className={`text-sm mt-1 underline ${
+            darktheme ? 'text-blue-400' : 'text-blue-600'
+          }`}
           onClick={handleUseMyLocation}
           disabled={loadingLocation}
         >
@@ -111,13 +124,24 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
         </button>
       )}
 
-      {loading && <p className="text-sm text-gray-400 mt-1">Searching...</p>}
+      {loading && <p className={`text-sm mt-1 ${
+        darktheme ? 'text-gray-500' : 'text-gray-400'
+      }`}>Searching...</p>}
+      
       {suggestions.length > 0 && (
-        <ul className="absolute z-10 w-full bg-white shadow rounded mt-1 max-h-40 overflow-y-auto">
+        <ul className={`absolute z-10 w-full shadow rounded mt-1 max-h-40 overflow-y-auto ${
+          darktheme 
+            ? 'bg-gray-800 border border-gray-600' 
+            : 'bg-white border border-gray-200'
+        }`}>
           {suggestions.map((s, idx) => (
             <li
               key={idx}
-              className="p-2 cursor-pointer hover:bg-gray-100 text-sm"
+              className={`p-2 cursor-pointer text-sm ${
+                darktheme 
+                  ? 'text-gray-200 hover:bg-gray-700' 
+                  : 'text-gray-900 hover:bg-gray-100'
+              }`}
               onClick={() => {
                 const pos = { lat: parseFloat(s.lat), lon: parseFloat(s.lon) };
                 setQuery(s.display_name);
@@ -170,6 +194,8 @@ const RazorpayPayment = () => {
   const [loadingPrice, setLoadingPrice] = useState(false);
   const { deviceid } = useParams();
   const { getAccessTokenSilently } = useAuth0();
+  const { darktheme } = useSelector((store) => store.auth);
+
   const handleCalculatePrice = async () => {
     if (!from || !to) {
       alert("Please select both From and To locations.");
@@ -210,114 +236,138 @@ const RazorpayPayment = () => {
   return (
     <>
       <Navbar />
-      <div className="max-w-md mx-auto p-4">
-        <h2 className="text-xl font-semibold mb-4">Book Your Bus Ticket</h2>
+      <div className={`min-h-screen py-8 ${
+        darktheme 
+          ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
+          : 'bg-gradient-to-br from-green-50 via-white to-green-100'
+      }`}>
+        <div className={`max-w-md mx-auto p-6 rounded-lg shadow-lg ${
+          darktheme 
+            ? 'bg-gray-800 border border-gray-700' 
+            : 'bg-white border border-gray-200'
+        }`}>
+          <h2 className={`text-xl font-semibold mb-4 ${
+            darktheme ? 'text-white' : 'text-gray-800'
+          }`}>Book Your Bus Ticket</h2>
 
-        <div className="mb-6">
-          <PlaceSearch
-            label="From"
-            enableUseMyLocation={true}
-            onSelect={(place) => setFrom({ lat: place.lat, lon: place.lon })}
-          />
-          <PlaceSearch
-            label="To"
-            onSelect={(place) => setTo({ lat: place.lat, lon: place.lon })}
-          />
-        </div>
-
-        <button
-          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md mb-4"
-          onClick={handleCalculatePrice}
-          disabled={loadingPrice}
-        >
-          {loadingPrice ? "Calculating..." : "Get Ticket Price"}
-        </button>
-
-        {ticketData && (
-          <div className="p-4 bg-gray-100 rounded">
-            <p>
-              <strong>From Index:</strong> {ticketData.fromIndex}
-            </p>
-            <p>
-              <strong>To Index:</strong> {ticketData.toIndex}
-            </p>
-            <p>
-              <strong>Total Distance:</strong> {ticketData.totalDistance} km
-            </p>
-            <p>
-              <strong>Passenger Distance:</strong>{" "}
-              {ticketData.passengerDistance} km
-            </p>
-            <p>
-              <strong>Ticket Price:</strong> ₹{ticketData.ticketPrice}
-            </p>
-            <p>
-              <strong>Price per km:</strong> ₹{ticketData.pricePerKm}
-            </p>
-
-            <button
-              className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg shadow-md mt-4"
-              onClick={async () => {
-                // Razorpay payment
-                const res = await fetch(
-                  `${import.meta.env.VITE_BASE_URL}/Bus/create-order`,
-                  {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ amount: ticketData.ticketPrice }),
-                  }
-                );
-                const order = await res.json();
-                 
-                const options = {
-                  key: "rzp_test_RPcZFwp7G16Gjf",
-                  amount: order.amount,
-                  currency: order.currency,
-                  name: "Bus Ticket Booking",
-                  description: `Ticket for Bus ${busId}`,
-                  order_id: order.id,
-                  handler: async function (response) {
-                    const token = await getAccessTokenSilently({
-                      audience: "http://localhost:5000/api/v3",
-                    });
-                    const verifyRes = await axios.post(
-                      `${import.meta.env.VITE_BASE_URL}/Bus/verify-payment`,
-
-                      {
-                        razorpay_order_id: response.razorpay_order_id,
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        razorpay_signature: response.razorpay_signature,
-                        ticketData,
-                        busId: deviceid,
-                        fromLat: from.lat,
-                        fromLng: from.lon,
-                        toLat: to.lat,
-                        toLng: to.lon,
-                      },
-                      { headers: { Authorization: `Bearer ${token}` } }
-                    );
-                     
-                    const verifyData = await verifyRes.json();
-                    alert(verifyData.message);
-                    console.log("✅ Verify Response:", verifyData);
-                  },
-
-                  prefill: {
-                    name: "Ayan Manna",
-                    email: "mannaayan777@gmail.com",
-                    contact: "9907072795",
-                  },
-                  theme: { color: "#3399cc" },
-                };
-
-                const rzp1 = new window.Razorpay(options);
-                rzp1.open();
-              }}
-            >
-              Pay ₹{ticketData.ticketPrice}
-            </button>
+          <div className="mb-6">
+            <PlaceSearch
+              label="From"
+              enableUseMyLocation={true}
+              onSelect={(place) => setFrom({ lat: place.lat, lon: place.lon })}
+            />
+            <PlaceSearch
+              label="To"
+              onSelect={(place) => setTo({ lat: place.lat, lon: place.lon })}
+            />
           </div>
-        )}
+
+          <button
+            className={`w-full px-6 py-2 rounded-lg shadow-md mb-4 transition-colors ${
+              darktheme 
+                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                : 'bg-blue-500 hover:bg-blue-600 text-white'
+            }`}
+            onClick={handleCalculatePrice}
+            disabled={loadingPrice}
+          >
+            {loadingPrice ? "Calculating..." : "Get Ticket Price"}
+          </button>
+
+          {ticketData && (
+            <div className={`p-4 rounded ${
+              darktheme 
+                ? 'bg-gray-700 border border-gray-600' 
+                : 'bg-gray-100 border border-gray-200'
+            }`}>
+              <p className={darktheme ? 'text-gray-200' : 'text-gray-800'}>
+                <strong>From Index:</strong> {ticketData.fromIndex}
+              </p>
+              <p className={darktheme ? 'text-gray-200' : 'text-gray-800'}>
+                <strong>To Index:</strong> {ticketData.toIndex}
+              </p>
+              <p className={darktheme ? 'text-gray-200' : 'text-gray-800'}>
+                <strong>Total Distance:</strong> {ticketData.totalDistance} km
+              </p>
+              <p className={darktheme ? 'text-gray-200' : 'text-gray-800'}>
+                <strong>Passenger Distance:</strong>{" "}
+                {ticketData.passengerDistance} km
+              </p>
+              <p className={darktheme ? 'text-gray-200' : 'text-gray-800'}>
+                <strong>Ticket Price:</strong> ₹{ticketData.ticketPrice}
+              </p>
+              <p className={darktheme ? 'text-gray-200' : 'text-gray-800'}>
+                <strong>Price per km:</strong> ₹{ticketData.pricePerKm}
+              </p>
+
+              <button
+                className={`w-full px-6 py-2 rounded-lg shadow-md mt-4 transition-colors ${
+                  darktheme 
+                    ? 'bg-green-600 hover:bg-green-700 text-white' 
+                    : 'bg-green-500 hover:bg-green-600 text-white'
+                }`}
+                onClick={async () => {
+                  // Razorpay payment
+                  const res = await fetch(
+                    `${import.meta.env.VITE_BASE_URL}/Bus/create-order`,
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ amount: ticketData.ticketPrice }),
+                    }
+                  );
+                  const order = await res.json();
+                   
+                  const options = {
+                    key: "rzp_test_RPcZFwp7G16Gjf",
+                    amount: order.amount,
+                    currency: order.currency,
+                    name: "Bus Ticket Booking",
+                    description: `Ticket for Bus ${busId}`,
+                    order_id: order.id,
+                    handler: async function (response) {
+                      const token = await getAccessTokenSilently({
+                        audience: "http://localhost:5000/api/v3",
+                      });
+                      const verifyRes = await axios.post(
+                        `${import.meta.env.VITE_BASE_URL}/Bus/verify-payment`,
+
+                        {
+                          razorpay_order_id: response.razorpay_order_id,
+                          razorpay_payment_id: response.razorpay_payment_id,
+                          razorpay_signature: response.razorpay_signature,
+                          ticketData,
+                          busId: deviceid,
+                          fromLat: from.lat,
+                          fromLng: from.lon,
+                          toLat: to.lat,
+                          toLng: to.lon,
+                        },
+                        { headers: { Authorization: `Bearer ${token}` } }
+                      );
+                       
+                      const verifyData = await verifyRes.json();
+                      alert(verifyData.message);
+                      console.log("✅ Verify Response:", verifyData);
+                    },
+
+                    prefill: {
+                      name: "Ayan Manna",
+                      email: "mannaayan777@gmail.com",
+                      contact: "9907072795",
+                    },
+                    theme: { color: "#3399cc" },
+                  };
+
+                  const rzp1 = new window.Razorpay(options);
+                  rzp1.open();
+                }}
+              >
+                Pay ₹{ticketData.ticketPrice}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );
