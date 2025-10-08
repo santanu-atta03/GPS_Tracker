@@ -8,6 +8,7 @@ import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 import Navbar from "../shared/Navbar";
+import MicInput from "./MicInput";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -291,28 +292,14 @@ const NearbyPOIMap = () => {
               </div>
 
               <div className="relative">
-                <input
+                <MicInput
                   type="text"
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder="Search for any location..."
                   className="w-full border-2 border-gray-200 p-3 sm:p-4 pr-10 sm:pr-12 rounded-xl focus:outline-none focus:border-green-500 text-sm sm:text-base text-gray-800 placeholder-gray-400 bg-white transition-all duration-300 hover:shadow-md"
                 />
-                <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-400">
-                  <svg
-                    className="w-4 h-4 sm:w-5 sm:h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </div>
+                 
 
                 {suggestions.length > 0 && (
                   <ul className="absolute bg-white border-2 border-green-100 rounded-xl shadow-2xl w-full mt-2 max-h-64 overflow-y-auto z-50">

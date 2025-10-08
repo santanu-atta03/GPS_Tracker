@@ -1,5 +1,4 @@
 import "./App.css";
- 
 import Home from "./components/page/Home";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
@@ -8,7 +7,6 @@ import Bus from "./components/page/Bus";
 import CreateBus from "./components/page/CreateBus";
 import Profile from "./components/page/Profile";
 import BusMap from "./components/page/BusMap";
-import { useEffect } from "react";
 import DriverLogin from "./components/page/DriverLogin";
 import UserLogin from "./components/page/UserLogin";
 import NearbyPOIMap from "./components/page/NearbyPOIMap";
@@ -29,7 +27,7 @@ function App() {
     },
     {
       path: "/bus/:deviceID",
-      element: <BusDetailsPage2/>
+      element: <BusDetailsPage2 />,
     },
     {
       path: "/complete/profile",
