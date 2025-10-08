@@ -55,7 +55,7 @@ const BusDetailsPage2 = () => {
     const fetchBusData = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/v1/Myroute/bus-details/${deviceID}`
+          `${import.meta.env.VITE_BASE_URL}/Myroute/bus-details/${deviceID}`
         );
         const data = await res.json();
         setBus(data);

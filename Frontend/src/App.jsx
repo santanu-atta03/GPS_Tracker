@@ -1,5 +1,5 @@
 import "./App.css";
-import BusDetailsPage from "./components/page/BusDetailsPage";
+ 
 import Home from "./components/page/Home";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
