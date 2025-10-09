@@ -36,14 +36,20 @@ const Profile = () => {
 
   if (!usere) {
     return (
-      <div className={`min-h-screen ${
-        darktheme 
-          ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
-          : 'bg-gradient-to-br from-green-50 via-white to-green-100'
-      }`}>
+      <div
+        className={`min-h-screen ${
+          darktheme
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+            : "bg-gradient-to-br from-green-50 via-white to-green-100"
+        }`}
+      >
         <Navbar />
         <div className="flex items-center justify-center py-16">
-          <p className={`text-center text-lg ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p
+            className={`text-center text-lg ${
+              darktheme ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
             No user data found.
           </p>
         </div>
@@ -67,11 +73,11 @@ const Profile = () => {
       dispatch(setuser(res.data.newDetails));
       setMessage("Profile updated successfully!");
       setIsEditing(false);
-       toast(res.data.message);
+      toast(res.data.message);
     } catch (err) {
       console.error(err);
       setMessage("Failed to update profile.");
-       const errorMessage =
+      const errorMessage =
         error.response?.data?.message || error.message || "An error occurred";
       toast.error(errorMessage);
     } finally {
@@ -80,28 +86,34 @@ const Profile = () => {
   };
 
   return (
-    <div className={`min-h-screen ${
-      darktheme 
-        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
-        : 'bg-gradient-to-br from-green-50 via-white to-green-100'
-    }`}>
+    <div
+      className={`min-h-screen ${
+        darktheme
+          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+          : "bg-gradient-to-br from-green-50 via-white to-green-100"
+      }`}
+    >
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Header Section */}
 
         <div className="max-w-2xl mx-auto">
-          <Card className={`shadow-xl rounded-2xl border ${
-            darktheme 
-              ? 'bg-gray-800/80 border-gray-700 backdrop-blur-sm' 
-              : 'bg-white/80 border-green-100 backdrop-blur-sm'
-          }`}>
+          <Card
+            className={`shadow-xl rounded-2xl border ${
+              darktheme
+                ? "bg-gray-800/80 border-gray-700 backdrop-blur-sm"
+                : "bg-white/80 border-green-100 backdrop-blur-sm"
+            }`}
+          >
             {/* Profile Header */}
             <CardHeader className="flex flex-col items-center space-y-4 pb-6">
               <div className="relative">
-                <Avatar className={`w-32 h-32 border-4 shadow-lg ${
-                  darktheme ? 'border-green-700' : 'border-green-200'
-                }`}>
+                <Avatar
+                  className={`w-32 h-32 border-4 shadow-lg ${
+                    darktheme ? "border-green-700" : "border-green-200"
+                  }`}
+                >
                   {usere.picture ? (
                     <AvatarImage
                       src={usere.picture}
@@ -109,30 +121,38 @@ const Profile = () => {
                       className="object-cover"
                     />
                   ) : (
-                    <AvatarFallback className={`text-3xl font-bold ${
-                      darktheme 
-                        ? 'bg-green-900 text-green-400' 
-                        : 'bg-green-100 text-green-700'
-                    }`}>
+                    <AvatarFallback
+                      className={`text-3xl font-bold ${
+                        darktheme
+                          ? "bg-green-900 text-green-400"
+                          : "bg-green-100 text-green-700"
+                      }`}
+                    >
                       {usere.name.charAt(0)}
                     </AvatarFallback>
                   )}
                 </Avatar>
-                <div className={`absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-4 ${
-                  darktheme ? 'border-gray-800' : 'border-white'
-                }`}>
+                <div
+                  className={`absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-4 ${
+                    darktheme ? "border-gray-800" : "border-white"
+                  }`}
+                >
                   <User className="w-4 h-4 text-white" />
                 </div>
               </div>
               <div className="text-center">
-                <CardTitle className={`text-2xl font-bold mb-1 ${
-                  darktheme ? 'text-white' : 'text-gray-800'
-                }`}>
+                <CardTitle
+                  className={`text-2xl font-bold mb-1 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
                   {usere.name}
                 </CardTitle>
-                <div className={`flex items-center justify-center ${
-                  darktheme ? 'text-gray-400' : 'text-gray-600'
-                }`}>
+                <div
+                  className={`flex items-center justify-center ${
+                    darktheme ? "text-gray-400" : "text-gray-600"
+                  }`}
+                >
                   <Mail className="w-4 h-4 mr-2" />
                   <span>{usere.email}</span>
                 </div>
@@ -145,7 +165,7 @@ const Profile = () => {
 
         {/* Footer */}
         <footer className="mt-16 text-center text-sm">
-          <p className={darktheme ? 'text-gray-500' : 'text-gray-500'}>
+          <p className={darktheme ? "text-gray-500" : "text-gray-500"}>
             &copy; 2024 Bus Sewa. All rights reserved.
           </p>
         </footer>

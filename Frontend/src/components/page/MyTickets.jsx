@@ -54,20 +54,28 @@ const MyTickets = () => {
 
   if (loading) {
     return (
-      <div className={`min-h-screen ${
-        darktheme 
-          ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
-          : 'bg-gradient-to-br from-green-50 via-white to-green-100'
-      }`}>
+      <div
+        className={`min-h-screen ${
+          darktheme
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+            : "bg-gradient-to-br from-green-50 via-white to-green-100"
+        }`}
+      >
         <Navbar />
         <div className="flex flex-col justify-center items-center min-h-[80vh]">
-          <div className={`rounded-2xl shadow-xl p-8 flex flex-col items-center border ${
-            darktheme 
-              ? 'bg-gray-800 border-gray-700' 
-              : 'bg-white border-green-100'
-          }`}>
+          <div
+            className={`rounded-2xl shadow-xl p-8 flex flex-col items-center border ${
+              darktheme
+                ? "bg-gray-800 border-gray-700"
+                : "bg-white border-green-100"
+            }`}
+          >
             <Loader2 className="animate-spin w-12 h-12 text-green-500 mb-4" />
-            <span className={`text-lg font-medium ${darktheme ? 'text-gray-300' : 'text-gray-600'}`}>
+            <span
+              className={`text-lg font-medium ${
+                darktheme ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
               Loading your tickets...
             </span>
           </div>
@@ -78,27 +86,45 @@ const MyTickets = () => {
 
   if (tickets.length === 0) {
     return (
-      <div className={`min-h-screen ${
-        darktheme 
-          ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
-          : 'bg-gradient-to-br from-green-50 via-white to-green-100'
-      }`}>
+      <div
+        className={`min-h-screen ${
+          darktheme
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+            : "bg-gradient-to-br from-green-50 via-white to-green-100"
+        }`}
+      >
         <Navbar />
         <div className="flex flex-col justify-center items-center min-h-[80vh]">
-          <div className={`rounded-2xl shadow-xl p-12 text-center border ${
-            darktheme 
-              ? 'bg-gray-800 border-gray-700' 
-              : 'bg-white border-gray-200'
-          }`}>
-            <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
-              darktheme ? 'bg-gray-700' : 'bg-gray-100'
-            }`}>
-              <Ticket className={`w-10 h-10 ${darktheme ? 'text-gray-500' : 'text-gray-400'}`} />
+          <div
+            className={`rounded-2xl shadow-xl p-12 text-center border ${
+              darktheme
+                ? "bg-gray-800 border-gray-700"
+                : "bg-white border-gray-200"
+            }`}
+          >
+            <div
+              className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
+                darktheme ? "bg-gray-700" : "bg-gray-100"
+              }`}
+            >
+              <Ticket
+                className={`w-10 h-10 ${
+                  darktheme ? "text-gray-500" : "text-gray-400"
+                }`}
+              />
             </div>
-            <h2 className={`text-2xl font-bold mb-2 ${darktheme ? 'text-white' : 'text-gray-800'}`}>
+            <h2
+              className={`text-2xl font-bold mb-2 ${
+                darktheme ? "text-white" : "text-gray-800"
+              }`}
+            >
               No Tickets Yet
             </h2>
-            <p className={`mb-6 ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p
+              className={`mb-6 ${
+                darktheme ? "text-gray-400" : "text-gray-600"
+              }`}
+            >
               You haven't booked any tickets yet.
             </p>
             <button
@@ -114,20 +140,30 @@ const MyTickets = () => {
   }
 
   return (
-    <div className={`min-h-screen ${
-      darktheme 
-        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
-        : 'bg-gradient-to-br from-green-50 via-white to-green-100'
-    }`}>
+    <div
+      className={`min-h-screen ${
+        darktheme
+          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+          : "bg-gradient-to-br from-green-50 via-white to-green-100"
+      }`}
+    >
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className={`text-4xl font-bold mb-4 ${darktheme ? 'text-white' : 'text-gray-800'}`}>
+          <h1
+            className={`text-4xl font-bold mb-4 ${
+              darktheme ? "text-white" : "text-gray-800"
+            }`}
+          >
             My Tickets
           </h1>
-          <p className={`text-lg ${darktheme ? 'text-gray-300' : 'text-gray-600'}`}>
+          <p
+            className={`text-lg ${
+              darktheme ? "text-gray-300" : "text-gray-600"
+            }`}
+          >
             View and manage all your bus tickets
           </p>
         </div>
@@ -138,43 +174,57 @@ const MyTickets = () => {
             <div
               key={ticket._id}
               className={`shadow-lg rounded-2xl p-6 border hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105 ${
-                darktheme 
-                  ? 'bg-gray-800 border-gray-700' 
-                  : 'bg-white border-green-100'
+                darktheme
+                  ? "bg-gray-800 border-gray-700"
+                  : "bg-white border-green-100"
               }`}
               onClick={() => navigate(`/ticket/${ticket._id}`)}
             >
               {/* Header with Status */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    darktheme ? 'bg-green-900' : 'bg-green-100'
-                  }`}>
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                      darktheme ? "bg-green-900" : "bg-green-100"
+                    }`}
+                  >
                     <Ticket className="w-5 h-5 text-green-600" />
                   </div>
-                  <h2 className={`text-lg font-semibold ${darktheme ? 'text-white' : 'text-gray-800'}`}>
+                  <h2
+                    className={`text-lg font-semibold ${
+                      darktheme ? "text-white" : "text-gray-800"
+                    }`}
+                  >
                     {ticket.busId || "Bus Info"}
                   </h2>
                 </div>
                 {ticket.paymentStatus === "Success" ? (
-                  <div className={`flex items-center gap-1 px-3 py-1 rounded-full ${
-                    darktheme ? 'bg-green-900' : 'bg-green-50'
-                  }`}>
+                  <div
+                    className={`flex items-center gap-1 px-3 py-1 rounded-full ${
+                      darktheme ? "bg-green-900" : "bg-green-50"
+                    }`}
+                  >
                     <CheckCircle2 className="text-green-500 w-4 h-4" />
-                    <span className={`text-xs font-medium ${
-                      darktheme ? 'text-green-400' : 'text-green-700'
-                    }`}>
+                    <span
+                      className={`text-xs font-medium ${
+                        darktheme ? "text-green-400" : "text-green-700"
+                      }`}
+                    >
                       Confirmed
                     </span>
                   </div>
                 ) : (
-                  <div className={`flex items-center gap-1 px-3 py-1 rounded-full ${
-                    darktheme ? 'bg-red-900' : 'bg-red-50'
-                  }`}>
+                  <div
+                    className={`flex items-center gap-1 px-3 py-1 rounded-full ${
+                      darktheme ? "bg-red-900" : "bg-red-50"
+                    }`}
+                  >
                     <XCircle className="text-red-500 w-4 h-4" />
-                    <span className={`text-xs font-medium ${
-                      darktheme ? 'text-red-400' : 'text-red-700'
-                    }`}>
+                    <span
+                      className={`text-xs font-medium ${
+                        darktheme ? "text-red-400" : "text-red-700"
+                      }`}
+                    >
                       Failed
                     </span>
                   </div>
@@ -182,20 +232,36 @@ const MyTickets = () => {
               </div>
 
               {/* Route Information */}
-              <div className={`rounded-xl p-4 mb-4 ${
-                darktheme ? 'bg-gray-700' : 'bg-gray-50'
-              }`}>
+              <div
+                className={`rounded-xl p-4 mb-4 ${
+                  darktheme ? "bg-gray-700" : "bg-gray-50"
+                }`}
+              >
                 <div className="flex items-center gap-2 mb-2">
                   <MapPin className="w-4 h-4 text-green-600" />
-                  <p className={`text-sm ${darktheme ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <p
+                    className={`text-sm ${
+                      darktheme ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
                     <span className="font-semibold">
                       Stop {ticket.fromIndex}
                     </span>
-                    <span className={`mx-2 ${darktheme ? 'text-gray-500' : 'text-gray-400'}`}>→</span>
+                    <span
+                      className={`mx-2 ${
+                        darktheme ? "text-gray-500" : "text-gray-400"
+                      }`}
+                    >
+                      →
+                    </span>
                     <span className="font-semibold">Stop {ticket.toIndex}</span>
                   </p>
                 </div>
-                <p className={`text-sm ml-6 ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
+                <p
+                  className={`text-sm ml-6 ${
+                    darktheme ? "text-gray-400" : "text-gray-600"
+                  }`}
+                >
                   Distance:{" "}
                   <span className="font-medium">
                     {ticket.passengerDistance} km
@@ -204,41 +270,61 @@ const MyTickets = () => {
               </div>
 
               {/* Price */}
-              <div className={`flex items-center justify-between rounded-xl p-4 mb-4 ${
-                darktheme ? 'bg-green-900' : 'bg-green-50'
-              }`}>
+              <div
+                className={`flex items-center justify-between rounded-xl p-4 mb-4 ${
+                  darktheme ? "bg-green-900" : "bg-green-50"
+                }`}
+              >
                 <div className="flex items-center gap-2">
                   <IndianRupee className="w-5 h-5 text-green-600" />
-                  <span className={`text-sm ${darktheme ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <span
+                    className={`text-sm ${
+                      darktheme ? "text-gray-300" : "text-gray-600"
+                    }`}
+                  >
                     Total Fare
                   </span>
                 </div>
-                <span className={`text-xl font-bold ${
-                  darktheme ? 'text-green-400' : 'text-green-700'
-                }`}>
+                <span
+                  className={`text-xl font-bold ${
+                    darktheme ? "text-green-400" : "text-green-700"
+                  }`}
+                >
                   ₹{ticket.ticketPrice}
                 </span>
               </div>
 
               {/* Date and Status */}
               <div className="space-y-2 mb-4">
-                <div className={`flex items-center gap-2 text-sm ${
-                  darktheme ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  <Calendar className={`w-4 h-4 ${darktheme ? 'text-gray-500' : 'text-gray-400'}`} />
+                <div
+                  className={`flex items-center gap-2 text-sm ${
+                    darktheme ? "text-gray-400" : "text-gray-600"
+                  }`}
+                >
+                  <Calendar
+                    className={`w-4 h-4 ${
+                      darktheme ? "text-gray-500" : "text-gray-400"
+                    }`}
+                  />
                   <span>
                     {new Date(ticket.createdAt).toLocaleString("en-IN")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <span className={darktheme ? 'text-gray-400' : 'text-gray-600'}>
+                  <span
+                    className={darktheme ? "text-gray-400" : "text-gray-600"}
+                  >
                     Payment Status:
                   </span>
                   <span
                     className={`font-semibold ${
                       ticket.paymentStatus === "Success"
-                        ? darktheme ? "text-green-400" : "text-green-600"
-                        : darktheme ? "text-red-400" : "text-red-500"
+                        ? darktheme
+                          ? "text-green-400"
+                          : "text-green-600"
+                        : darktheme
+                        ? "text-red-400"
+                        : "text-red-500"
                     }`}
                   >
                     {ticket.paymentStatus}

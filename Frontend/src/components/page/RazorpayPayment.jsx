@@ -95,9 +95,13 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
 
   return (
     <div className="mb-4 relative">
-      <label className={`block mb-1 font-medium ${
-        darktheme ? 'text-gray-300' : 'text-gray-700'
-      }`}>{label}</label>
+      <label
+        className={`block mb-1 font-medium ${
+          darktheme ? "text-gray-300" : "text-gray-700"
+        }`}
+      >
+        {label}
+      </label>
 
       <MicInput
         type="text"
@@ -105,9 +109,9 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
         placeholder="Type a place..."
         onChange={(e) => handleSearch(e.target.value)}
         className={`border p-2 w-full rounded ${
-          darktheme 
-            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-            : 'bg-white border-gray-300 text-gray-900'
+          darktheme
+            ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+            : "bg-white border-gray-300 text-gray-900"
         }`}
       />
 
@@ -115,7 +119,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
         <button
           type="button"
           className={`text-sm mt-1 underline ${
-            darktheme ? 'text-blue-400' : 'text-blue-600'
+            darktheme ? "text-blue-400" : "text-blue-600"
           }`}
           onClick={handleUseMyLocation}
           disabled={loadingLocation}
@@ -124,23 +128,31 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
         </button>
       )}
 
-      {loading && <p className={`text-sm mt-1 ${
-        darktheme ? 'text-gray-500' : 'text-gray-400'
-      }`}>Searching...</p>}
-      
+      {loading && (
+        <p
+          className={`text-sm mt-1 ${
+            darktheme ? "text-gray-500" : "text-gray-400"
+          }`}
+        >
+          Searching...
+        </p>
+      )}
+
       {suggestions.length > 0 && (
-        <ul className={`absolute z-10 w-full shadow rounded mt-1 max-h-40 overflow-y-auto ${
-          darktheme 
-            ? 'bg-gray-800 border border-gray-600' 
-            : 'bg-white border border-gray-200'
-        }`}>
+        <ul
+          className={`absolute z-10 w-full shadow rounded mt-1 max-h-40 overflow-y-auto ${
+            darktheme
+              ? "bg-gray-800 border border-gray-600"
+              : "bg-white border border-gray-200"
+          }`}
+        >
           {suggestions.map((s, idx) => (
             <li
               key={idx}
               className={`p-2 cursor-pointer text-sm ${
-                darktheme 
-                  ? 'text-gray-200 hover:bg-gray-700' 
-                  : 'text-gray-900 hover:bg-gray-100'
+                darktheme
+                  ? "text-gray-200 hover:bg-gray-700"
+                  : "text-gray-900 hover:bg-gray-100"
               }`}
               onClick={() => {
                 const pos = { lat: parseFloat(s.lat), lon: parseFloat(s.lon) };
@@ -235,20 +247,28 @@ const RazorpayPayment = () => {
 
   return (
     <>
-      <Navbar />
-      <div className={`min-h-screen py-8 ${
-        darktheme 
-          ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
-          : 'bg-gradient-to-br from-green-50 via-white to-green-100'
-      }`}>
-        <div className={`max-w-md mx-auto p-6 rounded-lg shadow-lg ${
-          darktheme 
-            ? 'bg-gray-800 border border-gray-700' 
-            : 'bg-white border border-gray-200'
-        }`}>
-          <h2 className={`text-xl font-semibold mb-4 ${
-            darktheme ? 'text-white' : 'text-gray-800'
-          }`}>Book Your Bus Ticket</h2>
+      <div
+        className={`min-h-screen py-8 ${
+          darktheme
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+            : "bg-gradient-to-br from-green-50 via-white to-green-100"
+        }`}
+      >
+        <Navbar />
+        <div
+          className={`max-w-md mx-auto p-6 rounded-lg shadow-lg ${
+            darktheme
+              ? "bg-gray-800 border border-gray-700"
+              : "bg-white border border-gray-200"
+          }`}
+        >
+          <h2
+            className={`text-xl font-semibold mb-4 ${
+              darktheme ? "text-white" : "text-gray-800"
+            }`}
+          >
+            Book Your Bus Ticket
+          </h2>
 
           <div className="mb-6">
             <PlaceSearch
@@ -264,9 +284,9 @@ const RazorpayPayment = () => {
 
           <button
             className={`w-full px-6 py-2 rounded-lg shadow-md mb-4 transition-colors ${
-              darktheme 
-                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                : 'bg-blue-500 hover:bg-blue-600 text-white'
+              darktheme
+                ? "bg-blue-600 hover:bg-blue-700 text-white"
+                : "bg-blue-500 hover:bg-blue-600 text-white"
             }`}
             onClick={handleCalculatePrice}
             disabled={loadingPrice}
@@ -275,36 +295,38 @@ const RazorpayPayment = () => {
           </button>
 
           {ticketData && (
-            <div className={`p-4 rounded ${
-              darktheme 
-                ? 'bg-gray-700 border border-gray-600' 
-                : 'bg-gray-100 border border-gray-200'
-            }`}>
-              <p className={darktheme ? 'text-gray-200' : 'text-gray-800'}>
+            <div
+              className={`p-4 rounded ${
+                darktheme
+                  ? "bg-gray-700 border border-gray-600"
+                  : "bg-gray-100 border border-gray-200"
+              }`}
+            >
+              <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
                 <strong>From Index:</strong> {ticketData.fromIndex}
               </p>
-              <p className={darktheme ? 'text-gray-200' : 'text-gray-800'}>
+              <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
                 <strong>To Index:</strong> {ticketData.toIndex}
               </p>
-              <p className={darktheme ? 'text-gray-200' : 'text-gray-800'}>
+              <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
                 <strong>Total Distance:</strong> {ticketData.totalDistance} km
               </p>
-              <p className={darktheme ? 'text-gray-200' : 'text-gray-800'}>
+              <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
                 <strong>Passenger Distance:</strong>{" "}
                 {ticketData.passengerDistance} km
               </p>
-              <p className={darktheme ? 'text-gray-200' : 'text-gray-800'}>
+              <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
                 <strong>Ticket Price:</strong> ₹{ticketData.ticketPrice}
               </p>
-              <p className={darktheme ? 'text-gray-200' : 'text-gray-800'}>
+              <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
                 <strong>Price per km:</strong> ₹{ticketData.pricePerKm}
               </p>
 
               <button
                 className={`w-full px-6 py-2 rounded-lg shadow-md mt-4 transition-colors ${
-                  darktheme 
-                    ? 'bg-green-600 hover:bg-green-700 text-white' 
-                    : 'bg-green-500 hover:bg-green-600 text-white'
+                  darktheme
+                    ? "bg-green-600 hover:bg-green-700 text-white"
+                    : "bg-green-500 hover:bg-green-600 text-white"
                 }`}
                 onClick={async () => {
                   // Razorpay payment
@@ -317,7 +339,7 @@ const RazorpayPayment = () => {
                     }
                   );
                   const order = await res.json();
-                   
+
                   const options = {
                     key: "rzp_test_RPcZFwp7G16Gjf",
                     amount: order.amount,
@@ -345,7 +367,7 @@ const RazorpayPayment = () => {
                         },
                         { headers: { Authorization: `Bearer ${token}` } }
                       );
-                       
+
                       const verifyData = await verifyRes.json();
                       alert(verifyData.message);
                       console.log("✅ Verify Response:", verifyData);

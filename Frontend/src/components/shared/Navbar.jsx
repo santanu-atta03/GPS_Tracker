@@ -219,7 +219,7 @@ const Navbar = () => {
                 >
                   <Button
                     variant="outline"
-                    className={`w-full mb-2 ${darktheme ? 'border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-gray-500' : 'border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300'}`}
+                    className={`w-full mb-2 ${darktheme ? 'border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-gray-500 bg-gray-900' : 'border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300'}`}
                     onClick={() => navigate("/profile")}
                   >
                     {t("navbar.viewProfile")}
@@ -370,7 +370,7 @@ const Navbar = () => {
                   </div>
                   <Button
                     variant="outline"
-                    className={`w-full mb-2 ${darktheme ? 'border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-gray-500' : 'border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300'}`}
+                    className={`w-full mb-2 ${darktheme ? 'border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-gray-500 bg-gray-900' : 'border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300'}`}
                     onClick={() => {
                       navigate("/profile");
                       setIsMobileMenuOpen(false);

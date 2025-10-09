@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
- 
+
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -62,11 +62,11 @@ const DriverLogin = () => {
       if (res.data.success) {
         dispatch(setuser(res.data.userData));
         navigate("/"); // redirect after success
-         toast(res.data.message);
+        toast(res.data.message);
       }
     } catch (error) {
       console.log("Create Driver error:", error.message);
-       const errorMessage =
+      const errorMessage =
         error.response?.data?.message || error.message || "An error occurred";
       toast.error(errorMessage);
     }

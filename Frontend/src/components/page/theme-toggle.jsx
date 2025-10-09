@@ -16,7 +16,7 @@ export function ThemeToggle() {
     <Button
       variant="outline"
       size="icon"
-      className={`relative ${!darktheme }? "bg-white" : " bg-black"`}
+      className={`relative ${!darktheme}? "bg-white" : " bg-black"`}
       onClick={handelthemechange}
     >
       <Sun

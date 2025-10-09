@@ -1,8 +1,12 @@
 // components/SupportPopover.jsx
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 import { HelpCircle } from "lucide-react";
 import SupportChat from "./SupportChat";
-  // 👈 Create this next
+// 👈 Create this next
 
 export default function SupportPopover() {
   return (
@@ -20,7 +24,7 @@ export default function SupportPopover() {
           align="end"
           className="w-[350px] p-0 border-none shadow-2xl rounded-xl overflow-hidden"
         >
-          <SupportChat/>
+          <SupportChat />
         </PopoverContent>
       </Popover>
     </div>

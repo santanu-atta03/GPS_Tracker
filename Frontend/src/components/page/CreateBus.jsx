@@ -61,7 +61,7 @@ const CreateBus = () => {
 
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/Bus/createbus`,
-        { name, deviceID, from, to, timeSlots,ticketPrice },
+        { name, deviceID, from, to, timeSlots, ticketPrice },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -73,13 +73,12 @@ const CreateBus = () => {
       setFromSearchQuery("");
       setToSearchQuery("");
       setTimeSlots([{ startTime: "", endTime: "" }]);
-         toast(res.data.message);
+      toast(res.data.message);
       navigate("/Bus");
-
     } catch (error) {
       console.error("Error creating bus:", error);
       setSuccess("Failed to create bus.");
-       const errorMessage =
+      const errorMessage =
         error.response?.data?.message || error.message || "An error occurred";
       toast.error(errorMessage);
     } finally {
@@ -100,7 +99,9 @@ const CreateBus = () => {
 
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value)}&addressdetails=1&limit=5`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          value
+        )}&addressdetails=1&limit=5`
       );
       const data = await res.json();
       setFromSuggestions(data);
@@ -123,7 +124,9 @@ const CreateBus = () => {
 
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(value)}&addressdetails=1&limit=5`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          value
+        )}&addressdetails=1&limit=5`
       );
       const data = await res.json();
       setToSuggestions(data);
@@ -150,23 +153,29 @@ const CreateBus = () => {
   };
 
   return (
-    <div className={`min-h-screen ${
-      darktheme 
-        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
-        : 'bg-gradient-to-br from-green-50 via-white to-green-100'
-    }`}>
+    <div
+      className={`min-h-screen ${
+        darktheme
+          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+          : "bg-gradient-to-br from-green-50 via-white to-green-100"
+      }`}
+    >
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <Card className={`max-w-md mx-auto mt-6 shadow-xl rounded-2xl border ${
-          darktheme 
-            ? 'bg-gray-800 border-gray-700' 
-            : 'bg-white border-green-100'
-        }`}>
+        <Card
+          className={`max-w-md mx-auto mt-6 shadow-xl rounded-2xl border ${
+            darktheme
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-green-100"
+          }`}
+        >
           <CardHeader>
-            <CardTitle className={`text-2xl font-bold text-center ${
-              darktheme ? 'text-white' : 'text-gray-800'
-            }`}>
+            <CardTitle
+              className={`text-2xl font-bold text-center ${
+                darktheme ? "text-white" : "text-gray-800"
+              }`}
+            >
               Create New Bus
             </CardTitle>
           </CardHeader>
@@ -177,7 +186,7 @@ const CreateBus = () => {
                 <Label
                   htmlFor="name"
                   className={`block text-sm font-medium mb-2 ${
-                    darktheme ? 'text-gray-300' : 'text-gray-700'
+                    darktheme ? "text-gray-300" : "text-gray-700"
                   }`}
                 >
                   Bus Name
@@ -188,9 +197,9 @@ const CreateBus = () => {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter Bus name"
                   className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
-                    darktheme 
-                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                      : 'bg-white border-gray-300 text-gray-900'
+                    darktheme
+                      ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                      : "bg-white border-gray-300 text-gray-900"
                   }`}
                   required
                 />
@@ -201,7 +210,7 @@ const CreateBus = () => {
                 <Label
                   htmlFor="deviceID"
                   className={`block text-sm font-medium mb-2 ${
-                    darktheme ? 'text-gray-300' : 'text-gray-700'
+                    darktheme ? "text-gray-300" : "text-gray-700"
                   }`}
                 >
                   Device ID
@@ -212,20 +221,20 @@ const CreateBus = () => {
                   onChange={(e) => setDeviceID(e.target.value)}
                   placeholder="Enter device ID"
                   className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
-                    darktheme 
-                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                      : 'bg-white border-gray-300 text-gray-900'
+                    darktheme
+                      ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                      : "bg-white border-gray-300 text-gray-900"
                   }`}
                   required
                 />
               </div>
-              
+
               {/* Ticket Price */}
               <div>
                 <Label
                   htmlFor="ticket-Price"
                   className={`block text-sm font-medium mb-2 ${
-                    darktheme ? 'text-gray-300' : 'text-gray-700'
+                    darktheme ? "text-gray-300" : "text-gray-700"
                   }`}
                 >
                   Ticket Price
@@ -236,9 +245,9 @@ const CreateBus = () => {
                   onChange={(e) => setticketPrice(e.target.value)}
                   placeholder="Enter ticket price"
                   className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
-                    darktheme 
-                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                      : 'bg-white border-gray-300 text-gray-900'
+                    darktheme
+                      ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                      : "bg-white border-gray-300 text-gray-900"
                   }`}
                   required
                 />
@@ -246,16 +255,22 @@ const CreateBus = () => {
 
               {/* From Location */}
               <div>
-                <div className={`rounded-2xl p-6 shadow-lg border ${
-                  darktheme 
-                    ? 'bg-gray-700 border-gray-600' 
-                    : 'bg-white border-gray-200'
-                }`}>
+                <div
+                  className={`rounded-2xl p-6 shadow-lg border ${
+                    darktheme
+                      ? "bg-gray-700 border-gray-600"
+                      : "bg-white border-gray-200"
+                  }`}
+                >
                   <div className="flex items-center gap-2 mb-5">
                     <span className="text-xl">🔍</span>
-                    <h2 className={`text-xl font-bold ${
-                      darktheme ? 'text-white' : 'text-gray-800'
-                    }`}>From</h2>
+                    <h2
+                      className={`text-xl font-bold ${
+                        darktheme ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      From
+                    </h2>
                   </div>
 
                   <div className="relative">
@@ -265,15 +280,17 @@ const CreateBus = () => {
                       onChange={handleFromSearchChange}
                       placeholder="Search for starting location..."
                       className={`w-full border-2 p-4 pr-12 rounded-xl focus:outline-none focus:border-blue-500 transition-all ${
-                        darktheme 
-                          ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
-                          : 'bg-white border-gray-200 text-gray-800 placeholder-gray-400'
+                        darktheme
+                          ? "bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                          : "bg-white border-gray-200 text-gray-800 placeholder-gray-400"
                       }`}
                       required
                     />
-                    <div className={`absolute right-4 top-1/2 -translate-y-1/2 ${
-                      darktheme ? 'text-gray-500' : 'text-gray-400'
-                    }`}>
+                    <div
+                      className={`absolute right-4 top-1/2 -translate-y-1/2 ${
+                        darktheme ? "text-gray-500" : "text-gray-400"
+                      }`}
+                    >
                       <svg
                         className="w-5 h-5"
                         fill="none"
@@ -290,19 +307,21 @@ const CreateBus = () => {
                     </div>
 
                     {showFromSuggestions && fromSuggestions.length > 0 && (
-                      <ul className={`absolute border-2 rounded-xl shadow-2xl w-full mt-2 max-h-64 overflow-y-auto z-50 ${
-                        darktheme 
-                          ? 'bg-gray-800 border-gray-600' 
-                          : 'bg-white border-gray-200'
-                      }`}>
+                      <ul
+                        className={`absolute border-2 rounded-xl shadow-2xl w-full mt-2 max-h-64 overflow-y-auto z-50 ${
+                          darktheme
+                            ? "bg-gray-800 border-gray-600"
+                            : "bg-white border-gray-200"
+                        }`}
+                      >
                         {fromSuggestions.map((place, index) => (
                           <li
                             key={place.place_id}
                             onClick={() => handleFromSuggestionClick(place)}
                             className={`p-4 cursor-pointer text-sm border-b last:border-b-0 flex items-start gap-3 transition-colors ${
-                              darktheme 
-                                ? 'text-gray-200 border-gray-700 hover:bg-gray-700' 
-                                : 'text-gray-700 border-gray-100 hover:bg-gray-50'
+                              darktheme
+                                ? "text-gray-200 border-gray-700 hover:bg-gray-700"
+                                : "text-gray-700 border-gray-100 hover:bg-gray-50"
                             }`}
                           >
                             <span className="text-lg mt-0.5">📍</span>
@@ -317,16 +336,22 @@ const CreateBus = () => {
 
               {/* To Location */}
               <div>
-                <div className={`rounded-2xl p-6 shadow-lg border ${
-                  darktheme 
-                    ? 'bg-gray-700 border-gray-600' 
-                    : 'bg-white border-gray-200'
-                }`}>
+                <div
+                  className={`rounded-2xl p-6 shadow-lg border ${
+                    darktheme
+                      ? "bg-gray-700 border-gray-600"
+                      : "bg-white border-gray-200"
+                  }`}
+                >
                   <div className="flex items-center gap-2 mb-5">
                     <span className="text-xl">🔍</span>
-                    <h2 className={`text-xl font-bold ${
-                      darktheme ? 'text-white' : 'text-gray-800'
-                    }`}>To</h2>
+                    <h2
+                      className={`text-xl font-bold ${
+                        darktheme ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      To
+                    </h2>
                   </div>
 
                   <div className="relative">
@@ -336,15 +361,17 @@ const CreateBus = () => {
                       onChange={handleToSearchChange}
                       placeholder="Search for destination..."
                       className={`w-full border-2 p-4 pr-12 rounded-xl focus:outline-none focus:border-blue-500 transition-all ${
-                        darktheme 
-                          ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400' 
-                          : 'bg-white border-gray-200 text-gray-800 placeholder-gray-400'
+                        darktheme
+                          ? "bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                          : "bg-white border-gray-200 text-gray-800 placeholder-gray-400"
                       }`}
                       required
                     />
-                    <div className={`absolute right-4 top-1/2 -translate-y-1/2 ${
-                      darktheme ? 'text-gray-500' : 'text-gray-400'
-                    }`}>
+                    <div
+                      className={`absolute right-4 top-1/2 -translate-y-1/2 ${
+                        darktheme ? "text-gray-500" : "text-gray-400"
+                      }`}
+                    >
                       <svg
                         className="w-5 h-5"
                         fill="none"
@@ -361,19 +388,21 @@ const CreateBus = () => {
                     </div>
 
                     {showToSuggestions && toSuggestions.length > 0 && (
-                      <ul className={`absolute border-2 rounded-xl shadow-2xl w-full mt-2 max-h-64 overflow-y-auto z-50 ${
-                        darktheme 
-                          ? 'bg-gray-800 border-gray-600' 
-                          : 'bg-white border-gray-200'
-                      }`}>
+                      <ul
+                        className={`absolute border-2 rounded-xl shadow-2xl w-full mt-2 max-h-64 overflow-y-auto z-50 ${
+                          darktheme
+                            ? "bg-gray-800 border-gray-600"
+                            : "bg-white border-gray-200"
+                        }`}
+                      >
                         {toSuggestions.map((place, index) => (
                           <li
                             key={place.place_id}
                             onClick={() => handleToSuggestionClick(place)}
                             className={`p-4 cursor-pointer text-sm border-b last:border-b-0 flex items-start gap-3 transition-colors ${
-                              darktheme 
-                                ? 'text-gray-200 border-gray-700 hover:bg-gray-700' 
-                                : 'text-gray-700 border-gray-100 hover:bg-gray-50'
+                              darktheme
+                                ? "text-gray-200 border-gray-700 hover:bg-gray-700"
+                                : "text-gray-700 border-gray-100 hover:bg-gray-50"
                             }`}
                           >
                             <span className="text-lg mt-0.5">📍</span>
@@ -388,9 +417,11 @@ const CreateBus = () => {
 
               {/* Time Slots */}
               <div>
-                <Label className={`block text-sm font-medium mb-2 ${
-                  darktheme ? 'text-gray-300' : 'text-gray-700'
-                }`}>
+                <Label
+                  className={`block text-sm font-medium mb-2 ${
+                    darktheme ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
                   Time Slots
                 </Label>
                 {timeSlots.map((slot, index) => (
@@ -403,12 +434,16 @@ const CreateBus = () => {
                       }
                       required
                       className={`flex-1 p-3 border rounded-xl ${
-                        darktheme 
-                          ? 'bg-gray-700 border-gray-600 text-white' 
-                          : 'bg-white border-gray-300 text-gray-900'
+                        darktheme
+                          ? "bg-gray-700 border-gray-600 text-white"
+                          : "bg-white border-gray-300 text-gray-900"
                       }`}
                     />
-                    <span className={darktheme ? 'text-gray-400' : 'text-gray-600'}>to</span>
+                    <span
+                      className={darktheme ? "text-gray-400" : "text-gray-600"}
+                    >
+                      to
+                    </span>
                     <Input
                       type="time"
                       value={slot.endTime}
@@ -417,9 +452,9 @@ const CreateBus = () => {
                       }
                       required
                       className={`flex-1 p-3 border rounded-xl ${
-                        darktheme 
-                          ? 'bg-gray-700 border-gray-600 text-white' 
-                          : 'bg-white border-gray-300 text-gray-900'
+                        darktheme
+                          ? "bg-gray-700 border-gray-600 text-white"
+                          : "bg-white border-gray-300 text-gray-900"
                       }`}
                     />
                     {timeSlots.length > 1 && (
@@ -453,9 +488,11 @@ const CreateBus = () => {
             </form>
 
             {success && (
-              <p className={`mt-4 text-center font-medium ${
-                darktheme ? 'text-green-400' : 'text-green-700'
-              }`}>
+              <p
+                className={`mt-4 text-center font-medium ${
+                  darktheme ? "text-green-400" : "text-green-700"
+                }`}
+              >
                 {success}
               </p>
             )}
@@ -464,7 +501,7 @@ const CreateBus = () => {
 
         {/* Footer */}
         <footer className="mt-16 text-center text-sm">
-          <p className={darktheme ? 'text-gray-500' : 'text-gray-500'}>
+          <p className={darktheme ? "text-gray-500" : "text-gray-500"}>
             &copy; 2024 Bus Sewa. All rights reserved.
           </p>
         </footer>
