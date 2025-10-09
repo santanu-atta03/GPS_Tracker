@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet-routing-machine";
@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Navbar from "../shared/Navbar";
 import { useSelector } from "react-redux";
+import { Button } from "../ui/button";
 
 // 🚌 Custom bus icon
 const busIcon = new L.DivIcon({
@@ -53,6 +54,7 @@ const BusDetailsPage2 = () => {
   const [bus, setBus] = useState(null);
   const [activeSlot, setActiveSlot] = useState(null);
 
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchBusData = async () => {
       try {
@@ -149,6 +151,31 @@ const BusDetailsPage2 = () => {
                   <span className="mx-2">→</span>
                   <span className="font-semibold">{bus.to}</span>
                 </p>
+              </div>
+              <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+                <Button
+                  variant={darktheme ? "outline" : "secondary"}
+                  className={`px-6 py-2 rounded-lg font-medium border ${
+                    darktheme
+                      ? "bg-gray-900 text-white border-gray-700 hover:bg-gray-700"
+                      : "bg-white text-gray-800 border-green-300 hover:bg-green-100"
+                  }`}
+                  onClick={() => navigate(`/bus/review/${bus.deviceID}`)}
+                >
+                  Review
+                </Button>
+
+                <Button
+                  variant="default"
+                  className={`px-6 py-2 rounded-lg font-medium ${
+                    darktheme
+                      ? "bg-green-600 text-white hover:bg-green-700"
+                      : "bg-green-500 text-white hover:bg-green-600"
+                  }`}
+                  onClick={() => navigate(`/makepayment/${bus.deviceID}`)}
+                >
+                  Get Ticket
+                </Button>
               </div>
             </div>
           </div>
