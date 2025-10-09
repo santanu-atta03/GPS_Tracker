@@ -202,7 +202,14 @@ const FllowBusMap = () => {
             zoom={13}
             style={{ height: "70vh", width: "80%" }}
           >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <TileLayer
+              url={
+                darktheme
+                  ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                  : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              }
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
             <Routing pathCoordinates={pathCoordinates} />
 
             {/* Address Markers */}

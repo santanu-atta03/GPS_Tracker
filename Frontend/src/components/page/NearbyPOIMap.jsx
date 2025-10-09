@@ -56,10 +56,14 @@ const NearbyPOIMap = () => {
 
     const map = L.map(mapContainerRef.current).setView([20.5937, 78.9629], 5);
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-    }).addTo(map);
+    const tileUrl = darktheme
+      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+      : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+    const attribution =
+      '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
+
+    L.tileLayer(tileUrl, { attribution }).addTo(map);
 
     mapInstanceRef.current = map;
 
@@ -81,7 +85,7 @@ const NearbyPOIMap = () => {
       map.remove();
       mapInstanceRef.current = null;
     };
-  }, []);
+  }, [darktheme]);
 
   const fetchNearbyPlaces = async (type) => {
     if (!userLocation) return [];
