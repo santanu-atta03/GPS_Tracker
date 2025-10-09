@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
@@ -19,6 +19,7 @@ const Navbar = () => {
   const { usere, darktheme } = useSelector((store) => store.auth);
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [selectedLang, setSelectedLang] = useState(
     localStorage.getItem("selectedLanguage") || "en"
@@ -45,6 +46,11 @@ const Navbar = () => {
     mni: { name: "মেইতেই লোন", flag: "🇮🇳" },
     ks: { name: "كٲشُر", flag: "🇮🇳" },
     as: { name: "অসমীয়া", flag: "🇮🇳" },
+  };
+
+  // Check if route is active
+  const isActiveRoute = (path) => {
+    return location.pathname === path;
   };
 
   // Language Change
@@ -122,48 +128,108 @@ const Navbar = () => {
             <div className="flex items-center gap-6">
               <div
                 onClick={() => handleNavigation("/")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
+                  isActiveRoute("/")
+                    ? darktheme 
+                      ? 'text-green-400' 
+                      : 'text-green-600'
+                    : darktheme 
+                      ? 'text-gray-300 hover:text-green-400' 
+                      : 'text-gray-700 hover:text-green-600'
+                }`}
               >
                 {t("navbar.home")}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                  isActiveRoute("/") ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
               </div>
               {usere?.status === "driver" ? (
                 <div
                   onClick={() => handleNavigation("/Bus")}
-                  className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
+                  className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
+                    isActiveRoute("/Bus")
+                      ? darktheme 
+                        ? 'text-green-400' 
+                        : 'text-green-600'
+                      : darktheme 
+                        ? 'text-gray-300 hover:text-green-400' 
+                        : 'text-gray-700 hover:text-green-600'
+                  }`}
                 >
                   {t("navbar.busDetails")}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                    isActiveRoute("/Bus") ? 'w-full' : 'w-0 group-hover:w-full'
+                  }`}></span>
                 </div>
               ) : null}
 
               <div
                 onClick={() => handleNavigation("/view/map")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
+                  isActiveRoute("/view/map")
+                    ? darktheme 
+                      ? 'text-green-400' 
+                      : 'text-green-600'
+                    : darktheme 
+                      ? 'text-gray-300 hover:text-green-400' 
+                      : 'text-gray-700 hover:text-green-600'
+                }`}
               >
                 {t("navbar.map")}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                  isActiveRoute("/view/map") ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
               </div>
               <div
                 onClick={() => handleNavigation("/find/ticket")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
+                  isActiveRoute("/find/ticket")
+                    ? darktheme 
+                      ? 'text-green-400' 
+                      : 'text-green-600'
+                    : darktheme 
+                      ? 'text-gray-300 hover:text-green-400' 
+                      : 'text-gray-700 hover:text-green-600'
+                }`}
               >
                 ticket
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                  isActiveRoute("/find/ticket") ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
               </div>
               <div
                 onClick={() => handleNavigation("/nearBy/search")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
+                  isActiveRoute("/nearBy/search")
+                    ? darktheme 
+                      ? 'text-green-400' 
+                      : 'text-green-600'
+                    : darktheme 
+                      ? 'text-gray-300 hover:text-green-400' 
+                      : 'text-gray-700 hover:text-green-600'
+                }`}
               >
                 NearBy
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                  isActiveRoute("/nearBy/search") ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
               </div>
                <div
                 onClick={() => handleNavigation("/see-history")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
+                  isActiveRoute("/see-history")
+                    ? darktheme 
+                      ? 'text-green-400' 
+                      : 'text-green-600'
+                    : darktheme 
+                      ? 'text-gray-300 hover:text-green-400' 
+                      : 'text-gray-700 hover:text-green-600'
+                }`}
               >
                 History
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                  isActiveRoute("/see-history") ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
               </div>
             </div>
 
@@ -279,48 +345,108 @@ const Navbar = () => {
             <div className="space-y-3">
               <div
                 onClick={() => handleNavigation("/")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
+                  isActiveRoute("/")
+                    ? darktheme 
+                      ? 'text-green-400' 
+                      : 'text-green-600'
+                    : darktheme 
+                      ? 'text-gray-300 hover:text-green-400' 
+                      : 'text-gray-700 hover:text-green-600'
+                }`}
               >
                 {t("navbar.home")}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                  isActiveRoute("/") ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
               </div>
               {usere?.status === "driver" ? (
                 <div
                   onClick={() => handleNavigation("/Bus")}
-                  className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
+                  className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
+                    isActiveRoute("/Bus")
+                      ? darktheme 
+                        ? 'text-green-400' 
+                        : 'text-green-600'
+                      : darktheme 
+                        ? 'text-gray-300 hover:text-green-400' 
+                        : 'text-gray-700 hover:text-green-600'
+                  }`}
                 >
                   {t("navbar.busDetails")}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                    isActiveRoute("/Bus") ? 'w-full' : 'w-0 group-hover:w-full'
+                  }`}></span>
                 </div>
               ) : null}
 
               <div
                 onClick={() => handleNavigation("/view/map")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
+                  isActiveRoute("/view/map")
+                    ? darktheme 
+                      ? 'text-green-400' 
+                      : 'text-green-600'
+                    : darktheme 
+                      ? 'text-gray-300 hover:text-green-400' 
+                      : 'text-gray-700 hover:text-green-600'
+                }`}
               >
                 {t("navbar.map")}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                  isActiveRoute("/view/map") ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
               </div>
               <div
                 onClick={() => handleNavigation("/find/ticket")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
+                  isActiveRoute("/find/ticket")
+                    ? darktheme 
+                      ? 'text-green-400' 
+                      : 'text-green-600'
+                    : darktheme 
+                      ? 'text-gray-300 hover:text-green-400' 
+                      : 'text-gray-700 hover:text-green-600'
+                }`}
               >
                 ticket
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                  isActiveRoute("/find/ticket") ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
               </div>
               <div
                 onClick={() => handleNavigation("/nearBy/search")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
+                  isActiveRoute("/nearBy/search")
+                    ? darktheme 
+                      ? 'text-green-400' 
+                      : 'text-green-600'
+                    : darktheme 
+                      ? 'text-gray-300 hover:text-green-400' 
+                      : 'text-gray-700 hover:text-green-600'
+                }`}
               >
                 NearBy
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                  isActiveRoute("/nearBy/search") ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
               </div>
               <div
                 onClick={() => handleNavigation("/see-history")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${darktheme ? 'text-gray-300 hover:text-green-400' : 'text-gray-700 hover:text-green-600'}`}
+                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
+                  isActiveRoute("/see-history")
+                    ? darktheme 
+                      ? 'text-green-400' 
+                      : 'text-green-600'
+                    : darktheme 
+                      ? 'text-gray-300 hover:text-green-400' 
+                      : 'text-gray-700 hover:text-green-600'
+                }`}
               >
                 History
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 group-hover:w-full transition-all duration-200"></span>
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                  isActiveRoute("/see-history") ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
               </div>
             </div>
 
