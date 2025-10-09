@@ -1,45 +1,39 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Bus as BusIcon,
-  Plus,
   MapPin,
   Navigation,
   User,
   Mail,
   CreditCard,
-  AlertTriangle,
-  Loader2,
-  Route,
-  ArrowLeft,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
-import { useSelector } from "react-redux";
+import { addActiveBus, removeActiveBus } from "@/Redux/locationSlice";
 
 const Bus = () => {
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { darktheme } = useSelector((store) => store.auth);
 
   const [buses, setBuses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 🔥 ADDED: State to track active buses and intervals
-  const [activeBuses, setActiveBuses] = useState({});
+  const activeBusIDs = useSelector((state) => state.location.activeBusIDs);
+
   const locationIntervals = useRef({});
 
-  // ✅ Fetch all buses
+  // ✅ Fetch all buses on mount
   useEffect(() => {
     const fetchBuses = async () => {
       try {
         setLoading(true);
-        setError(null);
-
         const token = await getAccessTokenSilently({
           audience: "http://localhost:5000/api/v3",
         });
@@ -54,11 +48,9 @@ const Bus = () => {
         toast(res.data.message);
         setBuses(res.data.AllBus || []);
       } catch (error) {
-        console.error("Error fetching buses:", error);
-        setError("Failed to fetch buses. Please try again later.");
-        const errorMessage =
-          error.response?.data?.message || error.message || "An error occurred";
-        toast.error(errorMessage);
+        const msg = error?.response?.data?.message || error.message;
+        toast.error(msg || "Failed to fetch buses.");
+        setError(msg);
       } finally {
         setLoading(false);
       }
@@ -67,76 +59,54 @@ const Bus = () => {
     fetchBuses();
   }, [getAccessTokenSilently]);
 
-  // ✅ MODIFIED: Removed incorrect "fatch" useEffect
-
-  const handleCreateBus = () => {
-    navigate("/createbus");
-  };
-
-  const handleBusClick = (bus) => {
-    navigate(`/bus/${bus.deviceID}`);
-  };
-
-  // 🔥 ADDED: Toggle location sending
-  const toggleBusActive = (busId) => {
-    const isActive = !!activeBuses[busId];
-
-    if (isActive) {
-      // Turn off
-      clearInterval(locationIntervals.current[busId]);
-      delete locationIntervals.current[busId];
-      setActiveBuses((prev) => {
-        const updated = { ...prev };
-        delete updated[busId];
-        return updated;
-      });
-    } else {
-      // Turn on
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-
-            const sendLocation = async () => {
-              try {
-                await axios.put("http://localhost:5000/api/v1/update/location", {
-                  deviceID: busId,
-                  latitude,
-                  longitude,
-                });
-                console.log(`Location sent for ${busId}:`, latitude, longitude);
-              } catch (error) {
-                console.error(`Failed to send location for ${busId}`, error);
-              }
-            };
-
-            sendLocation(); // Send immediately
-            const intervalId = setInterval(sendLocation, 5000); // Send every 5 sec
-
-            locationIntervals.current[busId] = intervalId;
-
-            setActiveBuses((prev) => ({
-              ...prev,
-              [busId]: true,
-            }));
-          },
-          (err) => {
-            toast.error("Unable to access location. Please allow location access.");
-            console.error(err);
-          }
-        );
-      } else {
-        toast.error("Geolocation is not supported by your browser.");
-      }
-    }
-  };
-
-  // 🔥 ADDED: Clear all intervals on unmount
+  // ✅ Clean up intervals on unmount
   useEffect(() => {
     return () => {
       Object.values(locationIntervals.current).forEach(clearInterval);
     };
   }, []);
+
+  // ✅ Toggle active state and start/stop location updates
+  const toggleBusActive = async (busId) => {
+    const isActive = activeBusIDs.includes(busId);
+
+    if (isActive) {
+      dispatch(removeActiveBus(busId));
+      clearInterval(locationIntervals.current[busId]);
+      delete locationIntervals.current[busId];
+    } else {
+      dispatch(addActiveBus(busId));
+
+      const sendLocation = async () => {
+        if (!navigator.geolocation) return;
+
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            try {
+              await axios.put(`${import.meta.env.VITE_BASE_URL}/update/location`, {
+                deviceID: busId,
+                latitude,
+                longitude,
+              });
+            } catch (err) {
+              console.error("Failed to send location:", err.message);
+            }
+          },
+          (err) => {
+            console.error("Geolocation error:", err.message);
+          }
+        );
+      };
+
+      sendLocation(); // send immediately
+      locationIntervals.current[busId] = setInterval(sendLocation, 5000);
+    }
+  };
+
+  const handleBusClick = (bus) => {
+    navigate(`/bus/${bus.deviceID}`);
+  };
 
   return (
     <div
@@ -149,9 +119,6 @@ const Bus = () => {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* ... header & stats unchanged ... */}
-
-        {/* Buses Grid */}
         {!loading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {buses.length > 0 ? (
@@ -164,7 +131,7 @@ const Bus = () => {
                       : "bg-white border border-green-100"
                   }`}
                 >
-                  {/* ✅ Bus Header */}
+                  {/* Bus Header */}
                   <div className="flex items-center justify-between mb-4">
                     <div
                       className="flex items-center"
@@ -186,26 +153,26 @@ const Bus = () => {
                       </h3>
                     </div>
 
-                    {/* 🔥 Switch Toggle */}
+                    {/* Toggle Switch */}
                     <div className="flex items-center">
                       <label className="flex items-center cursor-pointer">
                         <div className="relative">
                           <input
                             type="checkbox"
                             className="sr-only"
-                            checked={!!activeBuses[bus.deviceID]}
+                            checked={activeBusIDs.includes(bus.deviceID)}
                             onChange={() => toggleBusActive(bus.deviceID)}
                           />
                           <div
-                            className={`w-10 h-5 bg-gray-300 rounded-full shadow-inner transition ${
-                              activeBuses[bus.deviceID]
+                            className={`w-10 h-5 rounded-full shadow-inner transition ${
+                              activeBusIDs.includes(bus.deviceID)
                                 ? "bg-green-500"
                                 : "bg-gray-300"
                             }`}
                           ></div>
                           <div
                             className={`dot absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition ${
-                              activeBuses[bus.deviceID]
+                              activeBusIDs.includes(bus.deviceID)
                                 ? "translate-x-5"
                                 : "translate-x-0"
                             }`}
@@ -214,8 +181,6 @@ const Bus = () => {
                       </label>
                     </div>
                   </div>
-
-                  {/* ... existing content (route, driver info) unchanged ... */}
 
                   {/* Route Info */}
                   <div className="space-y-3 mb-4">

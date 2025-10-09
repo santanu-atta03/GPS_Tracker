@@ -18,6 +18,7 @@ import TicketDetails from "./components/page/TicketDetails";
 import SupportChat from "./components/page/SupportChat";
 import History from "./components/page/History";
 import BusDetailsPage2 from "./components/page/BusDetailsPage2";
+import LocationTracker from "./components/page/LocationTracker";
 
 function App() {
   const approute = createBrowserRouter([
@@ -93,6 +94,7 @@ function App() {
 
   return (
     <>
+      <LocationTracker />
       <RouterProvider router={approute} />
     </>
   );
