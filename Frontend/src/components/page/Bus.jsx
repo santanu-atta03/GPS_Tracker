@@ -11,6 +11,8 @@ import {
   User,
   Mail,
   CreditCard,
+  ArrowLeft,
+  Plus,
 } from "lucide-react";
 import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
@@ -86,11 +88,14 @@ const Bus = () => {
           async (position) => {
             const { latitude, longitude } = position.coords;
             try {
-              await axios.put(`${import.meta.env.VITE_BASE_URL}/update/location`, {
-                deviceID: busId,
-                latitude,
-                longitude,
-              });
+              await axios.put(
+                `${import.meta.env.VITE_BASE_URL}/update/location`,
+                {
+                  deviceID: busId,
+                  latitude,
+                  longitude,
+                }
+              );
             } catch (err) {
               console.error(t("bus.locationError"), err.message);
             }
@@ -110,6 +115,10 @@ const Bus = () => {
     navigate(`/bus/${bus.deviceID}`);
   };
 
+  const handleCreateBus = () => {
+    navigate("/createbus");
+  };
+  
   return (
     <div
       className={`min-h-screen ${
@@ -121,6 +130,42 @@ const Bus = () => {
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <button
+            onClick={() => navigate(-1)}
+            className={`absolute left-4 p-2 transition-colors ${
+              darktheme
+                ? "text-gray-400 hover:text-gray-200"
+                : "text-gray-600 hover:text-gray-800"
+            }`}
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+          <div>
+            <h1
+              className={`text-4xl font-bold mb-2 ${
+                darktheme ? "text-white" : "text-gray-800"
+              }`}
+            >
+              All Buses
+            </h1>
+            <p
+              className={`text-lg ${
+                darktheme ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
+              Manage and monitor your fleet of buses
+            </p>
+          </div>
+
+          <button
+            onClick={handleCreateBus}
+            className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-medium transition-all duration-300 shadow-lg hover:from-green-600 hover:to-green-700 hover:shadow-xl hover:scale-105 flex items-center"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Create New Bus
+          </button>
+        </div>
         {!loading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {buses.length > 0 ? (
@@ -193,7 +238,9 @@ const Bus = () => {
                     >
                       <MapPin className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
-                        <span className="text-sm font-medium">{t("bus.from")}</span>
+                        <span className="text-sm font-medium">
+                          {t("bus.from")}
+                        </span>
                         <p className="text-sm truncate">{bus.from}</p>
                       </div>
                     </div>
@@ -204,7 +251,9 @@ const Bus = () => {
                     >
                       <Navigation className="w-4 h-4 text-blue-500 mr-2 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
-                        <span className="text-sm font-medium">{t("bus.to")}</span>
+                        <span className="text-sm font-medium">
+                          {t("bus.to")}
+                        </span>
                         <p className="text-sm truncate">{bus.to}</p>
                       </div>
                     </div>
