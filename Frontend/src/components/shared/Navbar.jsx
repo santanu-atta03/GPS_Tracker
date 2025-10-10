@@ -37,7 +37,7 @@ const Navbar = () => {
     gu: { name: "ગુજરાતી", flag: "🇮🇳" },
     mr: { name: "मराठी", flag: "🇮🇳" },
     pa: { name: "ਪੰਜਾਬੀ", flag: "🇮🇳" },
-    ur: { name: "اُردُو", flag: "🇵🇰" },
+
     kok: { name: "कोंकणी", flag: "🇮🇳" },
     or: { name: "ଓଡ଼ିଆ", flag: "🇮🇳" },
     ne: { name: "नेपाली", flag: "🇳🇵" },
@@ -94,7 +94,13 @@ const Navbar = () => {
   }, [isMobileMenuOpen]);
 
   return (
-    <div className={`w-full backdrop-blur-md shadow-lg px-4 sm:px-6 py-3 relative ${darktheme ? 'bg-gray-800/80 border-b border-gray-700' : 'bg-white/80 border-b border-green-100'}`}>
+    <div
+      className={`w-full backdrop-blur-md shadow-lg px-4 sm:px-6 py-3 relative ${
+        darktheme
+          ? "bg-gray-800/80 border-b border-gray-700"
+          : "bg-white/80 border-b border-green-100"
+      }`}
+    >
       <header className="max-w-7xl mx-auto flex justify-between items-center">
         {/* Left Side - Logo & App Name */}
         <div className="flex items-center space-x-3 flex-shrink-0">
@@ -106,7 +112,11 @@ const Navbar = () => {
             <h1 className="text-2xl sm:text-2xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
               {t("navbar.appName")}
             </h1>
-            <p className={`text-xs sm:text-sm ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p
+              className={`text-xs sm:text-sm ${
+                darktheme ? "text-gray-400" : "text-gray-600"
+              }`}
+            >
               {t("navbar.tagline")}
             </p>
           </div>
@@ -130,36 +140,42 @@ const Navbar = () => {
                 onClick={() => handleNavigation("/")}
                 className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
                   isActiveRoute("/")
-                    ? darktheme 
-                      ? 'text-green-400' 
-                      : 'text-green-600'
-                    : darktheme 
-                      ? 'text-gray-300 hover:text-green-400' 
-                      : 'text-gray-700 hover:text-green-600'
+                    ? darktheme
+                      ? "text-green-400"
+                      : "text-green-600"
+                    : darktheme
+                    ? "text-gray-300 hover:text-green-400"
+                    : "text-gray-700 hover:text-green-600"
                 }`}
               >
                 {t("navbar.home")}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                  isActiveRoute("/") ? 'w-full' : 'w-0 group-hover:w-full'
-                }`}></span>
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                    isActiveRoute("/") ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
+                ></span>
               </div>
               {usere?.status === "driver" ? (
                 <div
                   onClick={() => handleNavigation("/Bus")}
                   className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
                     isActiveRoute("/Bus")
-                      ? darktheme 
-                        ? 'text-green-400' 
-                        : 'text-green-600'
-                      : darktheme 
-                        ? 'text-gray-300 hover:text-green-400' 
-                        : 'text-gray-700 hover:text-green-600'
+                      ? darktheme
+                        ? "text-green-400"
+                        : "text-green-600"
+                      : darktheme
+                      ? "text-gray-300 hover:text-green-400"
+                      : "text-gray-700 hover:text-green-600"
                   }`}
                 >
                   {t("navbar.busDetails")}
-                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                    isActiveRoute("/Bus") ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}></span>
+                  <span
+                    className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                      isActiveRoute("/Bus")
+                        ? "w-full"
+                        : "w-0 group-hover:w-full"
+                    }`}
+                  ></span>
                 </div>
               ) : null}
 
@@ -167,69 +183,85 @@ const Navbar = () => {
                 onClick={() => handleNavigation("/view/map")}
                 className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
                   isActiveRoute("/view/map")
-                    ? darktheme 
-                      ? 'text-green-400' 
-                      : 'text-green-600'
-                    : darktheme 
-                      ? 'text-gray-300 hover:text-green-400' 
-                      : 'text-gray-700 hover:text-green-600'
+                    ? darktheme
+                      ? "text-green-400"
+                      : "text-green-600"
+                    : darktheme
+                    ? "text-gray-300 hover:text-green-400"
+                    : "text-gray-700 hover:text-green-600"
                 }`}
               >
                 {t("navbar.map")}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                  isActiveRoute("/view/map") ? 'w-full' : 'w-0 group-hover:w-full'
-                }`}></span>
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                    isActiveRoute("/view/map")
+                      ? "w-full"
+                      : "w-0 group-hover:w-full"
+                  }`}
+                ></span>
               </div>
               <div
                 onClick={() => handleNavigation("/find/ticket")}
                 className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
                   isActiveRoute("/find/ticket")
-                    ? darktheme 
-                      ? 'text-green-400' 
-                      : 'text-green-600'
-                    : darktheme 
-                      ? 'text-gray-300 hover:text-green-400' 
-                      : 'text-gray-700 hover:text-green-600'
+                    ? darktheme
+                      ? "text-green-400"
+                      : "text-green-600"
+                    : darktheme
+                    ? "text-gray-300 hover:text-green-400"
+                    : "text-gray-700 hover:text-green-600"
                 }`}
               >
                 {t("navbar.ticket")}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                  isActiveRoute("/find/ticket") ? 'w-full' : 'w-0 group-hover:w-full'
-                }`}></span>
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                    isActiveRoute("/find/ticket")
+                      ? "w-full"
+                      : "w-0 group-hover:w-full"
+                  }`}
+                ></span>
               </div>
               <div
                 onClick={() => handleNavigation("/nearBy/search")}
                 className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
                   isActiveRoute("/nearBy/search")
-                    ? darktheme 
-                      ? 'text-green-400' 
-                      : 'text-green-600'
-                    : darktheme 
-                      ? 'text-gray-300 hover:text-green-400' 
-                      : 'text-gray-700 hover:text-green-600'
+                    ? darktheme
+                      ? "text-green-400"
+                      : "text-green-600"
+                    : darktheme
+                    ? "text-gray-300 hover:text-green-400"
+                    : "text-gray-700 hover:text-green-600"
                 }`}
               >
                 {t("navbar.nearBy")}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                  isActiveRoute("/nearBy/search") ? 'w-full' : 'w-0 group-hover:w-full'
-                }`}></span>
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                    isActiveRoute("/nearBy/search")
+                      ? "w-full"
+                      : "w-0 group-hover:w-full"
+                  }`}
+                ></span>
               </div>
-               <div
+              <div
                 onClick={() => handleNavigation("/see-history")}
                 className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
                   isActiveRoute("/see-history")
-                    ? darktheme 
-                      ? 'text-green-400' 
-                      : 'text-green-600'
-                    : darktheme 
-                      ? 'text-gray-300 hover:text-green-400' 
-                      : 'text-gray-700 hover:text-green-600'
+                    ? darktheme
+                      ? "text-green-400"
+                      : "text-green-600"
+                    : darktheme
+                    ? "text-gray-300 hover:text-green-400"
+                    : "text-gray-700 hover:text-green-600"
                 }`}
               >
                 {t("navbar.history")}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                  isActiveRoute("/see-history") ? 'w-full' : 'w-0 group-hover:w-full'
-                }`}></span>
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                    isActiveRoute("/see-history")
+                      ? "w-full"
+                      : "w-0 group-hover:w-full"
+                  }`}
+                ></span>
               </div>
             </div>
 
@@ -239,7 +271,11 @@ const Navbar = () => {
               <select
                 value={selectedLang}
                 onChange={(e) => handleLanguageChange(e.target.value)}
-                className={`border rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 ${darktheme ? 'bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600' : 'bg-white/70 border-green-200 text-gray-700 hover:bg-white'}`}
+                className={`border rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                  darktheme
+                    ? "bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600"
+                    : "bg-white/70 border-green-200 text-gray-700 hover:bg-white"
+                }`}
               >
                 {Object.entries(LANGUAGES).map(([code, { name, flag }]) => (
                   <option key={code} value={code}>
@@ -253,7 +289,13 @@ const Navbar = () => {
             {isAuthenticated ? (
               <Popover>
                 <PopoverTrigger asChild>
-                  <div className={`flex items-center cursor-pointer space-x-3 rounded-full px-3 py-2 transition-all duration-200 border ${darktheme ? 'bg-gray-700/50 hover:bg-gray-700 border-gray-600 hover:border-gray-500' : 'bg-white/50 hover:bg-white/80 border-gray-200 hover:border-green-200'}`}>
+                  <div
+                    className={`flex items-center cursor-pointer space-x-3 rounded-full px-3 py-2 transition-all duration-200 border ${
+                      darktheme
+                        ? "bg-gray-700/50 hover:bg-gray-700 border-gray-600 hover:border-gray-500"
+                        : "bg-white/50 hover:bg-white/80 border-gray-200 hover:border-green-200"
+                    }`}
+                  >
                     {user?.picture ? (
                       <Avatar className="w-10 h-10 border-2 border-green-200">
                         <AvatarImage
@@ -273,7 +315,11 @@ const Navbar = () => {
                         </AvatarFallback>
                       </Avatar>
                     )}
-                    <span className={`font-medium hidden xl:block ${darktheme ? 'text-gray-200' : 'text-gray-800'}`}>
+                    <span
+                      className={`font-medium hidden xl:block ${
+                        darktheme ? "text-gray-200" : "text-gray-800"
+                      }`}
+                    >
                       {user?.name}
                     </span>
                   </div>
@@ -281,11 +327,19 @@ const Navbar = () => {
 
                 <PopoverContent
                   align="end"
-                  className={`w-48 backdrop-blur-md shadow-xl ${darktheme ? 'bg-gray-800/95 border border-gray-700' : 'bg-white/95 border border-green-100'}`}
+                  className={`w-48 backdrop-blur-md shadow-xl ${
+                    darktheme
+                      ? "bg-gray-800/95 border border-gray-700"
+                      : "bg-white/95 border border-green-100"
+                  }`}
                 >
                   <Button
                     variant="outline"
-                    className={`w-full mb-2 ${darktheme ? 'border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-gray-500 bg-gray-900' : 'border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300'}`}
+                    className={`w-full mb-2 ${
+                      darktheme
+                        ? "border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-gray-500 bg-gray-900"
+                        : "border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300"
+                    }`}
                     onClick={() => navigate("/profile")}
                   >
                     {t("navbar.viewProfile")}
@@ -307,13 +361,23 @@ const Navbar = () => {
                 {t("navbar.login")}
               </Button>
             )}
-            <ThemeToggle/>
+            <ThemeToggle />
           </div>
 
           {/* Mobile Live Badge */}
-          <div className={`lg:hidden flex items-center space-x-2 rounded-full px-3 py-1.5 border ${darktheme ? 'bg-gradient-to-r from-green-900/50 to-green-800/50 border-green-700' : 'bg-gradient-to-r from-green-50 to-green-100 border-green-200'}`}>
+          <div
+            className={`lg:hidden flex items-center space-x-2 rounded-full px-3 py-1.5 border ${
+              darktheme
+                ? "bg-gradient-to-r from-green-900/50 to-green-800/50 border-green-700"
+                : "bg-gradient-to-r from-green-50 to-green-100 border-green-200"
+            }`}
+          >
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className={`text-xs sm:text-sm font-medium whitespace-nowrap ${darktheme ? 'text-green-400' : 'text-green-700'}`}>
+            <span
+              className={`text-xs sm:text-sm font-medium whitespace-nowrap ${
+                darktheme ? "text-green-400" : "text-green-700"
+              }`}
+            >
               {t("navbar.liveTracking")}
             </span>
           </div>
@@ -322,13 +386,25 @@ const Navbar = () => {
           <div className="lg:hidden mobile-menu-container">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`p-2 rounded-lg border transition-all duration-200 ${darktheme ? 'bg-gray-700/50 border-gray-600 hover:bg-gray-700' : 'bg-white/50 border-gray-200 hover:bg-white/80'}`}
+              className={`p-2 rounded-lg border transition-all duration-200 ${
+                darktheme
+                  ? "bg-gray-700/50 border-gray-600 hover:bg-gray-700"
+                  : "bg-white/50 border-gray-200 hover:bg-white/80"
+              }`}
               aria-label={t("navbar.toggleMenu")}
             >
               {isMobileMenuOpen ? (
-                <X className={`w-6 h-6 ${darktheme ? 'text-gray-300' : 'text-gray-700'}`} />
+                <X
+                  className={`w-6 h-6 ${
+                    darktheme ? "text-gray-300" : "text-gray-700"
+                  }`}
+                />
               ) : (
-                <Menu className={`w-6 h-6 ${darktheme ? 'text-gray-300' : 'text-gray-700'}`} />
+                <Menu
+                  className={`w-6 h-6 ${
+                    darktheme ? "text-gray-300" : "text-gray-700"
+                  }`}
+                />
               )}
             </button>
           </div>
@@ -338,7 +414,11 @@ const Navbar = () => {
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div
-          className={`lg:hidden w-full backdrop-blur-md shadow-xl border-b z-50 mobile-menu-container ${darktheme ? 'bg-gray-800 border-gray-700' : 'bg-white border-green-100'}`}
+          className={`lg:hidden w-full backdrop-blur-md shadow-xl border-b z-50 mobile-menu-container ${
+            darktheme
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-green-100"
+          }`}
         >
           <div className="px-4 py-4 space-y-4">
             {/* Links */}
@@ -347,36 +427,42 @@ const Navbar = () => {
                 onClick={() => handleNavigation("/")}
                 className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
                   isActiveRoute("/")
-                    ? darktheme 
-                      ? 'text-green-400' 
-                      : 'text-green-600'
-                    : darktheme 
-                      ? 'text-gray-300 hover:text-green-400' 
-                      : 'text-gray-700 hover:text-green-600'
+                    ? darktheme
+                      ? "text-green-400"
+                      : "text-green-600"
+                    : darktheme
+                    ? "text-gray-300 hover:text-green-400"
+                    : "text-gray-700 hover:text-green-600"
                 }`}
               >
                 {t("navbar.home")}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                  isActiveRoute("/") ? 'w-full' : 'w-0 group-hover:w-full'
-                }`}></span>
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                    isActiveRoute("/") ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
+                ></span>
               </div>
               {usere?.status === "driver" ? (
                 <div
                   onClick={() => handleNavigation("/Bus")}
                   className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
                     isActiveRoute("/Bus")
-                      ? darktheme 
-                        ? 'text-green-400' 
-                        : 'text-green-600'
-                      : darktheme 
-                        ? 'text-gray-300 hover:text-green-400' 
-                        : 'text-gray-700 hover:text-green-600'
+                      ? darktheme
+                        ? "text-green-400"
+                        : "text-green-600"
+                      : darktheme
+                      ? "text-gray-300 hover:text-green-400"
+                      : "text-gray-700 hover:text-green-600"
                   }`}
                 >
                   {t("navbar.busDetails")}
-                  <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                    isActiveRoute("/Bus") ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}></span>
+                  <span
+                    className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                      isActiveRoute("/Bus")
+                        ? "w-full"
+                        : "w-0 group-hover:w-full"
+                    }`}
+                  ></span>
                 </div>
               ) : null}
 
@@ -384,69 +470,85 @@ const Navbar = () => {
                 onClick={() => handleNavigation("/view/map")}
                 className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
                   isActiveRoute("/view/map")
-                    ? darktheme 
-                      ? 'text-green-400' 
-                      : 'text-green-600'
-                    : darktheme 
-                      ? 'text-gray-300 hover:text-green-400' 
-                      : 'text-gray-700 hover:text-green-600'
+                    ? darktheme
+                      ? "text-green-400"
+                      : "text-green-600"
+                    : darktheme
+                    ? "text-gray-300 hover:text-green-400"
+                    : "text-gray-700 hover:text-green-600"
                 }`}
               >
                 {t("navbar.map")}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                  isActiveRoute("/view/map") ? 'w-full' : 'w-0 group-hover:w-full'
-                }`}></span>
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                    isActiveRoute("/view/map")
+                      ? "w-full"
+                      : "w-0 group-hover:w-full"
+                  }`}
+                ></span>
               </div>
               <div
                 onClick={() => handleNavigation("/find/ticket")}
                 className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
                   isActiveRoute("/find/ticket")
-                    ? darktheme 
-                      ? 'text-green-400' 
-                      : 'text-green-600'
-                    : darktheme 
-                      ? 'text-gray-300 hover:text-green-400' 
-                      : 'text-gray-700 hover:text-green-600'
+                    ? darktheme
+                      ? "text-green-400"
+                      : "text-green-600"
+                    : darktheme
+                    ? "text-gray-300 hover:text-green-400"
+                    : "text-gray-700 hover:text-green-600"
                 }`}
               >
                 {t("navbar.ticket")}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                  isActiveRoute("/find/ticket") ? 'w-full' : 'w-0 group-hover:w-full'
-                }`}></span>
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                    isActiveRoute("/find/ticket")
+                      ? "w-full"
+                      : "w-0 group-hover:w-full"
+                  }`}
+                ></span>
               </div>
               <div
                 onClick={() => handleNavigation("/nearBy/search")}
                 className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
                   isActiveRoute("/nearBy/search")
-                    ? darktheme 
-                      ? 'text-green-400' 
-                      : 'text-green-600'
-                    : darktheme 
-                      ? 'text-gray-300 hover:text-green-400' 
-                      : 'text-gray-700 hover:text-green-600'
+                    ? darktheme
+                      ? "text-green-400"
+                      : "text-green-600"
+                    : darktheme
+                    ? "text-gray-300 hover:text-green-400"
+                    : "text-gray-700 hover:text-green-600"
                 }`}
               >
                 {t("navbar.nearBy")}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                  isActiveRoute("/nearBy/search") ? 'w-full' : 'w-0 group-hover:w-full'
-                }`}></span>
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                    isActiveRoute("/nearBy/search")
+                      ? "w-full"
+                      : "w-0 group-hover:w-full"
+                  }`}
+                ></span>
               </div>
               <div
                 onClick={() => handleNavigation("/see-history")}
                 className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
                   isActiveRoute("/see-history")
-                    ? darktheme 
-                      ? 'text-green-400' 
-                      : 'text-green-600'
-                    : darktheme 
-                      ? 'text-gray-300 hover:text-green-400' 
-                      : 'text-gray-700 hover:text-green-600'
+                    ? darktheme
+                      ? "text-green-400"
+                      : "text-green-600"
+                    : darktheme
+                    ? "text-gray-300 hover:text-green-400"
+                    : "text-gray-700 hover:text-green-600"
                 }`}
               >
                 {t("navbar.history")}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                  isActiveRoute("/see-history") ? 'w-full' : 'w-0 group-hover:w-full'
-                }`}></span>
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
+                    isActiveRoute("/see-history")
+                      ? "w-full"
+                      : "w-0 group-hover:w-full"
+                  }`}
+                ></span>
               </div>
             </div>
 
@@ -456,7 +558,11 @@ const Navbar = () => {
               <select
                 value={selectedLang}
                 onChange={(e) => handleLanguageChange(e.target.value)}
-                className={`flex-1 border rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 ${darktheme ? 'bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600' : 'bg-white/70 border-green-200 text-gray-700 hover:bg-white'}`}
+                className={`flex-1 border rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                  darktheme
+                    ? "bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600"
+                    : "bg-white/70 border-green-200 text-gray-700 hover:bg-white"
+                }`}
               >
                 {Object.entries(LANGUAGES).map(([code, { name, flag }]) => (
                   <option key={code} value={code}>
@@ -467,10 +573,18 @@ const Navbar = () => {
             </div>
 
             {/* Auth */}
-            <div className={`px-3 pt-2 ${darktheme ? 'bg-gray-800' : 'bg-white'}`}>
+            <div
+              className={`px-3 pt-2 ${darktheme ? "bg-gray-800" : "bg-white"}`}
+            >
               {isAuthenticated ? (
                 <div className="space-y-3">
-                  <div className={`flex items-center space-x-3 rounded-lg px-3 py-3 border ${darktheme ? 'bg-gray-700/50 border-gray-600' : 'bg-white/50 border-gray-200'}`}>
+                  <div
+                    className={`flex items-center space-x-3 rounded-lg px-3 py-3 border ${
+                      darktheme
+                        ? "bg-gray-700/50 border-gray-600"
+                        : "bg-white/50 border-gray-200"
+                    }`}
+                  >
                     {user?.picture ? (
                       <Avatar className="w-10 h-10 border-2 border-green-200">
                         <AvatarImage
@@ -490,13 +604,21 @@ const Navbar = () => {
                         </AvatarFallback>
                       </Avatar>
                     )}
-                    <span className={`font-medium ${darktheme ? 'text-gray-200' : 'text-gray-800'}`}>
+                    <span
+                      className={`font-medium ${
+                        darktheme ? "text-gray-200" : "text-gray-800"
+                      }`}
+                    >
                       {user?.name}
                     </span>
                   </div>
                   <Button
                     variant="outline"
-                    className={`w-full mb-2 ${darktheme ? 'border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-gray-500 bg-gray-900' : 'border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300'}`}
+                    className={`w-full mb-2 ${
+                      darktheme
+                        ? "border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-gray-500 bg-gray-900"
+                        : "border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300"
+                    }`}
                     onClick={() => {
                       navigate("/profile");
                       setIsMobileMenuOpen(false);
@@ -525,9 +647,8 @@ const Navbar = () => {
               )}
             </div>
           </div>
-           <ThemeToggle/>
+          <ThemeToggle />
         </div>
-       
       )}
     </div>
   );
