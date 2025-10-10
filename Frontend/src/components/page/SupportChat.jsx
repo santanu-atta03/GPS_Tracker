@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import axios from "axios";
 import { MessageCircle, Send, Bot, User } from "lucide-react";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const SupportChat = () => {
   const { darktheme } = useSelector((store) => store.auth);
+  const { t } = useTranslation();
 
   // Initialize with a greeting message from the bot
   const [messages, setMessages] = useState([
-    { sender: "bot", text: "Hi! How can I help you?" },
+    { sender: "bot", text: t("support.greeting") },
   ]);
   const [input, setInput] = useState("");
 
@@ -31,7 +33,7 @@ const SupportChat = () => {
         ...prev,
         {
           sender: "bot",
-          text: "Sorry, something went wrong. Try again later.",
+          text: t("support.errorMessage"),
         },
       ]);
     }
@@ -55,8 +57,8 @@ const SupportChat = () => {
           <MessageCircle className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="font-bold text-lg">Customer Support</h3>
-          <p className="text-xs text-green-50">We're here to help</p>
+          <h3 className="font-bold text-lg">{t("support.title")}</h3>
+          <p className="text-xs text-green-50">{t("support.subtitle")}</p>
         </div>
       </div>
 
@@ -131,7 +133,7 @@ const SupportChat = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Type your message..."
+          placeholder={t("support.inputPlaceholder")}
           className={`flex-grow px-4 py-2.5 rounded-xl border-2 focus:border-green-500 focus:outline-none transition-all duration-300 ${
             darktheme
               ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"

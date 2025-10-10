@@ -3,12 +3,14 @@ import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import Navbar from "../shared/Navbar";
 import { useSelector } from "react-redux";
 
 const ReviewForm = () => {
   const { getAccessTokenSilently } = useAuth0();
   const { darktheme } = useSelector((store) => store.auth);
+  const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
     punctuality: 3,
@@ -58,7 +60,7 @@ const ReviewForm = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setMessage("Review submitted successfully!");
+      setMessage(t("review.successMessage"));
       console.log("Review response:", res.data);
       setFormData({
         punctuality: 3,
@@ -73,9 +75,9 @@ const ReviewForm = () => {
       navigate("/");
     } catch (err) {
       console.error(err);
-      setMessage("Failed to submit review.");
+      setMessage(t("review.failureMessage"));
       const errorMessage =
-        err.response?.data?.message || err.message || "An error occurred";
+        err.response?.data?.message || err.message || t("review.genericError");
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -83,12 +85,12 @@ const ReviewForm = () => {
   };
 
   const ratingLabels = {
-    punctuality: "Punctuality",
-    comfort: "Comfort",
-    cleanliness: "Cleanliness",
-    driverBehavior: "Driver Behavior",
-    safety: "Safety",
-    valueForMoney: "Value For Money",
+    punctuality: t("review.punctuality"),
+    comfort: t("review.comfort"),
+    cleanliness: t("review.cleanliness"),
+    driverBehavior: t("review.driverBehavior"),
+    safety: t("review.safety"),
+    valueForMoney: t("review.valueForMoney"),
   };
 
   return (
@@ -113,10 +115,10 @@ const ReviewForm = () => {
                   darktheme ? "text-white" : "text-gray-800"
                 }`}
               >
-                Submit a Review
+                {t("review.pageTitle")}
               </h2>
               <p className={darktheme ? "text-gray-400" : "text-gray-600"}>
-                Share your experience with this bus service
+                {t("review.pageSubtitle")}
               </p>
             </div>
 
@@ -145,7 +147,7 @@ const ReviewForm = () => {
                       >
                         {[1, 2, 3, 4, 5].map((val) => (
                           <option key={val} value={val}>
-                            {val} {val === 1 ? "Star" : "Stars"}
+                            {val} {val === 1 ? t("review.star") : t("review.stars")}
                           </option>
                         ))}
                       </select>
@@ -180,7 +182,7 @@ const ReviewForm = () => {
                     darktheme ? "text-gray-300" : "text-gray-700"
                   }`}
                 >
-                  Comment
+                  {t("review.comment")}
                 </label>
                 <textarea
                   name="comment"
@@ -192,7 +194,7 @@ const ReviewForm = () => {
                       : "bg-white border-gray-300 text-gray-700 placeholder-gray-400"
                   }`}
                   rows="4"
-                  placeholder="Share your experience with this bus service..."
+                  placeholder={t("review.commentPlaceholder")}
                 ></textarea>
               </div>
 
@@ -224,7 +226,7 @@ const ReviewForm = () => {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Submitting...
+                    {t("review.submitting")}
                   </>
                 ) : (
                   <>
@@ -242,7 +244,7 @@ const ReviewForm = () => {
                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    Submit Review
+                    {t("review.submitButton")}
                   </>
                 )}
               </button>
@@ -250,7 +252,7 @@ const ReviewForm = () => {
               {message && (
                 <div
                   className={`mt-4 p-4 rounded-lg text-center font-medium ${
-                    message.includes("success")
+                    message.includes(t("review.successMessage"))
                       ? darktheme
                         ? "bg-green-900 text-green-300 border border-green-700"
                         : "bg-green-50 text-green-700 border border-green-200"

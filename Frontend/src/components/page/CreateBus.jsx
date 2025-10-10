@@ -9,10 +9,12 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const CreateBus = () => {
   const { getAccessTokenSilently } = useAuth0();
   const { darktheme } = useSelector((store) => store.auth);
+  const { t } = useTranslation();
   const [deviceID, setDeviceID] = useState("");
   const [ticketPrice, setticketPrice] = useState("");
   const [to, setTo] = useState("");
@@ -65,7 +67,7 @@ const CreateBus = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setSuccess("Bus created successfully!");
+      setSuccess(t("createBus.successMessage"));
       setDeviceID("");
       setFrom("");
       setTo("");
@@ -77,9 +79,9 @@ const CreateBus = () => {
       navigate("/Bus");
     } catch (error) {
       console.error("Error creating bus:", error);
-      setSuccess("Failed to create bus.");
+      setSuccess(t("createBus.errorMessage"));
       const errorMessage =
-        error.response?.data?.message || error.message || "An error occurred";
+        error.response?.data?.message || error.message || t("createBus.genericError");
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -176,7 +178,7 @@ const CreateBus = () => {
                 darktheme ? "text-white" : "text-gray-800"
               }`}
             >
-              Create New Bus
+              {t("createBus.pageTitle")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -189,13 +191,13 @@ const CreateBus = () => {
                     darktheme ? "text-gray-300" : "text-gray-700"
                   }`}
                 >
-                  Bus Name
+                  {t("createBus.busName")}
                 </Label>
                 <Input
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter Bus name"
+                  placeholder={t("createBus.busNamePlaceholder")}
                   className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
                     darktheme
                       ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
@@ -213,13 +215,13 @@ const CreateBus = () => {
                     darktheme ? "text-gray-300" : "text-gray-700"
                   }`}
                 >
-                  Device ID
+                  {t("createBus.deviceID")}
                 </Label>
                 <Input
                   id="deviceID"
                   value={deviceID}
                   onChange={(e) => setDeviceID(e.target.value)}
-                  placeholder="Enter device ID"
+                  placeholder={t("createBus.deviceIDPlaceholder")}
                   className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
                     darktheme
                       ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
@@ -237,13 +239,13 @@ const CreateBus = () => {
                     darktheme ? "text-gray-300" : "text-gray-700"
                   }`}
                 >
-                  Ticket Price
+                  {t("createBus.ticketPrice")}
                 </Label>
                 <Input
                   id="ticket-Price"
                   value={ticketPrice}
                   onChange={(e) => setticketPrice(e.target.value)}
-                  placeholder="Enter ticket price"
+                  placeholder={t("createBus.ticketPricePlaceholder")}
                   className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
                     darktheme
                       ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
@@ -269,7 +271,7 @@ const CreateBus = () => {
                         darktheme ? "text-white" : "text-gray-800"
                       }`}
                     >
-                      From
+                      {t("createBus.from")}
                     </h2>
                   </div>
 
@@ -278,7 +280,7 @@ const CreateBus = () => {
                       type="text"
                       value={fromSearchQuery}
                       onChange={handleFromSearchChange}
-                      placeholder="Search for starting location..."
+                      placeholder={t("createBus.fromPlaceholder")}
                       className={`w-full border-2 p-4 pr-12 rounded-xl focus:outline-none focus:border-blue-500 transition-all ${
                         darktheme
                           ? "bg-gray-800 border-gray-600 text-white placeholder-gray-400"
@@ -350,7 +352,7 @@ const CreateBus = () => {
                         darktheme ? "text-white" : "text-gray-800"
                       }`}
                     >
-                      To
+                      {t("createBus.to")}
                     </h2>
                   </div>
 
@@ -359,7 +361,7 @@ const CreateBus = () => {
                       type="text"
                       value={toSearchQuery}
                       onChange={handleToSearchChange}
-                      placeholder="Search for destination..."
+                      placeholder={t("createBus.toPlaceholder")}
                       className={`w-full border-2 p-4 pr-12 rounded-xl focus:outline-none focus:border-blue-500 transition-all ${
                         darktheme
                           ? "bg-gray-800 border-gray-600 text-white placeholder-gray-400"
@@ -422,7 +424,7 @@ const CreateBus = () => {
                     darktheme ? "text-gray-300" : "text-gray-700"
                   }`}
                 >
-                  Time Slots
+                  {t("createBus.timeSlots")}
                 </Label>
                 {timeSlots.map((slot, index) => (
                   <div key={index} className="flex gap-2 mb-2 items-center">
@@ -442,7 +444,7 @@ const CreateBus = () => {
                     <span
                       className={darktheme ? "text-gray-400" : "text-gray-600"}
                     >
-                      to
+                      {t("createBus.to")}
                     </span>
                     <Input
                       type="time"
@@ -463,7 +465,7 @@ const CreateBus = () => {
                         onClick={() => removeTimeSlot(index)}
                         className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg"
                       >
-                        Remove
+                        {t("createBus.remove")}
                       </Button>
                     )}
                   </div>
@@ -473,7 +475,7 @@ const CreateBus = () => {
                   onClick={addTimeSlot}
                   className="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl"
                 >
-                  Add Time Slot
+                  {t("createBus.addTimeSlot")}
                 </Button>
               </div>
 
@@ -483,7 +485,7 @@ const CreateBus = () => {
                 disabled={loading}
                 className="w-full px-8 py-4 rounded-xl font-medium transition-all duration-300 shadow-lg bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 hover:shadow-xl disabled:bg-gray-300 disabled:text-gray-500"
               >
-                {loading ? "Creating..." : "Create Bus"}
+                {loading ? t("createBus.creating") : t("createBus.createButton")}
               </Button>
             </form>
 
@@ -502,7 +504,7 @@ const CreateBus = () => {
         {/* Footer */}
         <footer className="mt-16 text-center text-sm">
           <p className={darktheme ? "text-gray-500" : "text-gray-500"}>
-            &copy; 2024 Bus Sewa. All rights reserved.
+            {t("createBus.footer")}
           </p>
         </footer>
       </main>

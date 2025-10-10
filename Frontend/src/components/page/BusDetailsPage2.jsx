@@ -5,6 +5,7 @@ import L from "leaflet";
 import "leaflet-routing-machine";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
+import { useTranslation } from "react-i18next";
 import {
   MapPin,
   Clock,
@@ -51,6 +52,7 @@ function Routing({ path }) {
 const BusDetailsPage2 = () => {
   const { deviceID } = useParams();
   const { darktheme } = useSelector((store) => store.auth);
+  const { t } = useTranslation();
   const [bus, setBus] = useState(null);
   const [activeSlot, setActiveSlot] = useState(null);
 
@@ -64,11 +66,11 @@ const BusDetailsPage2 = () => {
         const data = await res.json();
         setBus(data);
       } catch (err) {
-        console.error("Error fetching bus:", err);
+        console.error(t("busDetails.errorFetchingBus"), err);
       }
     };
     fetchBusData();
-  }, [deviceID]);
+  }, [deviceID, t]);
 
   useEffect(() => {
     if (!bus?.timeSlots) return;
@@ -106,7 +108,7 @@ const BusDetailsPage2 = () => {
                 darktheme ? "text-gray-300" : "text-gray-600"
               }`}
             >
-              Loading bus details...
+              {t("busDetails.loadingMessage")}
             </span>
           </div>
         </div>
@@ -138,7 +140,7 @@ const BusDetailsPage2 = () => {
                   darktheme ? "text-white" : "text-gray-800"
                 }`}
               >
-                Bus {bus.name} ({bus.deviceID})
+                {t("busDetails.busTitle")} {bus.name} ({bus.deviceID})
               </h1>
               <div
                 className={`flex items-center justify-center gap-2 ${
@@ -162,7 +164,7 @@ const BusDetailsPage2 = () => {
                   }`}
                   onClick={() => navigate(`/bus/review/${bus.deviceID}`)}
                 >
-                  Review
+                  {t("busDetails.reviewButton")}
                 </Button>
 
                 <Button
@@ -174,7 +176,7 @@ const BusDetailsPage2 = () => {
                   }`}
                   onClick={() => navigate(`/makepayment/${bus.deviceID}`)}
                 >
-                  Get Ticket
+                  {t("busDetails.getTicketButton")}
                 </Button>
               </div>
             </div>
@@ -198,7 +200,7 @@ const BusDetailsPage2 = () => {
                   }`}
                 >
                   <User className="w-5 h-5 text-green-600" />
-                  Driver Details
+                  {t("busDetails.driverDetails")}
                 </h3>
                 <div className="flex items-center space-x-4 mb-4">
                   <img
@@ -235,7 +237,7 @@ const BusDetailsPage2 = () => {
                     }`}
                   >
                     <CreditCard className="w-4 h-4 text-green-600" />
-                    <span className="font-medium">License ID:</span>
+                    <span className="font-medium">{t("busDetails.licenseId")}</span>
                     <span>{bus.driver.licenceId}</span>
                   </div>
                   <div
@@ -244,8 +246,8 @@ const BusDetailsPage2 = () => {
                     }`}
                   >
                     <Award className="w-4 h-4 text-green-600" />
-                    <span className="font-medium">Experience:</span>
-                    <span>{bus.driver.driverExp} years</span>
+                    <span className="font-medium">{t("busDetails.experience")}</span>
+                    <span>{bus.driver.driverExp} {t("busDetails.years")}</span>
                   </div>
                 </div>
               </div>
@@ -264,7 +266,7 @@ const BusDetailsPage2 = () => {
                   }`}
                 >
                   <Clock className="w-5 h-5 text-green-600" />
-                  Time Slots
+                  {t("busDetails.timeSlots")}
                 </h3>
                 <ul className="space-y-3">
                   {bus.timeSlots.map((slot) => (
@@ -299,7 +301,7 @@ const BusDetailsPage2 = () => {
                 }`}
               >
                 <MapPin className="w-5 h-5 text-green-600" />
-                Live Location
+                {t("busDetails.liveLocation")}
               </h3>
 
               <MapContainer
@@ -317,7 +319,7 @@ const BusDetailsPage2 = () => {
                 <Routing path={bus.path} />
                 <Marker position={bus.liveLocation.coordinates} icon={busIcon}>
                   <Popup>
-                    <b>Bus Live Location</b>
+                    <b>{t("busDetails.busLiveLocation")}</b>
                     <br />
                     {bus.name}
                   </Popup>
@@ -339,14 +341,14 @@ const BusDetailsPage2 = () => {
                       darktheme ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    Speed
+                    {t("busDetails.speed")}
                   </p>
                   <p
                     className={`font-bold ${
                       darktheme ? "text-white" : "text-gray-800"
                     }`}
                   >
-                    {bus.speed} km/h
+                    {bus.speed} {t("busDetails.kmh")}
                   </p>
                 </div>
                 <div
@@ -366,14 +368,14 @@ const BusDetailsPage2 = () => {
                       darktheme ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    Total
+                    {t("busDetails.total")}
                   </p>
                   <p
                     className={`font-bold ${
                       darktheme ? "text-white" : "text-gray-800"
                     }`}
                   >
-                    {bus.totalDistance} km
+                    {bus.totalDistance} {t("busDetails.km")}
                   </p>
                 </div>
                 <div
@@ -389,14 +391,14 @@ const BusDetailsPage2 = () => {
                       darktheme ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    Covered
+                    {t("busDetails.covered")}
                   </p>
                   <p
                     className={`font-bold ${
                       darktheme ? "text-white" : "text-gray-800"
                     }`}
                   >
-                    {bus.coveredDistance} km
+                    {bus.coveredDistance} {t("busDetails.km")}
                   </p>
                 </div>
                 <div
@@ -412,14 +414,14 @@ const BusDetailsPage2 = () => {
                       darktheme ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    Remaining
+                    {t("busDetails.remaining")}
                   </p>
                   <p
                     className={`font-bold ${
                       darktheme ? "text-white" : "text-gray-800"
                     }`}
                   >
-                    {bus.remainingDistance} km
+                    {bus.remainingDistance} {t("busDetails.km")}
                   </p>
                 </div>
                 <div
@@ -435,7 +437,7 @@ const BusDetailsPage2 = () => {
                       darktheme ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    ETA
+                    {t("busDetails.eta")}
                   </p>
                   <p
                     className={`font-bold ${

@@ -14,6 +14,7 @@ import MicInput from "./MicInput";
 import { toast } from "sonner";
 import { addToHistory } from "@/Redux/history.reducer";
 import Navbar from "../shared/Navbar";
+import { useTranslation } from "react-i18next";
 
 const API_BASE = `${import.meta.env.VITE_BASE_URL}/Myroute`;
 const GEOCODE_API = "https://nominatim.openstreetmap.org/search";
@@ -34,6 +35,7 @@ const LocationPicker = ({ onSelect }) => {
 };
 
 const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -74,7 +76,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
 
   const handleUseMyLocation = async () => {
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
+      alert(t("busSearch.geolocationNotSupported"));
       return;
     }
 
@@ -94,7 +96,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
       },
       (err) => {
         console.error("Geolocation error", err);
-        alert("Unable to get location.");
+        alert(t("busSearch.unableToGetLocation"));
         setLoadingLocation(false);
       }
     );
@@ -113,7 +115,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
       <MicInput
         type="text"
         value={query}
-        placeholder="Type a place..."
+        placeholder={t("busSearch.typePlaceholder")}
         onChange={(e) => handleSearch(e.target.value)}
         className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
           darktheme
@@ -133,7 +135,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
           onClick={handleUseMyLocation}
           disabled={loadingLocation}
         >
-          {loadingLocation ? "Getting location..." : "Use My Location"}
+          {loadingLocation ? t("busSearch.gettingLocation") : t("busSearch.useMyLocation")}
         </button>
       )}
 
@@ -143,7 +145,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
             darktheme ? "text-gray-400" : "text-gray-500"
           }`}
         >
-          Searching...
+          {t("busSearch.searching")}
         </p>
       )}
 
@@ -217,6 +219,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
 };
 
 const BusSearch = () => {
+  const { t } = useTranslation();
   const [searchType, setSearchType] = useState("route");
   const [from, setFrom] = useState({ lat: "", lon: "" });
   const [to, setTo] = useState({ lat: "", lon: "" });
@@ -235,7 +238,7 @@ const BusSearch = () => {
 
       if (searchType === "route") {
         if (!from.lat || !from.lon || !to.lat || !to.lon) {
-          alert("Please select both From and To locations");
+          alert(t("busSearch.selectBothLocations"));
           return;
         }
         console.log(from);
@@ -251,7 +254,7 @@ const BusSearch = () => {
         );
         console.log(res);
       } else if (searchType === "device") {
-        if (!deviceId) return alert("Please enter Device ID");
+        if (!deviceId) return alert(t("busSearch.enterDeviceId"));
         res = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/Myroute/find-bus-By-id`,
           {
@@ -259,7 +262,7 @@ const BusSearch = () => {
           }
         );
       } else if (searchType === "name") {
-        if (!busName) return alert("Please enter Bus Name");
+        if (!busName) return alert(t("busSearch.enterBusName"));
         res = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/Myroute/find-bus-bu-name`,
           {
@@ -294,7 +297,7 @@ const BusSearch = () => {
     } catch (error) {
       console.error("Error:", error);
       const errorMessage =
-        error.response?.data?.message || error.message || "An error occurred";
+        error.response?.data?.message || error.message || t("busSearch.errorOccurred");
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -325,14 +328,14 @@ const BusSearch = () => {
               darktheme ? "text-white" : "text-gray-800"
             }`}
           >
-            Find Your Bus
+            {t("busSearch.pageTitle")}
           </h1>
           <p
             className={`text-lg ${
               darktheme ? "text-gray-300" : "text-gray-600"
             }`}
           >
-            Search by route, device ID, or bus name
+            {t("busSearch.pageDescription")}
           </p>
         </div>
 
@@ -349,7 +352,7 @@ const BusSearch = () => {
               darktheme ? "text-white" : "text-gray-800"
             }`}
           >
-            Search Options
+            {t("busSearch.searchOptions")}
           </h2>
 
           {/* Search Type Selector */}
@@ -370,7 +373,7 @@ const BusSearch = () => {
                 }`}
               >
                 <MapPin className="w-4 h-4 inline mr-2" />
-                By Route
+                {t("busSearch.byRoute")}
               </button>
               <button
                 onClick={() => setSearchType("device")}
@@ -383,7 +386,7 @@ const BusSearch = () => {
                 }`}
               >
                 <Navigation className="w-4 h-4 inline mr-2" />
-                By Device ID
+                {t("busSearch.byDeviceId")}
               </button>
               <button
                 onClick={() => setSearchType("name")}
@@ -396,7 +399,7 @@ const BusSearch = () => {
                 }`}
               >
                 <Bus className="w-4 h-4 inline mr-2" />
-                By Bus Name
+                {t("busSearch.byBusName")}
               </button>
             </div>
           </div>
@@ -405,14 +408,14 @@ const BusSearch = () => {
           {searchType === "route" && (
             <div>
               <PlaceSearch
-                label="From"
+                label={t("busSearch.from")}
                 enableUseMyLocation={true}
                 onSelect={(place) =>
                   setFrom({ lat: place.lat, lon: place.lon })
                 }
               />
               <PlaceSearch
-                label="To"
+                label={t("busSearch.to")}
                 onSelect={(place) => setTo({ lat: place.lat, lon: place.lon })}
               />
             </div>
@@ -426,10 +429,10 @@ const BusSearch = () => {
                   darktheme ? "text-gray-300" : "text-gray-700"
                 }`}
               >
-                Enter Device ID
+                {t("busSearch.enterDeviceIdLabel")}
               </label>
               <input
-                placeholder="Enter Device ID (e.g. BUS-1234)"
+                placeholder={t("busSearch.deviceIdPlaceholder")}
                 value={deviceId}
                 onChange={(e) => setDeviceId(e.target.value)}
                 className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
@@ -449,10 +452,10 @@ const BusSearch = () => {
                   darktheme ? "text-gray-300" : "text-gray-700"
                 }`}
               >
-                Enter Bus Name
+                {t("busSearch.enterBusNameLabel")}
               </label>
               <input
-                placeholder="Enter Bus Name (e.g. 44)"
+                placeholder={t("busSearch.busNamePlaceholder")}
                 value={busName}
                 onChange={(e) => setBusName(e.target.value)}
                 className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
@@ -478,7 +481,7 @@ const BusSearch = () => {
               }`}
             >
               <Search className="w-5 h-5 mr-2" />
-              {loading ? "Searching..." : "Search Buses"}
+              {loading ? t("busSearch.searching") : t("busSearch.searchBuses")}
             </button>
 
             {searchType === "route" && results && (
@@ -486,7 +489,7 @@ const BusSearch = () => {
                 className="mt-4 px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 onClick={() => navigate("/fllow/path")}
               >
-                Start Journey
+                {t("busSearch.startJourney")}
               </button>
             )}
           </div>
@@ -498,11 +501,9 @@ const BusSearch = () => {
                 darktheme ? "text-gray-400" : "text-gray-500"
               }`}
             >
-              {searchType === "route" &&
-                "Select both starting point and destination"}
-              {searchType === "device" &&
-                "Enter the exact device ID of the bus"}
-              {searchType === "name" && "Enter the bus route name or number"}
+              {searchType === "route" && t("busSearch.routeTip")}
+              {searchType === "device" && t("busSearch.deviceTip")}
+              {searchType === "name" && t("busSearch.nameTip")}
             </p>
           </div>
         </div>
@@ -525,7 +526,7 @@ const BusSearch = () => {
                         darktheme ? "text-green-400" : "text-green-700"
                       }`}
                     >
-                      Start
+                      {t("busSearch.start")}
                     </h2>
                     <p
                       className={`text-xs mt-1 ${
@@ -533,7 +534,7 @@ const BusSearch = () => {
                       }`}
                     >
                       {results.pathAddresses?.[0]?.address ||
-                        "Unknown start location"}
+                        t("busSearch.unknownStartLocation")}
                     </p>
                   </div>
 
@@ -561,14 +562,14 @@ const BusSearch = () => {
                                 darktheme ? "text-gray-300" : "text-gray-600"
                               }`}
                             >
-                              Route: {bus.from || "N/A"} → {bus.to || "N/A"}
+                              {t("busSearch.route")} {bus.from || "N/A"} → {bus.to || "N/A"}
                             </p>
                             <p
                               className={`text-sm ${
                                 darktheme ? "text-gray-400" : "text-gray-500"
                               }`}
                             >
-                              Device: {bus.deviceID}
+                              {t("busSearch.device")} {bus.deviceID}
                             </p>
                             {bus.nextStartTime && (
                               <p
@@ -576,8 +577,7 @@ const BusSearch = () => {
                                   darktheme ? "text-gray-400" : "text-gray-500"
                                 }`}
                               >
-                                Time: {bus.nextStartTime.startTime} to{" "}
-                                {bus.nextStartTime.endTime}
+                                {t("busSearch.time")} {bus.nextStartTime.startTime} {t("busSearch.to")} {bus.nextStartTime.endTime}
                               </p>
                             )}
                           </div>
@@ -592,7 +592,7 @@ const BusSearch = () => {
                         darktheme ? "text-red-400" : "text-red-700"
                       }`}
                     >
-                      Destination
+                      {t("busSearch.destination")}
                     </h2>
                     <p
                       className={`text-xs mt-1 ${
@@ -600,7 +600,7 @@ const BusSearch = () => {
                       }`}
                     >
                       {results.pathAddresses?.[results.pathAddresses.length - 1]
-                        ?.address || "Unknown destination"}
+                        ?.address || t("busSearch.unknownDestination")}
                     </p>
                   </div>
                 </div>
@@ -620,7 +620,7 @@ const BusSearch = () => {
                         darktheme ? "text-green-400" : "text-green-700"
                       }`}
                     >
-                      Start
+                      {t("busSearch.start")}
                     </h2>
                     <p
                       className={`text-xs mt-1 ${
@@ -652,7 +652,7 @@ const BusSearch = () => {
                               darktheme ? "text-gray-300" : "text-gray-700"
                             }`}
                           >
-                            {isLast ? "Destination" : "Change Here"}
+                            {isLast ? t("busSearch.destination") : t("busSearch.changeHere")}
                             {changeLocation?.address && (
                               <p
                                 className={`text-xs mt-1 ${
@@ -684,7 +684,7 @@ const BusSearch = () => {
                                     darktheme ? "text-white" : "text-gray-900"
                                   }`}
                                 >
-                                  Bus: {bus.name}
+                                  {t("busSearch.bus")} {bus.name}
                                 </h3>
                                 <p
                                   className={`text-sm ${
@@ -693,7 +693,7 @@ const BusSearch = () => {
                                       : "text-gray-600"
                                   }`}
                                 >
-                                  Route: {bus.from} → {bus.to}
+                                  {t("busSearch.route")} {bus.from} → {bus.to}
                                 </p>
                                 <p
                                   className={`text-sm ${
@@ -702,7 +702,7 @@ const BusSearch = () => {
                                       : "text-gray-500"
                                   }`}
                                 >
-                                  Device: {bus.deviceID}
+                                  {t("busSearch.device")} {bus.deviceID}
                                 </p>
                                 <p
                                   className={`text-sm ${
@@ -711,8 +711,7 @@ const BusSearch = () => {
                                       : "text-gray-500"
                                   }`}
                                 >
-                                  Time: {bus.nextStartTime.startTime} to{" "}
-                                  {bus.nextStartTime.endTime}
+                                  {t("busSearch.time")} {bus.nextStartTime.startTime} {t("busSearch.to")} {bus.nextStartTime.endTime}
                                 </p>
                               </div>
                             </div>
@@ -750,21 +749,21 @@ const BusSearch = () => {
                           darktheme ? "text-white" : "text-gray-800"
                         }`}
                       >
-                        Bus Name: {bus.name || "N/A"}
+                        {t("busSearch.busName")} {bus.name || "N/A"}
                       </h2>
                       <p
                         className={`text-sm ${
                           darktheme ? "text-gray-300" : "text-gray-600"
                         }`}
                       >
-                        Device ID: {bus.deviceID}
+                        {t("busSearch.deviceId")} {bus.deviceID}
                       </p>
                       <p
                         className={`text-sm ${
                           darktheme ? "text-gray-300" : "text-gray-600"
                         }`}
                       >
-                        Route: {bus.from} → {bus.to}
+                        {t("busSearch.route")} {bus.from} → {bus.to}
                       </p>
                       {bus.driver && (
                         <p
@@ -772,7 +771,7 @@ const BusSearch = () => {
                             darktheme ? "text-gray-400" : "text-gray-500"
                           }`}
                         >
-                          Driver ID: {bus.driver}
+                          {t("busSearch.driverId")} {bus.driver}
                         </p>
                       )}
                     </div>
@@ -801,14 +800,14 @@ const BusSearch = () => {
                     darktheme ? "text-gray-300" : "text-gray-500"
                   }`}
                 >
-                  No buses found
+                  {t("busSearch.noBusesFound")}
                 </p>
                 <p
                   className={`text-sm mt-2 ${
                     darktheme ? "text-gray-500" : "text-gray-400"
                   }`}
                 >
-                  Try adjusting your search criteria
+                  {t("busSearch.adjustSearch")}
                 </p>
               </div>
             )

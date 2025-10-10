@@ -12,12 +12,14 @@ import {
   IndianRupee,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 
 const MyTickets = () => {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const { t } = useTranslation();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -42,7 +44,7 @@ const MyTickets = () => {
       } catch (error) {
         console.error("Error fetching tickets:", error);
         const errorMessage =
-          error.response?.data?.message || error.message || "An error occurred";
+          error.response?.data?.message || error.message || t("tickets.fetchError");
         toast.error(errorMessage);
       } finally {
         setLoading(false);
@@ -50,7 +52,7 @@ const MyTickets = () => {
     };
 
     if (isAuthenticated) fetchTickets();
-  }, [isAuthenticated, getAccessTokenSilently]);
+  }, [isAuthenticated, getAccessTokenSilently, t]);
 
   if (loading) {
     return (
@@ -76,7 +78,7 @@ const MyTickets = () => {
                 darktheme ? "text-gray-300" : "text-gray-600"
               }`}
             >
-              Loading your tickets...
+              {t("tickets.loading")}
             </span>
           </div>
         </div>
@@ -118,20 +120,20 @@ const MyTickets = () => {
                 darktheme ? "text-white" : "text-gray-800"
               }`}
             >
-              No Tickets Yet
+              {t("tickets.noTicketsTitle")}
             </h2>
             <p
               className={`mb-6 ${
                 darktheme ? "text-gray-400" : "text-gray-600"
               }`}
             >
-              You haven't booked any tickets yet.
+              {t("tickets.noTicketsMessage")}
             </p>
             <button
               onClick={() => navigate("/")}
               className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-medium hover:from-green-600 hover:to-green-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
-              Book Your First Ticket
+              {t("tickets.bookFirstTicket")}
             </button>
           </div>
         </div>
@@ -157,14 +159,14 @@ const MyTickets = () => {
               darktheme ? "text-white" : "text-gray-800"
             }`}
           >
-            My Tickets
+            {t("tickets.pageTitle")}
           </h1>
           <p
             className={`text-lg ${
               darktheme ? "text-gray-300" : "text-gray-600"
             }`}
           >
-            View and manage all your bus tickets
+            {t("tickets.pageSubtitle")}
           </p>
         </div>
 
@@ -195,7 +197,7 @@ const MyTickets = () => {
                       darktheme ? "text-white" : "text-gray-800"
                     }`}
                   >
-                    {ticket.busId || "Bus Info"}
+                    {ticket.busId || t("tickets.busInfo")}
                   </h2>
                 </div>
                 {ticket.paymentStatus === "Success" ? (
@@ -210,7 +212,7 @@ const MyTickets = () => {
                         darktheme ? "text-green-400" : "text-green-700"
                       }`}
                     >
-                      Confirmed
+                      {t("tickets.confirmed")}
                     </span>
                   </div>
                 ) : (
@@ -225,7 +227,7 @@ const MyTickets = () => {
                         darktheme ? "text-red-400" : "text-red-700"
                       }`}
                     >
-                      Failed
+                      {t("tickets.failed")}
                     </span>
                   </div>
                 )}
@@ -245,7 +247,7 @@ const MyTickets = () => {
                     }`}
                   >
                     <span className="font-semibold">
-                      Stop {ticket.fromIndex}
+                      {t("tickets.stop")} {ticket.fromIndex}
                     </span>
                     <span
                       className={`mx-2 ${
@@ -254,7 +256,7 @@ const MyTickets = () => {
                     >
                       →
                     </span>
-                    <span className="font-semibold">Stop {ticket.toIndex}</span>
+                    <span className="font-semibold">{t("tickets.stop")} {ticket.toIndex}</span>
                   </p>
                 </div>
                 <p
@@ -262,9 +264,9 @@ const MyTickets = () => {
                     darktheme ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
-                  Distance:{" "}
+                  {t("tickets.distance")}{" "}
                   <span className="font-medium">
-                    {ticket.passengerDistance} km
+                    {ticket.passengerDistance} {t("tickets.km")}
                   </span>
                 </p>
               </div>
@@ -282,7 +284,7 @@ const MyTickets = () => {
                       darktheme ? "text-gray-300" : "text-gray-600"
                     }`}
                   >
-                    Total Fare
+                    {t("tickets.totalFare")}
                   </span>
                 </div>
                 <span
@@ -314,7 +316,7 @@ const MyTickets = () => {
                   <span
                     className={darktheme ? "text-gray-400" : "text-gray-600"}
                   >
-                    Payment Status:
+                    {t("tickets.paymentStatus")}
                   </span>
                   <span
                     className={`font-semibold ${
@@ -340,7 +342,7 @@ const MyTickets = () => {
                 }}
                 className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
-                View Details
+                {t("tickets.viewDetails")}
               </button>
             </div>
           ))}

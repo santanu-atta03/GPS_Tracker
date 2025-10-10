@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useTranslation } from "react-i18next";
 import { setuser } from "../../Redux/auth.reducer";
 import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
@@ -25,6 +26,7 @@ import { toast } from "sonner";
 const Profile = () => {
   const { usere, darktheme } = useSelector((store) => store.auth);
   const { getAccessTokenSilently } = useAuth0();
+  const { t } = useTranslation();
 
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(usere?.name || "");
@@ -50,7 +52,7 @@ const Profile = () => {
               darktheme ? "text-gray-400" : "text-gray-600"
             }`}
           >
-            No user data found.
+            {t("profile.noUserData")}
           </p>
         </div>
       </div>
@@ -71,14 +73,14 @@ const Profile = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       dispatch(setuser(res.data.newDetails));
-      setMessage("Profile updated successfully!");
+      setMessage(t("profile.updateSuccess"));
       setIsEditing(false);
       toast(res.data.message);
     } catch (err) {
       console.error(err);
-      setMessage("Failed to update profile.");
+      setMessage(t("profile.updateFailed"));
       const errorMessage =
-        error.response?.data?.message || error.message || "An error occurred";
+        err.response?.data?.message || err.message || t("profile.updateError");
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -166,7 +168,7 @@ const Profile = () => {
         {/* Footer */}
         <footer className="mt-16 text-center text-sm">
           <p className={darktheme ? "text-gray-500" : "text-gray-500"}>
-            &copy; 2024 Bus Sewa. All rights reserved.
+            {t("profile.copyright")}
           </p>
         </footer>
       </main>

@@ -10,6 +10,7 @@ import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 import Navbar from "../shared/Navbar";
 import MicInput from "./MicInput";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -18,26 +19,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl,
 });
 
-const POI_TYPES = [
-  { label: "Hospital", tag: "hospital", icon: "🏥" },
-  { label: "Clinic", tag: "clinic", icon: "🩺" },
-  { label: "Pharmacy", tag: "pharmacy", icon: "💊" },
-  { label: "Park", tag: "park", icon: "🌳" },
-  { label: "Petrol Pump", tag: "fuel", icon: "⛽" },
-  { label: "ATM", tag: "atm", icon: "🏧" },
-  { label: "Bank", tag: "bank", icon: "🏦" },
-  { label: "School", tag: "school", icon: "🏫" },
-  { label: "College", tag: "college", icon: "🎓" },
-  { label: "Restaurant", tag: "restaurant", icon: "🍽️" },
-  { label: "Supermarket", tag: "supermarket", icon: "🛒" },
-  { label: "Bus Stop", tag: "bus_station", icon: "🚌" },
-  { label: "Police Station", tag: "police", icon: "🚓" },
-  { label: "Fire Station", tag: "fire_station", icon: "🚒" },
-  { label: "Library", tag: "library", icon: "📚" },
-  { label: "Cinema", tag: "cinema", icon: "🎬" },
-];
-
 const NearbyPOIMap = () => {
+  const { t } = useTranslation();
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const [selectedType, setSelectedType] = useState(null);
@@ -50,6 +33,25 @@ const NearbyPOIMap = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const searchMarkerRef = useRef(null);
+
+  const POI_TYPES = [
+    { label: t("nearbyPOI.hospital"), tag: "hospital", icon: "🏥" },
+    { label: t("nearbyPOI.clinic"), tag: "clinic", icon: "🩺" },
+    { label: t("nearbyPOI.pharmacy"), tag: "pharmacy", icon: "💊" },
+    { label: t("nearbyPOI.park"), tag: "park", icon: "🌳" },
+    { label: t("nearbyPOI.petrolPump"), tag: "fuel", icon: "⛽" },
+    { label: t("nearbyPOI.atm"), tag: "atm", icon: "🏧" },
+    { label: t("nearbyPOI.bank"), tag: "bank", icon: "🏦" },
+    { label: t("nearbyPOI.school"), tag: "school", icon: "🏫" },
+    { label: t("nearbyPOI.college"), tag: "college", icon: "🎓" },
+    { label: t("nearbyPOI.restaurant"), tag: "restaurant", icon: "🍽️" },
+    { label: t("nearbyPOI.supermarket"), tag: "supermarket", icon: "🛒" },
+    { label: t("nearbyPOI.busStop"), tag: "bus_station", icon: "🚌" },
+    { label: t("nearbyPOI.policeStation"), tag: "police", icon: "🚓" },
+    { label: t("nearbyPOI.fireStation"), tag: "fire_station", icon: "🚒" },
+    { label: t("nearbyPOI.library"), tag: "library", icon: "📚" },
+    { label: t("nearbyPOI.cinema"), tag: "cinema", icon: "🎬" },
+  ];
 
   useEffect(() => {
     if (mapInstanceRef.current) return;
@@ -74,7 +76,7 @@ const NearbyPOIMap = () => {
         setUserLocation({ lat, lon });
 
         map.setView([lat, lon], 14);
-        L.marker([lat, lon]).addTo(map).bindPopup("You are here").openPopup();
+        L.marker([lat, lon]).addTo(map).bindPopup(t("nearbyPOI.youAreHere")).openPopup();
       },
       (err) => {
         console.warn("Geolocation error:", err);
@@ -85,7 +87,7 @@ const NearbyPOIMap = () => {
       map.remove();
       mapInstanceRef.current = null;
     };
-  }, [darktheme]);
+  }, [darktheme, t]);
 
   const fetchNearbyPlaces = async (type) => {
     if (!userLocation) return [];
@@ -128,11 +130,11 @@ const NearbyPOIMap = () => {
     places.forEach((place) => {
       const lat = place.lat || place.center?.lat;
       const lon = place.lon || place.center?.lon;
-      const name = place.tags?.name || "Unnamed";
+      const name = place.tags?.name || t("nearbyPOI.unnamed");
 
       if (lat && lon) {
         const marker = L.marker([lat, lon]).bindPopup(
-          `<strong>${name}</strong><br/>Type: ${type}<br/><button id="go-${lat}-${lon}">Go Here</button>`
+          `<strong>${name}</strong><br/>${t("nearbyPOI.type")}: ${type}<br/><button id="go-${lat}-${lon}">${t("nearbyPOI.goHere")}</button>`
         );
 
         marker.on("popupopen", () => {
@@ -213,7 +215,7 @@ const NearbyPOIMap = () => {
     const marker = L.marker([lat, lon])
       .addTo(mapInstanceRef.current)
       .bindPopup(
-        `<b>${place.display_name}</b><br/><button id="go-${lat}-${lon}">Go Here</button>`
+        `<b>${place.display_name}</b><br/><button id="go-${lat}-${lon}">${t("nearbyPOI.goHere")}</button>`
       )
       .openPopup();
 
@@ -258,14 +260,14 @@ const NearbyPOIMap = () => {
                     darktheme ? "text-white" : "text-gray-800"
                   }`}
                 >
-                  Explore Nearby
+                  {t("nearbyPOI.pageTitle")}
                 </h1>
                 <p
                   className={`text-xs sm:text-sm ${
                     darktheme ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
-                  Discover places around you
+                  {t("nearbyPOI.pageDescription")}
                 </p>
               </div>
             </div>
@@ -292,7 +294,7 @@ const NearbyPOIMap = () => {
                       darktheme ? "text-white" : "text-gray-800"
                     }`}
                   >
-                    Nearby Places
+                    {t("nearbyPOI.nearbyPlaces")}
                   </h2>
                 </div>
 
@@ -337,7 +339,7 @@ const NearbyPOIMap = () => {
                       darktheme ? "text-white" : "text-gray-800"
                     }`}
                   >
-                    Search Location
+                    {t("nearbyPOI.searchLocation")}
                   </h2>
                 </div>
 
@@ -346,7 +348,7 @@ const NearbyPOIMap = () => {
                     type="text"
                     value={searchQuery}
                     onChange={handleSearchChange}
-                    placeholder="Search for any location..."
+                    placeholder={t("nearbyPOI.searchPlaceholder")}
                     className={`w-full border-2 p-3 sm:p-4 pr-10 sm:pr-12 rounded-xl focus:outline-none focus:border-green-500 text-sm sm:text-base transition-all duration-300 hover:shadow-md ${
                       darktheme
                         ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
@@ -401,7 +403,7 @@ const NearbyPOIMap = () => {
                     darktheme ? "text-white" : "text-gray-800"
                   }`}
                 >
-                  Interactive Map
+                  {t("nearbyPOI.interactiveMap")}
                 </h2>
               </div>
 

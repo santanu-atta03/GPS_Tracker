@@ -6,6 +6,7 @@ import "leaflet-routing-machine";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import Navbar from "../shared/Navbar";
+import { useTranslation } from "react-i18next";
 // ✅ Fix for missing default Leaflet marker icons on Vercel
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
@@ -132,6 +133,7 @@ const getUserStepIndex = (userLocation, pathCoordinates) => {
 
 const FllowBusMap = () => {
   const { path, darktheme } = useSelector((store) => store.auth);
+  const { t } = useTranslation();
   const [userLocation, setUserLocation] = useState(null);
 
   useEffect(() => {
@@ -171,7 +173,7 @@ const FllowBusMap = () => {
             darktheme ? "text-gray-400" : "text-gray-500"
           }`}
         >
-          Loading map data...
+          {t("followBusMap.loadingMap")}
         </div>
       </div>
     );
@@ -230,13 +232,13 @@ const FllowBusMap = () => {
                 >
                   <Popup>
                     <div>
-                      <strong>Bus Name:</strong> {bus.name}
+                      <strong>{t("followBusMap.busName")}:</strong> {bus.name}
                       <br />
-                      <strong>From:</strong> {bus.from}
+                      <strong>{t("followBusMap.from")}:</strong> {bus.from}
                       <br />
-                      <strong>To:</strong> {bus.to}
+                      <strong>{t("followBusMap.to")}:</strong> {bus.to}
                       <br />
-                      <strong>Time:</strong> {bus.nextStartTime?.startTime} to{" "}
+                      <strong>{t("followBusMap.time")}:</strong> {bus.nextStartTime?.startTime} {t("followBusMap.timeTo")}{" "}
                       {bus.nextStartTime?.endTime}
                     </div>
                   </Popup>
@@ -247,7 +249,7 @@ const FllowBusMap = () => {
             {/* User Location Marker */}
             {userLocation && (
               <Marker position={userLocation} icon={userIcon}>
-                <Popup>Your Current Location</Popup>
+                <Popup>{t("followBusMap.yourLocation")}</Popup>
               </Marker>
             )}
           </MapContainer>
@@ -284,7 +286,7 @@ const FllowBusMap = () => {
                   {showBusIcon && (
                     <div
                       className="absolute -left-8 top-0"
-                      title="Your location"
+                      title={t("followBusMap.yourLocationTooltip")}
                     >
                       <TimelineBusIcon />
                     </div>
@@ -296,7 +298,7 @@ const FllowBusMap = () => {
                       darktheme ? "text-green-400" : "text-green-600"
                     }`}
                   >
-                    {isStart ? "Start" : isEnd ? "Destination" : "Change Here"}
+                    {isStart ? t("followBusMap.start") : isEnd ? t("followBusMap.destination") : t("followBusMap.changeHere")}
                   </div>
 
                   {/* Address */}
@@ -324,14 +326,14 @@ const FllowBusMap = () => {
                           darktheme ? "text-white" : "text-gray-900"
                         }`}
                       >
-                        Bus: {busesUsed[idx].name}
+                        {t("followBusMap.busLabel")}: {busesUsed[idx].name}
                       </div>
                       <div
                         className={`mb-1 ${
                           darktheme ? "text-gray-300" : "text-gray-800"
                         }`}
                       >
-                        <span className="font-semibold">Route:</span>{" "}
+                        <span className="font-semibold">{t("followBusMap.route")}:</span>{" "}
                         {busesUsed[idx].from} → {busesUsed[idx].to}
                       </div>
                       <div
@@ -339,7 +341,7 @@ const FllowBusMap = () => {
                           darktheme ? "text-gray-300" : "text-gray-800"
                         }`}
                       >
-                        <span className="font-semibold">Device:</span>{" "}
+                        <span className="font-semibold">{t("followBusMap.device")}:</span>{" "}
                         {busesUsed[idx].deviceID}
                       </div>
                       <div
@@ -347,8 +349,8 @@ const FllowBusMap = () => {
                           darktheme ? "text-gray-300" : "text-gray-800"
                         }
                       >
-                        <span className="font-semibold">Time:</span>{" "}
-                        {busesUsed[idx].nextStartTime?.startTime} to{" "}
+                        <span className="font-semibold">{t("followBusMap.time")}:</span>{" "}
+                        {busesUsed[idx].nextStartTime?.startTime} {t("followBusMap.timeTo")}{" "}
                         {busesUsed[idx].nextStartTime?.endTime}
                       </div>
                     </div>

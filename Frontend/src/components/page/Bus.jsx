@@ -3,6 +3,7 @@ import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import {
   Bus as BusIcon,
   MapPin,
@@ -20,6 +21,7 @@ const Bus = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { darktheme } = useSelector((store) => store.auth);
+  const { t } = useTranslation();
 
   const [buses, setBuses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +51,7 @@ const Bus = () => {
         setBuses(res.data.AllBus || []);
       } catch (error) {
         const msg = error?.response?.data?.message || error.message;
-        toast.error(msg || "Failed to fetch buses.");
+        toast.error(msg || t("bus.fetchError"));
         setError(msg);
       } finally {
         setLoading(false);
@@ -57,7 +59,7 @@ const Bus = () => {
     };
 
     fetchBuses();
-  }, [getAccessTokenSilently]);
+  }, [getAccessTokenSilently, t]);
 
   // ✅ Clean up intervals on unmount
   useEffect(() => {
@@ -90,11 +92,11 @@ const Bus = () => {
                 longitude,
               });
             } catch (err) {
-              console.error("Failed to send location:", err.message);
+              console.error(t("bus.locationError"), err.message);
             }
           },
           (err) => {
-            console.error("Geolocation error:", err.message);
+            console.error(t("bus.geolocationError"), err.message);
           }
         );
       };
@@ -191,7 +193,7 @@ const Bus = () => {
                     >
                       <MapPin className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
-                        <span className="text-sm font-medium">From:</span>
+                        <span className="text-sm font-medium">{t("bus.from")}</span>
                         <p className="text-sm truncate">{bus.from}</p>
                       </div>
                     </div>
@@ -202,7 +204,7 @@ const Bus = () => {
                     >
                       <Navigation className="w-4 h-4 text-blue-500 mr-2 flex-shrink-0" />
                       <div className="min-w-0 flex-1">
-                        <span className="text-sm font-medium">To:</span>
+                        <span className="text-sm font-medium">{t("bus.to")}</span>
                         <p className="text-sm truncate">{bus.to}</p>
                       </div>
                     </div>
@@ -223,7 +225,7 @@ const Bus = () => {
                         }`}
                       >
                         <User className="w-4 h-4 mr-2" />
-                        Driver Details
+                        {t("bus.driverDetails")}
                       </h4>
                       <div className="space-y-2">
                         <div
@@ -251,7 +253,7 @@ const Bus = () => {
                         >
                           <CreditCard className="w-3 h-3 mr-2" />
                           <span className="text-sm">
-                            License: {bus.driver.licenceId}
+                            {t("bus.license")} {bus.driver.licenceId}
                           </span>
                         </div>
                       </div>
@@ -267,7 +269,7 @@ const Bus = () => {
                           darktheme ? "text-gray-500" : "text-gray-500"
                         }`}
                       >
-                        No driver assigned
+                        {t("bus.noDriverAssigned")}
                       </p>
                     </div>
                   )}
@@ -275,7 +277,7 @@ const Bus = () => {
               ))
             ) : (
               <div className="col-span-full text-center text-gray-500">
-                No buses found.
+                {t("bus.noBusesFound")}
               </div>
             )}
           </div>

@@ -4,6 +4,7 @@ import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useTranslation } from "react-i18next";
 import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
@@ -32,6 +33,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [selectedPos, setSelectedPos] = useState(null);
   const { darktheme } = useSelector((store) => store.auth);
+  const { t } = useTranslation();
 
   const handleSearch = async (value) => {
     setQuery(value);
@@ -66,7 +68,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
 
   const handleUseMyLocation = async () => {
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
+      alert(t("payment.geolocationNotSupported"));
       return;
     }
 
@@ -87,7 +89,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
       },
       (err) => {
         console.error("Geolocation error", err);
-        alert("Unable to get location.");
+        alert(t("payment.unableToGetLocation"));
         setLoadingLocation(false);
       }
     );
@@ -106,7 +108,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
       <MicInput
         type="text"
         value={query}
-        placeholder="Type a place..."
+        placeholder={t("payment.typePlaceholder")}
         onChange={(e) => handleSearch(e.target.value)}
         className={`border p-2 w-full rounded ${
           darktheme
@@ -124,7 +126,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
           onClick={handleUseMyLocation}
           disabled={loadingLocation}
         >
-          {loadingLocation ? "Getting location..." : "Use My Location"}
+          {loadingLocation ? t("payment.gettingLocation") : t("payment.useMyLocation")}
         </button>
       )}
 
@@ -134,7 +136,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
             darktheme ? "text-gray-500" : "text-gray-400"
           }`}
         >
-          Searching...
+          {t("payment.searching")}
         </p>
       )}
 
@@ -211,10 +213,11 @@ const RazorpayPayment = () => {
   const { deviceid } = useParams();
   const { getAccessTokenSilently } = useAuth0();
   const { darktheme } = useSelector((store) => store.auth);
+  const { t } = useTranslation();
 
   const handleCalculatePrice = async () => {
     if (!from || !to) {
-      alert("Please select both From and To locations.");
+      alert(t("payment.selectBothLocations"));
       return;
     }
 
@@ -239,11 +242,11 @@ const RazorpayPayment = () => {
       if (data.success) {
         setTicketData(data.data);
       } else {
-        alert("Failed to calculate ticket price");
+        alert(t("payment.failedCalculatePrice"));
       }
     } catch (err) {
       console.error(err);
-      alert("Error calculating ticket price");
+      alert(t("payment.errorCalculatingPrice"));
     } finally {
       setLoadingPrice(false);
     }
@@ -271,17 +274,17 @@ const RazorpayPayment = () => {
               darktheme ? "text-white" : "text-gray-800"
             }`}
           >
-            Book Your Bus Ticket
+            {t("payment.pageTitle")}
           </h2>
 
           <div className="mb-6">
             <PlaceSearch
-              label="From"
+              label={t("payment.from")}
               enableUseMyLocation={true}
               onSelect={(place) => setFrom({ lat: place.lat, lon: place.lon })}
             />
             <PlaceSearch
-              label="To"
+              label={t("payment.to")}
               onSelect={(place) => setTo({ lat: place.lat, lon: place.lon })}
             />
           </div>
@@ -295,7 +298,7 @@ const RazorpayPayment = () => {
             onClick={handleCalculatePrice}
             disabled={loadingPrice}
           >
-            {loadingPrice ? "Calculating..." : "Get Ticket Price"}
+            {loadingPrice ? t("payment.calculating") : t("payment.getTicketPrice")}
           </button>
 
           {ticketData && (
@@ -307,23 +310,23 @@ const RazorpayPayment = () => {
               }`}
             >
               <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
-                <strong>From Index:</strong> {ticketData.fromIndex}
+                <strong>{t("payment.fromIndex")}</strong> {ticketData.fromIndex}
               </p>
               <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
-                <strong>To Index:</strong> {ticketData.toIndex}
+                <strong>{t("payment.toIndex")}</strong> {ticketData.toIndex}
               </p>
               <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
-                <strong>Total Distance:</strong> {ticketData.totalDistance} km
+                <strong>{t("payment.totalDistance")}</strong> {ticketData.totalDistance} {t("payment.km")}
               </p>
               <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
-                <strong>Passenger Distance:</strong>{" "}
-                {ticketData.passengerDistance} km
+                <strong>{t("payment.passengerDistance")}</strong>{" "}
+                {ticketData.passengerDistance} {t("payment.km")}
               </p>
               <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
-                <strong>Ticket Price:</strong> ₹{ticketData.ticketPrice}
+                <strong>{t("payment.ticketPrice")}</strong> ₹{ticketData.ticketPrice}
               </p>
               <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
-                <strong>Price per km:</strong> ₹{ticketData.pricePerKm}
+                <strong>{t("payment.pricePerKm")}</strong> ₹{ticketData.pricePerKm}
               </p>
 
               <button
@@ -348,8 +351,8 @@ const RazorpayPayment = () => {
                     key: "rzp_test_RPcZFwp7G16Gjf",
                     amount: order.amount,
                     currency: order.currency,
-                    name: "Bus Ticket Booking",
-                    description: `Ticket for Bus ${busId}`,
+                    name: t("payment.busTicketBooking"),
+                    description: `${t("payment.ticketFor")} ${busId}`,
                     order_id: order.id,
                     handler: async function (response) {
                       const token = await getAccessTokenSilently({
@@ -389,7 +392,7 @@ const RazorpayPayment = () => {
                   rzp1.open();
                 }}
               >
-                Pay ₹{ticketData.ticketPrice}
+                {t("payment.pay")} ₹{ticketData.ticketPrice}
               </button>
             </div>
           )}

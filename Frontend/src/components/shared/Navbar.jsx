@@ -192,7 +192,7 @@ const Navbar = () => {
                       : 'text-gray-700 hover:text-green-600'
                 }`}
               >
-                ticket
+                {t("navbar.ticket")}
                 <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
                   isActiveRoute("/find/ticket") ? 'w-full' : 'w-0 group-hover:w-full'
                 }`}></span>
@@ -209,7 +209,7 @@ const Navbar = () => {
                       : 'text-gray-700 hover:text-green-600'
                 }`}
               >
-                NearBy
+                {t("navbar.nearBy")}
                 <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
                   isActiveRoute("/nearBy/search") ? 'w-full' : 'w-0 group-hover:w-full'
                 }`}></span>
@@ -226,7 +226,7 @@ const Navbar = () => {
                       : 'text-gray-700 hover:text-green-600'
                 }`}
               >
-                History
+                {t("navbar.history")}
                 <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
                   isActiveRoute("/see-history") ? 'w-full' : 'w-0 group-hover:w-full'
                 }`}></span>
@@ -314,7 +314,7 @@ const Navbar = () => {
           <div className={`lg:hidden flex items-center space-x-2 rounded-full px-3 py-1.5 border ${darktheme ? 'bg-gradient-to-r from-green-900/50 to-green-800/50 border-green-700' : 'bg-gradient-to-r from-green-50 to-green-100 border-green-200'}`}>
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span className={`text-xs sm:text-sm font-medium whitespace-nowrap ${darktheme ? 'text-green-400' : 'text-green-700'}`}>
-              Live
+              {t("navbar.liveTracking")}
             </span>
           </div>
 
@@ -323,7 +323,7 @@ const Navbar = () => {
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className={`p-2 rounded-lg border transition-all duration-200 ${darktheme ? 'bg-gray-700/50 border-gray-600 hover:bg-gray-700' : 'bg-white/50 border-gray-200 hover:bg-white/80'}`}
-              aria-label="Toggle mobile menu"
+              aria-label={t("navbar.toggleMenu")}
             >
               {isMobileMenuOpen ? (
                 <X className={`w-6 h-6 ${darktheme ? 'text-gray-300' : 'text-gray-700'}`} />
@@ -409,7 +409,7 @@ const Navbar = () => {
                       : 'text-gray-700 hover:text-green-600'
                 }`}
               >
-                ticket
+                {t("navbar.ticket")}
                 <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
                   isActiveRoute("/find/ticket") ? 'w-full' : 'w-0 group-hover:w-full'
                 }`}></span>
@@ -426,7 +426,7 @@ const Navbar = () => {
                       : 'text-gray-700 hover:text-green-600'
                 }`}
               >
-                NearBy
+                {t("navbar.nearBy")}
                 <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
                   isActiveRoute("/nearBy/search") ? 'w-full' : 'w-0 group-hover:w-full'
                 }`}></span>
@@ -443,7 +443,7 @@ const Navbar = () => {
                       : 'text-gray-700 hover:text-green-600'
                 }`}
               >
-                History
+                {t("navbar.history")}
                 <span className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
                   isActiveRoute("/see-history") ? 'w-full' : 'w-0 group-hover:w-full'
                 }`}></span>

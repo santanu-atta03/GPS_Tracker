@@ -16,6 +16,7 @@ import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 // Helper to create a custom marker with bus emoji
 const createBusIcon = (isActive = true) => {
@@ -62,6 +63,7 @@ const createUserIcon = () => {
 };
 
 const BusMap = () => {
+  const { t } = useTranslation();
   const [userLocation, setUserLocation] = useState([22.5726, 88.3639]); // default Kolkata
   const [busLocations, setBusLocations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,15 +86,13 @@ const BusMap = () => {
         },
         (err) => {
           console.error("Error getting location:", err);
-          setLocationError(
-            "Could not get your location. Using default location (Kolkata)."
-          );
+          setLocationError(t("busMap.locationError"));
         }
       );
     } else {
-      setLocationError("Geolocation is not supported by this browser.");
+      setLocationError(t("busMap.geolocationNotSupported"));
     }
-  }, []);
+  }, [t]);
 
   // Fetch all bus details
   useEffect(() => {
@@ -107,10 +107,10 @@ const BusMap = () => {
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching bus locations:", error);
-        setError("Failed to load bus locations. Please try again.");
+        setError(t("busMap.fetchError"));
         setIsLoading(false);
         const errorMessage =
-          error.response?.data?.message || error.message || "An error occurred";
+          error.response?.data?.message || error.message || t("busMap.errorOccurred");
         toast.error(errorMessage);
       }
     };
@@ -123,7 +123,7 @@ const BusMap = () => {
 
     // Cleanup when component unmounts
     return () => clearInterval(interval);
-  }, []);
+  }, [t]);
 
   // Manual refresh function
   const handleRefresh = async () => {
@@ -137,9 +137,9 @@ const BusMap = () => {
       setError(null);
       toast(res.data.message);
     } catch (error) {
-      setError("Failed to refresh bus locations.");
+      setError(t("busMap.refreshError"));
       const errorMessage =
-        error.response?.data?.message || error.message || "An error occurred";
+        error.response?.data?.message || error.message || t("busMap.errorOccurred");
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -158,7 +158,7 @@ const BusMap = () => {
           setLocationError(null);
         },
         (err) => {
-          setLocationError("Could not get your current location.");
+          setLocationError(t("busMap.currentLocationError"));
         }
       );
     }
@@ -182,15 +182,14 @@ const BusMap = () => {
               darktheme ? "text-white" : "text-gray-800"
             }`}
           >
-            Live Bus Map
+            {t("busMap.pageTitle")}
           </h1>
           <p
             className={`text-lg max-w-2xl mx-auto ${
               darktheme ? "text-gray-300" : "text-gray-600"
             }`}
           >
-            Track all buses in real-time on the interactive map. See their
-            current locations, routes, and driver information.
+            {t("busMap.pageDescription")}
           </p>
         </div>
 
@@ -210,8 +209,7 @@ const BusMap = () => {
                 }`}
               >
                 <MapPin className="w-4 h-4 mr-1 text-green-500" />
-                <span className="font-medium">{busLocations.length}</span> buses
-                tracked
+                <span className="font-medium">{busLocations.length}</span> {t("busMap.busesTracked")}
               </div>
               {lastUpdated && (
                 <div
@@ -220,7 +218,7 @@ const BusMap = () => {
                   }`}
                 >
                   <Clock className="w-4 h-4 mr-1" />
-                  Last updated: {lastUpdated.toLocaleTimeString()}
+                  {t("busMap.lastUpdated")} {lastUpdated.toLocaleTimeString()}
                 </div>
               )}
             </div>
@@ -231,7 +229,7 @@ const BusMap = () => {
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 flex items-center text-sm"
               >
                 <Locate className="w-4 h-4 mr-1" />
-                My Location
+                {t("busMap.myLocation")}
               </button>
 
               <button
@@ -246,7 +244,7 @@ const BusMap = () => {
                 <RefreshCw
                   className={`w-4 h-4 mr-1 ${isLoading ? "animate-spin" : ""}`}
                 />
-                {isLoading ? "Refreshing..." : "Refresh"}
+                {isLoading ? t("busMap.refreshing") : t("busMap.refresh")}
               </button>
             </div>
           </div>
@@ -269,7 +267,7 @@ const BusMap = () => {
                     darktheme ? "text-red-300" : "text-red-800"
                   }`}
                 >
-                  Error
+                  {t("busMap.error")}
                 </h3>
                 <p
                   className={`text-sm ${
@@ -299,7 +297,7 @@ const BusMap = () => {
                     darktheme ? "text-yellow-300" : "text-yellow-800"
                   }`}
                 >
-                  Location Notice
+                  {t("busMap.locationNotice")}
                 </h3>
                 <p
                   className={`text-sm ${
@@ -334,7 +332,7 @@ const BusMap = () => {
                     darktheme ? "text-gray-300" : "text-gray-600"
                   }`}
                 >
-                  Loading buses...
+                  {t("busMap.loadingBuses")}
                 </span>
               </div>
             )}
@@ -360,9 +358,9 @@ const BusMap = () => {
                 <Popup className="custom-popup">
                   <div className="p-2">
                     <h3 className="font-bold text-blue-600 mb-1">
-                      📍 Your Location
+                      📍 {t("busMap.yourLocation")}
                     </h3>
-                    <p className="text-sm text-gray-600">You are here</p>
+                    <p className="text-sm text-gray-600">{t("busMap.youAreHere")}</p>
                   </div>
                 </Popup>
               </Marker>
@@ -391,7 +389,7 @@ const BusMap = () => {
                           🚌 {bus.deviceID}
                           {!isRecent && (
                             <span className="ml-2 px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                              Inactive
+                              {t("busMap.inactive")}
                             </span>
                           )}
                         </h3>
@@ -401,7 +399,7 @@ const BusMap = () => {
                             <Route className="w-4 h-4 text-purple-500 mr-2 mt-0.5 flex-shrink-0" />
                             <div>
                               <span className="font-medium text-gray-700">
-                                Route:
+                                {t("busMap.route")}
                               </span>
                               <p className="text-gray-600">
                                 {bus.from} → {bus.to}
@@ -414,7 +412,7 @@ const BusMap = () => {
                               <User className="w-4 h-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
                               <div>
                                 <span className="font-medium text-gray-700">
-                                  Driver:
+                                  {t("busMap.driver")}
                                 </span>
                                 <p className="text-gray-600">
                                   {bus.driver.name} ({bus.driver.experience})
@@ -427,12 +425,12 @@ const BusMap = () => {
                             <Clock className="w-4 h-4 text-orange-500 mr-2 mt-0.5 flex-shrink-0" />
                             <div>
                               <span className="font-medium text-gray-700">
-                                Last Updated:
+                                {t("busMap.lastUpdated")}
                               </span>
                               <p className="text-gray-600">
                                 {minutesAgo === 0
-                                  ? "Just now"
-                                  : `${minutesAgo} min ago`}
+                                  ? t("busMap.justNow")
+                                  : `${minutesAgo} ${t("busMap.minAgo")}`}
                               </p>
                               <p className="text-xs text-gray-500">
                                 {lastUpdatedTime.toLocaleString()}
@@ -444,7 +442,7 @@ const BusMap = () => {
                             <Navigation className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
                             <div>
                               <span className="font-medium text-gray-700">
-                                Coordinates:
+                                {t("busMap.coordinates")}
                               </span>
                               <p className="text-gray-600 font-mono text-xs">
                                 {bus.location.coordinates.join(", ")}
@@ -458,7 +456,7 @@ const BusMap = () => {
                             className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-200"
                             onClick={() => navigate(`/bus/${bus.deviceID}`)}
                           >
-                            Track This Bus
+                            {t("busMap.trackThisBus")}
                           </button>
                         </div>
                       </div>
@@ -483,7 +481,7 @@ const BusMap = () => {
               darktheme ? "text-white" : "text-gray-800"
             }`}
           >
-            Map Legend
+            {t("busMap.mapLegend")}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center space-x-3">
@@ -496,14 +494,14 @@ const BusMap = () => {
                     darktheme ? "text-gray-200" : "text-gray-700"
                   }`}
                 >
-                  Your Location
+                  {t("busMap.yourLocation")}
                 </p>
                 <p
                   className={`text-sm ${
                     darktheme ? "text-gray-400" : "text-gray-500"
                   }`}
                 >
-                  Current GPS position
+                  {t("busMap.currentGPS")}
                 </p>
               </div>
             </div>
@@ -518,14 +516,14 @@ const BusMap = () => {
                     darktheme ? "text-gray-200" : "text-gray-700"
                   }`}
                 >
-                  Active Bus
+                  {t("busMap.activeBus")}
                 </p>
                 <p
                   className={`text-sm ${
                     darktheme ? "text-gray-400" : "text-gray-500"
                   }`}
                 >
-                  Updated within 10 minutes
+                  {t("busMap.activeBusDescription")}
                 </p>
               </div>
             </div>
@@ -540,14 +538,14 @@ const BusMap = () => {
                     darktheme ? "text-gray-200" : "text-gray-700"
                   }`}
                 >
-                  Inactive Bus
+                  {t("busMap.inactiveBus")}
                 </p>
                 <p
                   className={`text-sm ${
                     darktheme ? "text-gray-400" : "text-gray-500"
                   }`}
                 >
-                  Last seen over 10 minutes ago
+                  {t("busMap.inactiveBusDescription")}
                 </p>
               </div>
             </div>
@@ -560,7 +558,7 @@ const BusMap = () => {
             darktheme ? "text-gray-400" : "text-gray-500"
           }`}
         >
-          <p>&copy; 2024 Bus Sewa. All rights reserved.</p>
+          <p>{t("busMap.footer")}</p>
         </footer>
       </main>
     </div>

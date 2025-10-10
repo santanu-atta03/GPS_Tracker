@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
 import QRCode from "react-qr-code";
 import { Loader2 } from "lucide-react";
@@ -12,6 +13,7 @@ const TicketDetails = () => {
   const { ticketid } = useParams();
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
   const { darktheme } = useSelector((store) => store.auth);
+  const { t } = useTranslation();
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -31,7 +33,9 @@ const TicketDetails = () => {
       } catch (error) {
         console.error("Error fetching ticket:", error);
         const errorMessage =
-          error.response?.data?.message || error.message || "An error occurred";
+          error.response?.data?.message ||
+          error.message ||
+          t("ticketDetails.fetchError");
         toast.error(errorMessage);
       } finally {
         setLoading(false);
@@ -39,7 +43,7 @@ const TicketDetails = () => {
     };
 
     if (isAuthenticated) fetchTicket();
-  }, [ticketid, getAccessTokenSilently, isAuthenticated]);
+  }, [ticketid, getAccessTokenSilently, isAuthenticated, t]);
 
   if (loading)
     return (
@@ -58,7 +62,7 @@ const TicketDetails = () => {
         <span
           className={`ml-2 ${darktheme ? "text-blue-300" : "text-blue-800"}`}
         >
-          Loading ticket...
+          {t("ticketDetails.loading")}
         </span>
       </div>
     );
@@ -75,13 +79,14 @@ const TicketDetails = () => {
         <p
           className={`text-lg ${darktheme ? "text-gray-400" : "text-gray-700"}`}
         >
-          No ticket found
+          {t("ticketDetails.noTicketFound")}
         </p>
       </div>
     );
 
   return (
     <>
+      <Navbar />
       <div
         className={`min-h-screen flex justify-center items-center py-10 px-4 ${
           darktheme
@@ -89,7 +94,6 @@ const TicketDetails = () => {
             : "bg-gradient-to-br from-blue-100 to-blue-200"
         }`}
       >
-        <Navbar />
         <div
           className={`rounded-lg shadow-2xl w-full max-w-md p-6 relative border-2 ${
             darktheme
@@ -104,7 +108,7 @@ const TicketDetails = () => {
                 darktheme ? "text-blue-300" : "text-blue-900"
               }`}
             >
-              HAPPY JOURNEY
+              {t("ticketDetails.happyJourney")}
             </h1>
           </div>
 
@@ -114,7 +118,9 @@ const TicketDetails = () => {
               darktheme ? "text-gray-200" : "text-blue-900"
             }`}
           >
-            <div className="text-base font-semibold">JOURNEY (J)</div>
+            <div className="text-base font-semibold">
+              {t("ticketDetails.journey")}
+            </div>
             <div className="text-base font-semibold">
               {new Date(ticket.createdAt)
                 .toLocaleDateString("en-GB")
@@ -129,7 +135,7 @@ const TicketDetails = () => {
             }`}
           >
             <div className="text-base font-bold">
-              Rs. {ticket.ticketPrice.toFixed(2)}/-
+              {t("ticketDetails.rs")} {ticket.ticketPrice.toFixed(2)}/-
             </div>
             <div className="text-sm font-mono">
               {ticket.razorpay_payment_id?.slice(-10) || "N/A"}
@@ -141,7 +147,7 @@ const TicketDetails = () => {
             className={`mb-4 ${darktheme ? "text-gray-200" : "text-blue-900"}`}
           >
             <p className="text-sm font-bold">
-              Payment Id.: {ticket.razorpay_payment_id}
+              {t("ticketDetails.paymentId")} {ticket.razorpay_payment_id}
             </p>
           </div>
 
@@ -202,8 +208,12 @@ const TicketDetails = () => {
               darktheme ? "text-gray-200" : "text-blue-900"
             }`}
           >
-            <div className="text-sm font-bold">ADULT : 1</div>
-            <div className="text-sm font-bold">CHILD : 0</div>
+            <div className="text-sm font-bold">
+              {t("ticketDetails.adult")} : 1
+            </div>
+            <div className="text-sm font-bold">
+              {t("ticketDetails.child")} : 0
+            </div>
           </div>
 
           {/* Class and Train Details */}
@@ -213,18 +223,30 @@ const TicketDetails = () => {
             }`}
           >
             <div className="text-xs">
-              <span className="font-semibold">द्वितीय</span>
+              <span className="font-semibold">
+                {t("ticketDetails.secondLocal")}
+              </span>
             </div>
             <div className="text-xs">
-              <span className="font-semibold">साधारण</span>
+              <span className="font-semibold">
+                {t("ticketDetails.ordinaryLocal")}
+              </span>
             </div>
-            <div className="text-xs font-bold">CLASS: SECOND (II)</div>
-            <div className="text-xs font-bold">TRAIN: ORDINARY (O)</div>
-            <div className="text-xs">
-              <span className="font-semibold">द्वि द्वे</span>
+            <div className="text-xs font-bold">
+              {t("ticketDetails.classSecond")}
+            </div>
+            <div className="text-xs font-bold">
+              {t("ticketDetails.trainOrdinary")}
             </div>
             <div className="text-xs">
-              <span className="font-semibold">साधारण</span>
+              <span className="font-semibold">
+                {t("ticketDetails.secondLocal")}
+              </span>
+            </div>
+            <div className="text-xs">
+              <span className="font-semibold">
+                {t("ticketDetails.ordinaryLocal")}
+              </span>
             </div>
           </div>
 
@@ -234,7 +256,7 @@ const TicketDetails = () => {
               darktheme ? "text-gray-200" : "text-blue-900"
             }`}
           >
-            <span className="font-bold">VIA : ------</span>
+            <span className="font-bold">{t("ticketDetails.via")} : ------</span>
           </div>
 
           {/* SAC and IR Details */}
@@ -243,8 +265,10 @@ const TicketDetails = () => {
               darktheme ? "text-gray-300" : "text-blue-900"
             }`}
           >
-            <div>SAC:{ticket._id.slice(-6)}</div>
-            <div>IR:27AAAGM0289C2ZI</div>
+            <div>
+              {t("ticketDetails.sac")}:{ticket._id.slice(-6)}
+            </div>
+            <div>{t("ticketDetails.ir")}:27AAAGM0289C2ZI</div>
           </div>
 
           {/* Journey Notice */}
@@ -253,7 +277,7 @@ const TicketDetails = () => {
               darktheme ? "text-gray-300" : "text-blue-900"
             }`}
           >
-            Journey Should Commence within 1 hour
+            {t("ticketDetails.journeyNotice")}
           </div>
 
           {/* Vaccination/Verification */}
@@ -267,7 +291,7 @@ const TicketDetails = () => {
                 darktheme ? "text-red-400" : "text-red-600"
               }`}
             >
-              VACCINATED:
+              {t("ticketDetails.vaccinated")}:
               {ticket.user?.email?.slice(0, 15) || ticket.email.slice(0, 15)}/
             </p>
             <p
@@ -286,7 +310,10 @@ const TicketDetails = () => {
             }`}
           >
             <div>{ticket._id.slice(-6).toUpperCase()}</div>
-            <div>Distance: {ticket.passengerDistance}km</div>
+            <div>
+              {t("ticketDetails.distance")}: {ticket.passengerDistance}
+              {t("ticketDetails.km")}
+            </div>
           </div>
 
           {/* Booking Time */}
@@ -295,7 +322,9 @@ const TicketDetails = () => {
               darktheme ? "text-gray-300" : "text-blue-900"
             }`}
           >
-            <span className="font-semibold">Booking Time: </span>
+            <span className="font-semibold">
+              {t("ticketDetails.bookingTime")}{" "}
+            </span>
             {new Date(ticket.createdAt).toLocaleDateString("en-GB")}{" "}
             {new Date(ticket.createdAt).toLocaleTimeString("en-GB", {
               hour: "2-digit",
@@ -327,7 +356,7 @@ const TicketDetails = () => {
               darktheme ? "text-gray-400" : "text-blue-900"
             }`}
           >
-            It is recommended not to perform factory reset or
+            {t("ticketDetails.footerWarning")}
           </div>
         </div>
       </div>

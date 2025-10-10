@@ -5,10 +5,12 @@ import { setpath } from "@/Redux/auth.reducer";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import { clearHistory } from "@/Redux/history.reducer";
+import { useTranslation } from "react-i18next";
 
 const History = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { items } = useSelector((store) => store.history);
   const { darktheme } = useSelector((store) => store.auth);
 
@@ -56,14 +58,14 @@ const History = () => {
                   darktheme ? "text-white" : "text-gray-800"
                 }`}
               >
-                No History Yet
+                {t("history.noHistoryTitle")}
               </h2>
               <p
                 className={`mb-6 ${
                   darktheme ? "text-gray-400" : "text-gray-600"
                 }`}
               >
-                You haven't searched any routes yet.
+                {t("history.noHistoryMessage")}
               </p>
             </div>
           </div>
@@ -90,14 +92,14 @@ const History = () => {
                 darktheme ? "text-white" : "text-gray-800"
               }`}
             >
-              Route History
+              {t("history.pageTitle")}
             </h1>
             <p
               className={`text-lg ${
                 darktheme ? "text-gray-300" : "text-gray-600"
               }`}
             >
-              View and access your previously searched routes
+              {t("history.pageDescription")}
             </p>
 
             {/* Clear History Button */}
@@ -106,17 +108,17 @@ const History = () => {
               className="absolute top-0 right-0 flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               <Trash2 className="w-4 h-4" />
-              Clear History
+              {t("history.clearHistory")}
             </button>
           </div>
 
           {/* History Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((item, index) => {
-              const from = item.pathAddresses?.[0]?.address || "Unknown";
+              const from = item.pathAddresses?.[0]?.address || t("history.unknown");
               const to =
                 item.pathAddresses?.[item.pathAddresses.length - 1]?.address ||
-                "Unknown";
+                t("history.unknown");
 
               return (
                 <div
@@ -143,7 +145,7 @@ const History = () => {
                           darktheme ? "text-white" : "text-gray-800"
                         }`}
                       >
-                        Route #{index + 1}
+                        {t("history.routeNumber", { number: index + 1 })}
                       </h2>
                     </div>
                     <div
@@ -176,7 +178,7 @@ const History = () => {
                               darktheme ? "text-gray-400" : "text-gray-500"
                             }`}
                           >
-                            From
+                            {t("history.from")}
                           </p>
                           <p
                             className={`text-sm font-semibold line-clamp-2 ${
@@ -204,7 +206,7 @@ const History = () => {
                               darktheme ? "text-gray-400" : "text-gray-500"
                             }`}
                           >
-                            To
+                            {t("history.to")}
                           </p>
                           <p
                             className={`text-sm font-semibold line-clamp-2 ${
@@ -226,7 +228,7 @@ const History = () => {
                     }}
                     className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                   >
-                    View Route
+                    {t("history.viewRoute")}
                   </button>
                 </div>
               );
