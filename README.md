@@ -137,12 +137,12 @@ Frontend will run on:
 http://localhost:5173
 ```
 
-Start Frontend and Backend Both use this comend
+Steps to run both Frontend and Backend:
 
 ```bash
- cd .\Frontend\ 
+cd .\Frontend\ 
 npm run both
-``
+```
 
 🧪 Usage
 
