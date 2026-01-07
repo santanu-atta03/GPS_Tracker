@@ -51,6 +51,7 @@ This project is built with a modern tech stack and follows open-source best prac
 
 ## 📂 Project Structure
 
+```bash
 GPS_Tracker/
 ├── backend/
 │ ├── src/
@@ -65,7 +66,7 @@ GPS_Tracker/
 │ └── vite.config.js
 │
 └── README.md
-
+```
 
 ---
 
