@@ -53,7 +53,7 @@ export const userFindByEmail = async (req, res) => {
       newUser = userfind;
     }
     return res.status(200).json({
-      message: "user alredy exicet",
+      message: `welcom back ${newUser.name} to our website`,
       newUser,
       success: true,
     });

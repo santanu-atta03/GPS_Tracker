@@ -25,6 +25,36 @@ const BusDetails = mongoose.Schema({
     ref: "Location",
     required: true,
   },
+  ratings: {
+    punctuality: { type: Number, min: 1, max: 5, required: true, default: 1 },
+    comfort: { type: Number, min: 1, max: 5, required: true, default: 1 },
+    cleanliness: { type: Number, min: 1, max: 5, required: true, default: 1 },
+    driverBehavior: {
+      type: Number,
+      min: 1,
+      max: 5,
+      required: true,
+      default: 1,
+    },
+    safety: { type: Number, min: 1, max: 5, required: true, default: 1 },
+    valueForMoney: { type: Number, min: 1, max: 5, required: true, default: 1 },
+  },
+  ticketprice: {
+    type: Number,
+    min: 1,
+  },
+  timeSlots: [
+    {
+      startTime: {
+        type: String,
+        required: true,
+      },
+      endTime: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 const Bus = mongoose.model("Bus", BusDetails);

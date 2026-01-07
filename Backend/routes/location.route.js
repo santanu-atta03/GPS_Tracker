@@ -13,6 +13,7 @@ import {
 
 const locationRoute = express.Router();
 
+
 // Existing routes
 locationRoute.put("/update/location", updatelocation);
 locationRoute.post("/create/newBus", createBusId);

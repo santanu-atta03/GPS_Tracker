@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { useState } from "react";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const Complete = () => {
   const navigate = useNavigate();
@@ -26,11 +27,15 @@ const Complete = () => {
         if (res.data.success) {
           navigate("/"); // already registered driver
         }
+        toast(res.data.message);
       } catch (error) {
         console.log(
           "Verification error:",
           error.response?.data || error.message
         );
+        const errorMessage =
+          error.response?.data?.message || error.message || "An error occurred";
+        toast.error(errorMessage);
       }
     };
     fetchData();

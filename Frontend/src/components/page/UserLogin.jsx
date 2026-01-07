@@ -4,6 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
+import { toast } from "sonner";
 
 const UserLogin = () => {
   const { getAccessTokenSilently, user } = useAuth0();
@@ -24,7 +25,7 @@ const UserLogin = () => {
       });
 
       const res = await axios.post(
-        "http://localhost:5000/api/v1/user/crete/User",
+        `${import.meta.env.VITE_BASE_URL}/user/crete/User`,
         {
           fullname, // use value from input
           email: user.email,
@@ -34,13 +35,16 @@ const UserLogin = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+      toast(res.data.message);
       if (res.data.success) {
         dispatch(setuser(res.data.userData));
         navigate("/");
       }
     } catch (error) {
       console.error(error);
+      const errorMessage =
+        error.response?.data?.message || error.message || "An error occurred";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -52,7 +56,9 @@ const UserLogin = () => {
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded-lg shadow-md w-80"
       >
-        <h2 className="text-lg font-semibold mb-4 text-center">Confirm your name</h2>
+        <h2 className="text-lg font-semibold mb-4 text-center">
+          Confirm your name
+        </h2>
 
         <input
           type="text"

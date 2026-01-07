@@ -1,12 +1,13 @@
 import React from "react";
 import axios from "axios";
- 
+
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { useState } from "react";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 const DriverLogin = () => {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const DriverLogin = () => {
       });
       console.log(token);
       const res = await axios.post(
-        "https://gps-tracker-kq2q.vercel.app/api/v1/driver/createUser",
+        `${import.meta.env.VITE_BASE_URL}/driver/createUser`,
         {
           fullname: user.name,
           email: user.email,
@@ -61,9 +62,13 @@ const DriverLogin = () => {
       if (res.data.success) {
         dispatch(setuser(res.data.userData));
         navigate("/"); // redirect after success
+        toast(res.data.message);
       }
     } catch (error) {
       console.log("Create Driver error:", error.message);
+      const errorMessage =
+        error.response?.data?.message || error.message || "An error occurred";
+      toast.error(errorMessage);
     }
   };
 

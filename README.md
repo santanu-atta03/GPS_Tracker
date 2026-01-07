@@ -1,0 +1,187 @@
+# 🚌 Where Is My Bus – Real-Time Bus Tracking & Booking System
+
+Where Is My Bus is a full-stack web application designed to help users search, track, and book buses in real time. The platform provides live bus location tracking on maps, route-based search, ticket booking with online payment, and nearby place discovery to improve the daily commuting experience.
+
+This project is built with a modern tech stack and follows open-source best practices, making it beginner-friendly and scalable.
+
+---
+
+## 🚀 Features
+
+- 🔍 Search buses by **Route (From & To)**, **Bus Name**, or **Bus ID**
+- 📍 **Real-time bus tracking** on an interactive map
+- 🗺️ View **nearby buses** and important places (Hospitals, Schools, Clinics)
+- 🎫 **Bus ticket booking & cancellation**
+- 💳 Secure online payments using **Razorpay**
+- 🌐 **Multi-language support**
+- 👤 User authentication & profile management
+- 🧾 View booking history and tickets
+- ⚠️ Proper error handling and validations
+
+---
+
+## 🧑‍💻 Target Audience
+
+- Daily commuters  
+- Travelers using public transportation  
+- Users who need real-time bus location updates  
+- Transport management systems  
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- React (Vite)
+- JavaScript
+- Google Maps API
+- HTML, CSS
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB
+- Redis
+- JWT Authentication
+- Auth0
+- Razorpay
+- OpenAI API (optional features)
+
+---
+
+## 📂 Project Structure
+
+```bash
+GPS_Tracker/
+├── backend/
+│ ├── src/
+│ ├── .env
+│ ├── package.json
+│ └── server.js
+│
+├── frontend/
+│ ├── src/
+│ ├── .env
+│ ├── package.json
+│ └── vite.config.js
+│
+└── README.md
+```
+
+---
+
+## ⚙️ Installation & Setup
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/ayanmanna123/GPS_Tracker.git
+```
+```bash
+cd GPS_Tracker
+```
+
+🔧 Backend Setup
+```bash
+cd backend
+```
+```bash
+npm install
+```
+Create .env file in backend/
+
+```bash
+MONGO_URI=""
+PORT=""
+jwt_Secret=""
+AUTH0_AUDIENCE=""
+AUTH0_DOMAIN=""
+NODE_ENV=development
+RAZORPAY_SECRET=""
+GOOGLE_API_KEY=""
+OPENAI_API_KEY=""
+REDIS_URI=""
+```
+Start Backend Server
+```bash
+npm start
+```
+
+
+Backend will run on:
+```bash
+http://localhost:5000
+```
+
+
+🎨 Frontend Setup
+```bash
+cd frontend
+```
+```bash
+npm install
+```
+
+Create .env file in frontend/
+```bash
+VITE_BASE_URL=http://localhost:5000/api/v1
+```
+
+Start Frontend
+```bash
+npm run dev
+```
+
+Frontend will run on:
+```bash
+http://localhost:5173
+```
+
+
+🧪 Usage
+
+Register / Login to the platform
+
+Search buses using route, name, or bus ID
+
+Track live bus location on the map
+
+Book tickets and make payments
+
+View and manage booked tickets
+
+Explore nearby important places
+
+🤝 Contribution Guidelines
+
+Fork the repository
+
+Create a new branch for your feature or fix
+
+Commit with clear messages
+
+Open a Pull Request with proper description
+
+Beginner-friendly issues are labeled for new contributors.
+
+📌 Future Enhancements
+
+Push notifications for bus arrival
+
+Mobile app integration
+
+AI-based route prediction
+
+Admin dashboard for bus operators
+
+📜 License
+
+This project is licensed under the MIT License.
+
+⭐ Support
+
+If you like this project, please consider giving it a ⭐ on GitHub
+It helps the project grow and motivates contributors!
+
+Made with ❤️ by Ayan Manna
+
