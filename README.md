@@ -83,7 +83,7 @@ cd GPS_Tracker
 
 🔧 Backend Setup
 ```bash
-cd backend
+cd Backend
 ```
 ```bash
 npm install
@@ -104,7 +104,7 @@ REDIS_URI=""
 ```
 Start Backend Server
 ```bash
-npm start
+npm run dev
 ```
 
 
@@ -116,7 +116,7 @@ http://localhost:5000
 
 🎨 Frontend Setup
 ```bash
-cd frontend
+cd Frontend
 ```
 ```bash
 npm install
@@ -137,6 +137,12 @@ Frontend will run on:
 http://localhost:5173
 ```
 
+Start Frontend and Backend Both use this comend
+
+```bash
+ cd .\Frontend\ 
+npm run both
+``
 
 🧪 Usage
 
