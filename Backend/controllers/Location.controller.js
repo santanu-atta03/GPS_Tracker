@@ -90,7 +90,7 @@ export const updatelocation = async (req, res) => {
         );
 
         // Only add to route if moved more than 10 meters
-        shouldAddToRoute = distance > 100;
+        shouldAddToRoute = distance > 1;
       }
 
       if (shouldAddToRoute) {
