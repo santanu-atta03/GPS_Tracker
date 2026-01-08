@@ -13,34 +13,61 @@ import ReviewRoute from "./routes/Review.route.js";
 import supportBotRoutes from "./routes/supportBot.routes.js";
 import { initSupportBot } from "./controllers/supportBot.controller.js";
 import email_route from "./routes/auth.routes.js";
+
 dotenv.config();
 connectToMongo();
 
 const app = express();
 const port = process.env.PORT || 8000;
-// ✅ CORS Options
+
+/* =========================
+   API REQUEST LOGGING (NEW)
+========================= */
+app.use((req, res, next) => {
+  const start = Date.now();
+
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    const method = req.method;
+    const url = req.originalUrl;
+    const status = res.statusCode;
+
+    console.log(
+      `[${method}] ${url} → ${status} (${duration}ms)`
+    );
+  });
+
+  next();
+});
+
+/* =========================
+   CORS CONFIGURATION
+========================= */
 const corsOptions = {
   origin: [
     "http://localhost:5173",
     "https://gps-map-nine.vercel.app",
     "https://gps-tracker-ecru.vercel.app",
   ],
-
   credentials: true,
 };
 
 app.use(cors(corsOptions));
 
+/* =========================
+   BASIC ROUTES & MIDDLEWARES
+========================= */
 app.get("/authorized", (req, res) => {
   res.send("Secured Resource");
 });
 
-// ✅ Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-// ✅ Public Test Route
 
+/* =========================
+   API ROUTES
+========================= */
 app.use("/api/v1/Myroute", findBusRoute);
 app.use("/api/v1", locationRoute);
 app.use("/api/v1/driver", driverRoute);
@@ -51,13 +78,19 @@ app.use("/api/v1/review", ReviewRoute);
 app.use("/api/v1/support", supportBotRoutes);
 app.use("/api/v1/email", email_route);
 
+/* =========================
+   HEALTH CHECK
+========================= */
 app.get("/", (req, res) => {
   return res.status(200).json({
     message: "Hello from backend",
   });
 });
 
-app.listen(port,async () => {
-   await initSupportBot();
+/* =========================
+   SERVER START
+========================= */
+app.listen(port, async () => {
+  await initSupportBot();
   console.log(`✅ Website is running at http://localhost:${port}`);
 });

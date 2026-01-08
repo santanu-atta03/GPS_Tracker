@@ -88,9 +88,7 @@ export const updatelocation = async (req, res) => {
           bus.route,
           500
         );
-
-        // Only add to route if moved more than 10 meters
-        shouldAddToRoute = distance > 1;
+        shouldAddToRoute = !isDuplicate;
       }
 
       if (shouldAddToRoute) {
