@@ -12,6 +12,7 @@ import findBusRoute from "./routes/MyLocation.route.js";
 import ReviewRoute from "./routes/Review.route.js";
 import supportBotRoutes from "./routes/supportBot.routes.js";
 import { initSupportBot } from "./controllers/supportBot.controller.js";
+import email_route from "./routes/auth.routes.js";
 dotenv.config();
 connectToMongo();
 
@@ -48,6 +49,7 @@ app.use("/api/v1/", JourneyRoute);
 app.use("/api/v1/user", UserRoute);
 app.use("/api/v1/review", ReviewRoute);
 app.use("/api/v1/support", supportBotRoutes);
+app.use("/api/v1/email", email_route);
 
 app.get("/", (req, res) => {
   return res.status(200).json({
