@@ -209,7 +209,7 @@ const BusMap = () => {
                 }`}
               >
                 <MapPin className="w-4 h-4 mr-1 text-green-500" />
-                <span className="font-medium">{busLocations.length}</span> {t("busMap.busesTracked")}
+                <span className="font-medium">{busLocations.length}</span>{" "}{t("busMap.busesTracked")}
               </div>
               {lastUpdated && (
                 <div
