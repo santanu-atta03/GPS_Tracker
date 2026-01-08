@@ -470,35 +470,42 @@ const BusMap = () => {
 
         {/* Legend */}
         <div
-          className={`rounded-2xl shadow-lg p-6 mt-6 ${
+          className={`rounded-2xl shadow-xl p-8 mt-6 backdrop-blur-sm ${
             darktheme
-              ? "bg-gray-800 border border-gray-700"
-              : "bg-white border border-green-100"
+              ? "bg-gradient-to-br from-gray-800/95 to-gray-900/95 border-2 border-gray-700/50"
+              : "bg-gradient-to-br from-green-50/95 to-white border-2 border-green-200/50"
           }`}
         >
           <h3
-            className={`text-lg font-bold mb-4 ${
+            className={`text-2xl font-bold mb-6 text-center ${
               darktheme ? "text-white" : "text-gray-800"
             }`}
           >
             {t("busMap.mapLegend")}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Your Location */}
+            <div
+              className={`flex items-start space-x-4 p-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                darktheme
+                  ? "bg-gray-700/50 hover:bg-gray-700/70"
+                  : "bg-blue-50/50 hover:bg-blue-50/70"
+              }`}
+            >
+              <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-lg flex-shrink-0 shadow-lg ring-4 ring-blue-200/50">
                 📍
               </div>
-              <div>
+              <div className="flex-1">
                 <p
-                  className={`font-medium ${
-                    darktheme ? "text-gray-200" : "text-gray-700"
+                  className={`font-semibold text-base mb-1 ${
+                    darktheme ? "text-blue-300" : "text-blue-700"
                   }`}
                 >
                   {t("busMap.yourLocation")}
                 </p>
                 <p
-                  className={`text-sm ${
-                    darktheme ? "text-gray-400" : "text-gray-500"
+                  className={`text-sm leading-relaxed ${
+                    darktheme ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
                   {t("busMap.currentGPS")}
@@ -506,21 +513,28 @@ const BusMap = () => {
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm">
+            {/* Active Bus */}
+            <div
+              className={`flex items-start space-x-4 p-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                darktheme
+                  ? "bg-gray-700/50 hover:bg-gray-700/70"
+                  : "bg-green-50/50 hover:bg-green-50/70"
+              }`}
+            >
+              <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white text-lg flex-shrink-0 shadow-lg ring-4 ring-green-200/50">
                 🚌
               </div>
-              <div>
+              <div className="flex-1">
                 <p
-                  className={`font-medium ${
-                    darktheme ? "text-gray-200" : "text-gray-700"
+                  className={`font-semibold text-base mb-1 ${
+                    darktheme ? "text-green-300" : "text-green-700"
                   }`}
                 >
                   {t("busMap.activeBus")}
                 </p>
                 <p
-                  className={`text-sm ${
-                    darktheme ? "text-gray-400" : "text-gray-500"
+                  className={`text-sm leading-relaxed ${
+                    darktheme ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
                   {t("busMap.activeBusDescription")}
@@ -528,21 +542,28 @@ const BusMap = () => {
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-white text-sm">
+            {/* Inactive Bus */}
+            <div
+              className={`flex items-start space-x-4 p-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                darktheme
+                  ? "bg-gray-700/50 hover:bg-gray-700/70"
+                  : "bg-gray-50/50 hover:bg-gray-50/70"
+              }`}
+            >
+              <div className="w-12 h-12 bg-gray-500 rounded-full flex items-center justify-center text-white text-lg flex-shrink-0 shadow-lg ring-4 ring-gray-200/50">
                 🚌
               </div>
-              <div>
+              <div className="flex-1">
                 <p
-                  className={`font-medium ${
-                    darktheme ? "text-gray-200" : "text-gray-700"
+                  className={`font-semibold text-base mb-1 ${
+                    darktheme ? "text-gray-300" : "text-gray-700"
                   }`}
                 >
                   {t("busMap.inactiveBus")}
                 </p>
                 <p
-                  className={`text-sm ${
-                    darktheme ? "text-gray-400" : "text-gray-500"
+                  className={`text-sm leading-relaxed ${
+                    darktheme ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
                   {t("busMap.inactiveBusDescription")}
