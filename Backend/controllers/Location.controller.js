@@ -33,11 +33,131 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 };
 
+ feat/api-pagination-bus-listing
 /* =========================
    UPDATE LOCATION (UNCHANGED)
 ========================= */
 /* 🔹 Your updatelocation function remains EXACTLY the same */
 /* (No changes here) */
+
+export const updatelocation = async (req, res) => {
+  try {
+    const { deviceID, latitude, longitude } = req.body;
+
+    console.log(`[updatelocation] Received request:`, {
+      deviceID,
+      latitude,
+      longitude,
+    });
+
+    if (!deviceID || !latitude || !longitude) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields: deviceID, latitude, longitude",
+        received: {
+          deviceID: !!deviceID,
+          latitude: !!latitude,
+          longitude: !!longitude,
+        },
+      });
+    }
+
+    const lat = parseFloat(latitude);
+    const lng = parseFloat(longitude);
+
+    if (
+      isNaN(lat) ||
+      isNaN(lng) ||
+      lat < -90 ||
+      lat > 90 ||
+      lng < -180 ||
+      lng > 180
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid coordinates",
+        details: { latitude: lat, longitude: lng, valid: false },
+      });
+    }
+
+    const coordinates = [lat, lng];
+    const currentTime = new Date();
+    console.log(`[updatelocation] Parsed coordinates:`, coordinates);
+
+    let bus = await Location.findOne({ deviceID });
+    console.log(`[updatelocation] Existing bus found:`, !!bus);
+
+    if (bus) {
+      let shouldAddToRoute = true;
+
+      if (bus.route && bus.route.length > 0) {
+        const isDuplicate = isCoordinateNearExisting(
+          coordinates,
+          bus.route,
+          500
+        );
+        shouldAddToRoute = !isDuplicate;
+      }
+
+      if (shouldAddToRoute) {
+        bus.route.push({
+          type: "Point",
+          coordinates: coordinates,
+          timestamp: currentTime,
+        });
+        console.log(
+          `[updatelocation] Added new location to route, total points: ${bus.route.length}`
+        );
+      } else {
+        console.log(
+          `[updatelocation] Skipped adding duplicate route point (within 500m)`
+        );
+      }
+
+      // ✅ Always update live location
+      bus.prevlocation = {
+        type: "Point",
+        coordinates: bus.location.coordinates, // old location
+        timestamp:bus.location.timestamp
+      };
+
+      bus.location = {
+        type: "Point",
+        coordinates: coordinates,
+      };
+      bus.lastUpdated = currentTime;
+
+      await bus.save();
+      return res.json({ success: true, message: "Location updated", bus });
+    } else {
+      const newBus = new Location({
+        deviceID,
+        location: {
+          type: "Point",
+          coordinates: coordinates,
+        },
+        route: [
+          {
+            type: "Point",
+            coordinates: coordinates,
+            timestamp: currentTime,
+          },
+        ],
+        lastUpdated: currentTime,
+      });
+
+      await newBus.save();
+      return res.json({
+        success: true,
+        message: "New bus created",
+        bus: newBus,
+      });
+    }
+  } catch (error) {
+    console.error(`[updatelocation] Error:`, error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
 
 /* =========================
    UPDATED: getAllBus (PAGINATED)
