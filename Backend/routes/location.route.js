@@ -1,5 +1,4 @@
 import express from "express";
-
 import {
   createBusId,
   getAllBus,
@@ -8,198 +7,168 @@ import {
   getBusesAlongRoute,
   getLocation,
   updatelocation,
-  debugDatabase, // Add this import
+  debugDatabase,
 } from "../controllers/Location.controller.js";
 
 const locationRoute = express.Router();
 
+/* =========================
+   Helper: Standard Error Response
+========================= */
+const errorResponse = (res, status, message) => {
+  return res.status(status).json({
+    success: false,
+    message,
+  });
+};
 
-// Existing routes
-locationRoute.put("/update/location", updatelocation);
-locationRoute.post("/create/newBus", createBusId);
-locationRoute.get("/get/location/:deviceID", getLocation);
-locationRoute.get("/get/search", getAllBus);
-locationRoute.get("/route/search", getBusesAlongRoute);
-locationRoute.get("/bus/:deviceId", getBusByDeviceId);
-// locationRoute.post('/bus/update', updateBusLocation);
-locationRoute.get("/AllLocation", getAllBusDetails);
+/* =========================
+   Routes with Validation
+========================= */
 
-// NEW DEBUG ENDPOINTS
-locationRoute.get("/debug/database", debugDatabase);
+// Update bus location
+locationRoute.put("/update/location", async (req, res) => {
+  try {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return errorResponse(res, 400, "Request body is required");
+    }
 
-// Test endpoint to create sample buses for testing
+    await updatelocation(req, res);
+  } catch (error) {
+    console.error("Update location error:", error);
+    return errorResponse(res, 500, "Failed to update location");
+  }
+});
+
+// Create new bus
+locationRoute.post("/create/newBus", async (req, res) => {
+  try {
+    if (!req.body?.deviceID) {
+      return errorResponse(res, 400, "deviceID is required");
+    }
+
+    await createBusId(req, res);
+  } catch (error) {
+    console.error("Create bus error:", error);
+    return errorResponse(res, 500, "Failed to create new bus");
+  }
+});
+
+// Get bus location by deviceID
+locationRoute.get("/get/location/:deviceID", async (req, res) => {
+  try {
+    const { deviceID } = req.params;
+
+    if (!deviceID) {
+      return errorResponse(res, 400, "deviceID parameter is required");
+    }
+
+    await getLocation(req, res);
+  } catch (error) {
+    console.error("Get location error:", error);
+    return errorResponse(res, 500, "Failed to fetch location");
+  }
+});
+
+// Get all buses
+locationRoute.get("/get/search", async (req, res) => {
+  try {
+    await getAllBus(req, res);
+  } catch (error) {
+    console.error("Get all buses error:", error);
+    return errorResponse(res, 500, "Failed to fetch buses");
+  }
+});
+
+// Search buses along route
+locationRoute.get("/route/search", async (req, res) => {
+  try {
+    const { fromLat, fromLon, toLat, toLon } = req.query;
+
+    if (!fromLat || !fromLon || !toLat || !toLon) {
+      return errorResponse(
+        res,
+        400,
+        "fromLat, fromLon, toLat, and toLon query parameters are required"
+      );
+    }
+
+    await getBusesAlongRoute(req, res);
+  } catch (error) {
+    console.error("Route search error:", error);
+    return errorResponse(res, 500, "Failed to search buses along route");
+  }
+});
+
+// Get bus by deviceId
+locationRoute.get("/bus/:deviceId", async (req, res) => {
+  try {
+    const { deviceId } = req.params;
+
+    if (!deviceId) {
+      return errorResponse(res, 400, "deviceId parameter is required");
+    }
+
+    await getBusByDeviceId(req, res);
+  } catch (error) {
+    console.error("Get bus by deviceId error:", error);
+    return errorResponse(res, 500, "Failed to fetch bus details");
+  }
+});
+
+// Get all location details
+locationRoute.get("/AllLocation", async (req, res) => {
+  try {
+    await getAllBusDetails(req, res);
+  } catch (error) {
+    console.error("Get all locations error:", error);
+    return errorResponse(res, 500, "Failed to fetch all location details");
+  }
+});
+
+/* =========================
+   Debug Routes (Handled Safely)
+========================= */
+
+locationRoute.get("/debug/database", async (req, res) => {
+  try {
+    await debugDatabase(req, res);
+  } catch (error) {
+    console.error("Debug database error:", error);
+    return errorResponse(res, 500, "Database debug failed");
+  }
+});
+
+// Create sample buses (debug)
 locationRoute.post("/debug/create-sample-buses", async (req, res) => {
   try {
     const Location = (await import("../models/Location.model.js")).default;
 
-    // Sample bus locations around Delhi for testing
     const sampleBuses = [
       {
         deviceID: "TEST-BUS-001",
-        location: {
-          type: "Point",
-          coordinates: [77.209, 28.6139], // Delhi center
-        },
-        route: [
-          {
-            type: "Point",
-            coordinates: [77.1025, 28.7041], // North Delhi
-            timestamp: new Date(),
-          },
-          {
-            type: "Point",
-            coordinates: [77.209, 28.6139], // Center
-            timestamp: new Date(),
-          },
-        ],
+        location: { type: "Point", coordinates: [77.209, 28.6139] },
         status: "Active",
         driverName: "Test Driver 1",
       },
       {
         deviceID: "TEST-BUS-002",
-        location: {
-          type: "Point",
-          coordinates: [77.1025, 28.7041], // North Delhi
-        },
-        route: [
-          {
-            type: "Point",
-            coordinates: [77.209, 28.6139], // Center
-            timestamp: new Date(),
-          },
-          {
-            type: "Point",
-            coordinates: [77.391, 28.5355], // South Delhi
-            timestamp: new Date(),
-          },
-        ],
+        location: { type: "Point", coordinates: [77.1025, 28.7041] },
         status: "Active",
         driverName: "Test Driver 2",
       },
-      {
-        deviceID: "TEST-BUS-003",
-        location: {
-          type: "Point",
-          coordinates: [77.391, 28.5355], // South Delhi
-        },
-        route: [
-          {
-            type: "Point",
-            coordinates: [77.1025, 28.7041], // North Delhi
-            timestamp: new Date(),
-          },
-          {
-            type: "Point",
-            coordinates: [77.391, 28.5355], // South Delhi
-            timestamp: new Date(),
-          },
-        ],
-        status: "Active",
-        driverName: "Test Driver 3",
-      },
     ];
 
-    // Delete existing test buses
     await Location.deleteMany({ deviceID: { $regex: /^TEST-BUS/ } });
+    const created = await Location.insertMany(sampleBuses);
 
-    // Insert new test buses
-    const createdBuses = await Location.insertMany(sampleBuses);
-
-    res.json({
+    return res.status(201).json({
       success: true,
-      message: `Created ${createdBuses.length} test buses`,
-      buses: createdBuses.map((bus) => ({
-        deviceID: bus.deviceID,
-        coordinates: bus.location.coordinates,
-        routePoints: bus.route.length,
-      })),
+      message: `Created ${created.length} test buses`,
     });
   } catch (error) {
-    console.error("Error creating sample buses:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
-
-// Test route search with predefined coordinates
-locationRoute.get("/debug/test-route-search", async (req, res) => {
-  try {
-    // Delhi coordinates for testing
-    const testRoutes = [
-      {
-        name: "North to South Delhi",
-        fromLat: 28.7041,
-        fromLon: 77.1025,
-        toLat: 28.5355,
-        toLon: 77.391,
-      },
-      {
-        name: "Central Delhi Loop",
-        fromLat: 28.6139,
-        fromLon: 77.209,
-        toLat: 28.65,
-        toLon: 77.25,
-      },
-    ];
-
-    const results = [];
-
-    for (const route of testRoutes) {
-      try {
-        const { getBusesAlongRoute } = await import(
-          "../controllers/Location.controller.js"
-        );
-
-        // Mock request/response objects
-        const mockReq = {
-          query: {
-            fromLat: route.fromLat,
-            fromLon: route.fromLon,
-            toLat: route.toLat,
-            toLon: route.toLon,
-            radius: 10000,
-          },
-        };
-
-        let mockResult = null;
-        const mockRes = {
-          json: (data) => {
-            mockResult = data;
-          },
-          status: (code) => ({
-            json: (data) => {
-              mockResult = { ...data, statusCode: code };
-            },
-          }),
-        };
-
-        await getBusesAlongRoute(mockReq, mockRes);
-
-        results.push({
-          route: route.name,
-          coordinates: `(${route.fromLat}, ${route.fromLon}) -> (${route.toLat}, ${route.toLon})`,
-          result: mockResult,
-        });
-      } catch (error) {
-        results.push({
-          route: route.name,
-          error: error.message,
-        });
-      }
-    }
-
-    res.json({
-      success: true,
-      testResults: results,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    console.error("Create sample buses error:", error);
+    return errorResponse(res, 500, "Failed to create sample buses");
   }
 });
 
