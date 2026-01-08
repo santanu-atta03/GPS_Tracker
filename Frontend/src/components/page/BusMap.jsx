@@ -202,49 +202,63 @@ const BusMap = () => {
           }`}
         >
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-6">
               <div
-                className={`flex items-center text-sm ${
-                  darktheme ? "text-gray-300" : "text-gray-600"
+                className={`flex items-center gap-3 ${
+                  darktheme ? "text-gray-200" : "text-gray-700"
                 }`}
               >
-                <MapPin className="w-4 h-4 mr-1 text-green-500" />
-                <span className="font-medium">{busLocations.length}</span> {t("busMap.busesTracked")}
+                <div className="flex-shrink-0">
+                  <MapPin className="w-6 h-6 text-green-500" />
+                </div>
+                <span className="text-base font-semibold">
+                  <span className="text-green-500 font-bold text-lg">
+                    {busLocations.length}
+                  </span>{" "}
+                  {t("busMap.busesTracked")}
+                </span>
               </div>
               {lastUpdated && (
                 <div
-                  className={`flex items-center text-sm ${
-                    darktheme ? "text-gray-400" : "text-gray-500"
+                  className={`flex items-center gap-2 text-sm ${
+                    darktheme ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
-                  <Clock className="w-4 h-4 mr-1" />
-                  {t("busMap.lastUpdated")} {lastUpdated.toLocaleTimeString()}
+                  <Clock className="w-4 h-4 flex-shrink-0" />
+                  <span>
+                    {t("busMap.lastUpdated")}{" "}
+                    {lastUpdated.toLocaleTimeString()}
+                  </span>
                 </div>
               )}
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-3">
               <button
                 onClick={handleGetCurrentLocation}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 flex items-center text-sm"
+                className="px-5 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-all duration-200 flex items-center gap-2 text-sm font-medium shadow-md hover:shadow-lg"
               >
-                <Locate className="w-4 h-4 mr-1" />
-                {t("busMap.myLocation")}
+                <Locate className="w-4 h-4 flex-shrink-0" />
+                <span>{t("busMap.myLocation")}</span>
               </button>
 
               <button
                 onClick={handleRefresh}
                 disabled={isLoading}
-                className={`px-4 py-2 rounded-lg transition-colors duration-200 flex items-center text-sm ${
+                className={`px-5 py-2.5 rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium shadow-md hover:shadow-lg ${
                   isLoading
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-green-500 text-white hover:bg-green-600"
+                    : "bg-green-500 text-white hover:bg-green-600 active:bg-green-700"
                 }`}
               >
                 <RefreshCw
-                  className={`w-4 h-4 mr-1 ${isLoading ? "animate-spin" : ""}`}
+                  className={`w-4 h-4 flex-shrink-0 ${
+                    isLoading ? "animate-spin" : ""
+                  }`}
                 />
-                {isLoading ? t("busMap.refreshing") : t("busMap.refresh")}
+                <span>
+                  {isLoading ? t("busMap.refreshing") : t("busMap.refresh")}
+                </span>
               </button>
             </div>
           </div>
@@ -259,18 +273,20 @@ const BusMap = () => {
                 : "bg-red-50 border border-red-200"
             }`}
           >
-            <div className="flex items-start">
-              <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
-              <div>
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 pt-0.5">
+                <AlertTriangle className="w-6 h-6 text-red-500" />
+              </div>
+              <div className="flex-1 min-w-0">
                 <h3
-                  className={`font-medium mb-1 ${
+                  className={`font-semibold mb-1.5 text-base ${
                     darktheme ? "text-red-300" : "text-red-800"
                   }`}
                 >
                   {t("busMap.error")}
                 </h3>
                 <p
-                  className={`text-sm ${
+                  className={`text-sm leading-relaxed ${
                     darktheme ? "text-red-400" : "text-red-700"
                   }`}
                 >
@@ -289,18 +305,20 @@ const BusMap = () => {
                 : "bg-yellow-50 border border-yellow-200"
             }`}
           >
-            <div className="flex items-start">
-              <AlertTriangle className="w-5 h-5 text-yellow-500 mt-0.5 mr-3 flex-shrink-0" />
-              <div>
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 pt-0.5">
+                <AlertTriangle className="w-6 h-6 text-yellow-500" />
+              </div>
+              <div className="flex-1 min-w-0">
                 <h3
-                  className={`font-medium mb-1 ${
+                  className={`font-semibold mb-1.5 text-base ${
                     darktheme ? "text-yellow-300" : "text-yellow-800"
                   }`}
                 >
                   {t("busMap.locationNotice")}
                 </h3>
                 <p
-                  className={`text-sm ${
+                  className={`text-sm leading-relaxed ${
                     darktheme ? "text-yellow-400" : "text-yellow-700"
                   }`}
                 >
