@@ -36,7 +36,7 @@ function App() {
       element: <PrivacyPolicy />,
     },
     {
-      path: "/terms",
+      path: "/terms-and-conditions",
       element: <TermsAndConditions />
     },
     {
