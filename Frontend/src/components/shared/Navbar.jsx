@@ -345,8 +345,7 @@ const Navbar = () => {
                     {t("navbar.viewProfile")}
                   </Button>
                   <Button
-                    variant="destructive"
-                    className="w-full bg-red-500 hover:bg-red-600"
+                    className="w-full bg-[#dc2626] hover:bg-[#b91c1c] text-white border-0"
                     onClick={handleLogout}
                   >
                     {t("navbar.logout")}
@@ -627,8 +626,7 @@ const Navbar = () => {
                     {t("navbar.viewProfile")}
                   </Button>
                   <Button
-                    variant="destructive"
-                    className="w-full bg-red-500 hover:bg-red-600"
+                    className="w-full bg-[#dc2626] hover:bg-[#b91c1c] text-white border-0"
                     onClick={handleLogout}
                   >
                     {t("navbar.logout")}
