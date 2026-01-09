@@ -32,7 +32,7 @@ function App() {
       element: <Home />,
     },
     {
-      path: "/privacy",
+      path: "/privacy-policy",
       element: <PrivacyPolicy />,
     },
     {
