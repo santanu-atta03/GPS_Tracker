@@ -19,6 +19,9 @@ import SupportChat from "./components/page/SupportChat";
 import History from "./components/page/History";
 import BusDetailsPage2 from "./components/page/BusDetailsPage2";
 import LocationTracker from "./components/page/LocationTracker";
+import Footer from "./components/shared/Footer";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 function App() {
   const approute = createBrowserRouter([
@@ -91,11 +94,22 @@ function App() {
       element: <History />,
     },
   ]);
+   const { darktheme } = useSelector((store) => store.auth);
 
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (darktheme) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [darktheme]);
   return (
     <>
       <LocationTracker />
       <RouterProvider router={approute} />
+      <Footer />
     </>
   );
 }
