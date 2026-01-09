@@ -110,7 +110,9 @@ const BusMap = () => {
         setError(t("busMap.fetchError"));
         setIsLoading(false);
         const errorMessage =
-          error.response?.data?.message || error.message || t("busMap.errorOccurred");
+          error.response?.data?.message ||
+          error.message ||
+          t("busMap.errorOccurred");
         toast.error(errorMessage);
       }
     };
@@ -139,7 +141,9 @@ const BusMap = () => {
     } catch (error) {
       setError(t("busMap.refreshError"));
       const errorMessage =
-        error.response?.data?.message || error.message || t("busMap.errorOccurred");
+        error.response?.data?.message ||
+        error.message ||
+        t("busMap.errorOccurred");
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -226,8 +230,7 @@ const BusMap = () => {
                 >
                   <Clock className="w-4 h-4 flex-shrink-0" />
                   <span>
-                    {t("busMap.lastUpdated")}{" "}
-                    {lastUpdated.toLocaleTimeString()}
+                    {t("busMap.lastUpdated")} {lastUpdated.toLocaleTimeString()}
                   </span>
                 </div>
               )}
@@ -378,7 +381,9 @@ const BusMap = () => {
                     <h3 className="font-bold text-blue-600 mb-1">
                       📍 {t("busMap.yourLocation")}
                     </h3>
-                    <p className="text-sm text-gray-600">{t("busMap.youAreHere")}</p>
+                    <p className="text-sm text-gray-600">
+                      {t("busMap.youAreHere")}
+                    </p>
                   </div>
                 </Popup>
               </Marker>
