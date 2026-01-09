@@ -1,6 +1,5 @@
 import "./App.css";
 import Home from "./components/page/Home";
-import Landing from "./components/page/Landing";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
 import Complete from "./components/page/Complete";
