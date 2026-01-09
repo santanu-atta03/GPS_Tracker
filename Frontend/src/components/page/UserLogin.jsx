@@ -24,7 +24,6 @@ const UserLogin = () => {
     }
   }, [user]);
 
-  // STEP 1: Submit name + send OTP
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -39,19 +38,6 @@ const UserLogin = () => {
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v3",
       });
-
-      // save / create user
-      await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/user/crete/User`,
-        {
-          fullname,
-          email: user.email,
-          picture: user.picture,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
 
       // send OTP to email
       await axios.post(
@@ -72,7 +58,6 @@ const UserLogin = () => {
     }
   };
 
-  // STEP 2: Verify OTP
   const verifyOtp = async () => {
     if (!otp.trim()) {
       toast.error("Please enter OTP");
@@ -91,18 +76,37 @@ const UserLogin = () => {
       );
 
       if (res.data.success) {
+        const token = await getAccessTokenSilently({
+          audience: "http://localhost:5000/api/v3",
+        });
+
+        const createUserRes = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/user/crete/User`,
+          {
+            fullname,
+            email: user.email,
+            picture: user.picture,
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
         dispatch(
           setuser({
             fullname,
             email: user.email,
             picture: user.picture,
+            ...createUserRes.data.userData
           })
         );
         toast.success("Login successful");
         navigate("/");
       }
     } catch (error) {
-      toast.error("Invalid or expired OTP");
+      console.error(error);
+      const msg = error.response?.data?.message || "Invalid OTP or Creation Failed";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
