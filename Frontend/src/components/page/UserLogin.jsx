@@ -102,7 +102,8 @@ const UserLogin = () => {
         navigate("/");
       }
     } catch (error) {
-      toast.error("Invalid or expired OTP");
+      const errorMessage = error.response?.data?.message || "Invalid or expired OTP";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
