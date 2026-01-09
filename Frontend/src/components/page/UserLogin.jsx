@@ -24,7 +24,6 @@ const UserLogin = () => {
     }
   }, [user]);
 
-  // STEP 1: Send OTP Only (Do NOT create user yet)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -39,9 +38,6 @@ const UserLogin = () => {
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v3",
       });
-
-      // REMOVED: User creation logic was here. 
-      // We only want to send the OTP at this stage.
 
       // send OTP to email
       await axios.post(
@@ -62,7 +58,6 @@ const UserLogin = () => {
     }
   };
 
-  // STEP 2: Verify OTP AND Create User
   const verifyOtp = async () => {
     if (!otp.trim()) {
       toast.error("Please enter OTP");
@@ -72,7 +67,6 @@ const UserLogin = () => {
     try {
       setLoading(true);
 
-      // 1. Verify the OTP first
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/email/verify-otp`,
         {
@@ -82,12 +76,10 @@ const UserLogin = () => {
       );
 
       if (res.data.success) {
-        // 2. OTP is valid, NOW create the user in the database
         const token = await getAccessTokenSilently({
           audience: "http://localhost:5000/api/v3",
         });
 
-        // Note: Using your existing endpoint '/user/crete/User' (mind the typo 'crete')
         const createUserRes = await axios.post(
           `${import.meta.env.VITE_BASE_URL}/user/crete/User`,
           {
@@ -100,13 +92,12 @@ const UserLogin = () => {
           }
         );
 
-        // 3. Update Redux and Redirect
         dispatch(
           setuser({
             fullname,
             email: user.email,
             picture: user.picture,
-            ...createUserRes.data.userData // Optionally merge backend data
+            ...createUserRes.data.userData
           })
         );
         toast.success("Login successful");
@@ -114,7 +105,6 @@ const UserLogin = () => {
       }
     } catch (error) {
       console.error(error);
-      // Determine if error was OTP or Creation related
       const msg = error.response?.data?.message || "Invalid OTP or Creation Failed";
       toast.error(msg);
     } finally {
