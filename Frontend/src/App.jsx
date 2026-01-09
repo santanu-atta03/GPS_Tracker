@@ -25,10 +25,6 @@ function App() {
   const approute = createBrowserRouter([
     {
       path: "/",
-      element: <Landing />,
-    },
-    {
-      path: "/home",
       element: <Home />,
     },
     {
