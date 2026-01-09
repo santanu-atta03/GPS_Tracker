@@ -22,12 +22,22 @@ import LocationTracker from "./components/page/LocationTracker";
 import Footer from "./components/shared/Footer";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import PrivacyPolicy from "./components/page/PrivacyPolicy";
+import TermsAndConditions from "./components/page/TermsAndConditions";
 
 function App() {
   const approute = createBrowserRouter([
     {
       path: "/",
       element: <Home />,
+    },
+    {
+      path: "/privacy",
+      element: <PrivacyPolicy />,
+    },
+    {
+      path: "/terms",
+      element: <TermsAndConditions />
     },
     {
       path: "/bus/:deviceID",
