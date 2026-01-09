@@ -18,7 +18,7 @@ dotenv.config();
 connectToMongo();
 
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 5000;
 
 /* =========================
    API REQUEST LOGGING (NEW)
