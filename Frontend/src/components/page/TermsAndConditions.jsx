@@ -1,116 +1,216 @@
+import Navbar from "../shared/Navbar";
+import { useSelector } from "react-redux";
+
 const TermsAndConditions = () => {
+  const { darktheme } = useSelector((store) => store.auth);
+
   return (
-    <div className="max-w-5xl mx-auto px-6 py-16">
-      <h1 className="text-3xl font-bold mb-6">Terms & Conditions</h1>
-      <p className="text-sm text-muted-foreground mb-10">
-        Last updated: {new Date().toLocaleDateString()}
-      </p>
+    <div
+      className={`min-h-screen ${
+        darktheme
+          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+          : "bg-gradient-to-br from-green-50 via-white to-green-100"
+      }`}
+    >
+      <Navbar />
 
-      <div className="space-y-8 text-sm leading-relaxed text-foreground">
-        <section>
-          <h2 className="text-xl font-semibold mb-2">1. Acceptance of Terms</h2>
-          <p className="text-muted-foreground">
-            By accessing or using GPS Tracker, you agree to comply with and be
-            bound by these Terms & Conditions. If you do not agree, please do
-            not use the service.
-          </p>
-        </section>
+      <div className="px-6 py-20">
+        <div className="max-w-4xl mx-auto">
+          <div
+            className={`backdrop-blur-xl border rounded-2xl p-10 shadow-2xl ${
+              darktheme
+                ? "bg-gray-800/70 border-gray-700 text-gray-300"
+                : "bg-white border-green-100 text-gray-700"
+            }`}
+          >
+            <h1
+              className={`text-3xl font-bold mb-2 ${
+                darktheme ? "text-white" : "text-gray-800"
+              }`}
+            >
+              Terms & Conditions
+            </h1>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">2. Description of Service</h2>
-          <p className="text-muted-foreground">
-            GPS Tracker provides real-time vehicle tracking, map visualization,
-            ticketing, and related services. Features may change or evolve over
-            time.
-          </p>
-        </section>
+            <p
+              className={`text-sm mb-10 ${
+                darktheme ? "text-gray-400" : "text-gray-500"
+              }`}
+            >
+              Last updated: {new Date().toLocaleDateString()}
+            </p>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">3. User Responsibilities</h2>
-          <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-            <li>Provide accurate and lawful information</li>
-            <li>Do not misuse or attempt to exploit the platform</li>
-            <li>Do not interfere with tracking systems or APIs</li>
-            <li>Comply with local laws and regulations</li>
-          </ul>
-        </section>
+            <div className="space-y-8 text-sm leading-relaxed">
+              <section>
+                <h2
+                  className={`text-xl font-semibold mb-2 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  1. Acceptance of Terms
+                </h2>
+                <p>
+                  By accessing or using Where is My Bus, you agree to comply with
+                  and be bound by these Terms & Conditions. If you do not agree,
+                  please discontinue use of the service.
+                </p>
+              </section>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">4. Account Security</h2>
-          <p className="text-muted-foreground">
-            You are responsible for maintaining the confidentiality of your
-            account credentials. We are not liable for unauthorized access
-            caused by user negligence.
-          </p>
-        </section>
+              <section>
+                <h2
+                  className={`text-xl font-semibold mb-2 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  2. Description of Service
+                </h2>
+                <p>
+                  Where is My Bus provides real-time GPS tracking, route
+                  visualization, ticketing, and related transportation services.
+                  Features may evolve over time.
+                </p>
+              </section>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">5. Payments & Tickets</h2>
-          <p className="text-muted-foreground">
-            Payments are processed through third-party payment providers. GPS
-            Tracker does not store sensitive payment information. Refunds, if
-            applicable, are subject to provider policies.
-          </p>
-        </section>
+              <section>
+                <h2
+                  className={`text-xl font-semibold mb-2 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  3. User Responsibilities
+                </h2>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li>Provide accurate and lawful information</li>
+                  <li>Do not misuse or abuse the platform</li>
+                  <li>Do not interfere with tracking systems or APIs</li>
+                  <li>Comply with all applicable laws and regulations</li>
+                </ul>
+              </section>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">6. Service Availability</h2>
-          <p className="text-muted-foreground">
-            We strive to maintain uptime but do not guarantee uninterrupted
-            service. Downtime may occur due to maintenance, technical issues, or
-            external dependencies.
-          </p>
-        </section>
+              <section>
+                <h2
+                  className={`text-xl font-semibold mb-2 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  4. Accounts & Security
+                </h2>
+                <p>
+                  You are responsible for maintaining the confidentiality of
+                  your account credentials. We are not liable for unauthorized
+                  access resulting from user negligence.
+                </p>
+              </section>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">7. Limitation of Liability</h2>
-          <p className="text-muted-foreground">
-            GPS Tracker shall not be liable for any indirect, incidental, or
-            consequential damages arising from the use or inability to use the
-            service.
-          </p>
-        </section>
+              <section>
+                <h2
+                  className={`text-xl font-semibold mb-2 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  5. Payments & Tickets
+                </h2>
+                <p>
+                  Payments are processed via third-party providers. Where is My
+                  Bus does not store sensitive payment details. Refunds, if any,
+                  are subject to provider policies.
+                </p>
+              </section>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">8. Termination</h2>
-          <p className="text-muted-foreground">
-            We reserve the right to suspend or terminate accounts that violate
-            these terms or misuse the platform.
-          </p>
-        </section>
+              <section>
+                <h2
+                  className={`text-xl font-semibold mb-2 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  6. Service Availability
+                </h2>
+                <p>
+                  We strive to maintain uninterrupted service but do not
+                  guarantee uptime. Temporary outages may occur due to
+                  maintenance or technical issues.
+                </p>
+              </section>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">9. Intellectual Property</h2>
-          <p className="text-muted-foreground">
-            All content, logos, and software associated with GPS Tracker are the
-            intellectual property of their respective owners.
-          </p>
-        </section>
+              <section>
+                <h2
+                  className={`text-xl font-semibold mb-2 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  7. Limitation of Liability
+                </h2>
+                <p>
+                  Where is My Bus shall not be liable for any indirect,
+                  incidental, or consequential damages arising from the use or
+                  inability to use the service.
+                </p>
+              </section>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">10. Changes to Terms</h2>
-          <p className="text-muted-foreground">
-            We may modify these Terms & Conditions at any time. Continued use
-            of the service constitutes acceptance of updated terms.
-          </p>
-        </section>
+              <section>
+                <h2
+                  className={`text-xl font-semibold mb-2 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  8. Termination
+                </h2>
+                <p>
+                  We reserve the right to suspend or terminate access to the
+                  platform for violations of these terms or misuse of the
+                  service.
+                </p>
+              </section>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">11. Governing Law</h2>
-          <p className="text-muted-foreground">
-            These terms are governed by the laws of India. Any disputes shall
-            be subject to the jurisdiction of Indian courts.
-          </p>
-        </section>
+              <section>
+                <h2
+                  className={`text-xl font-semibold mb-2 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  9. Intellectual Property
+                </h2>
+                <p>
+                  All content, trademarks, and software associated with Where is
+                  My Bus remain the intellectual property of their respective
+                  owners.
+                </p>
+              </section>
 
-        <section>
-          <h2 className="text-xl font-semibold mb-2">12. Contact Information</h2>
-          <p className="text-muted-foreground">
-            For questions regarding these Terms & Conditions, contact:
-            <br />
-            <strong>support@gpstracker.app</strong>
-          </p>
-        </section>
+              <section>
+                <h2
+                  className={`text-xl font-semibold mb-2 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  10. Governing Law
+                </h2>
+                <p>
+                  These Terms & Conditions are governed by the laws of India.
+                  Any disputes shall fall under the jurisdiction of Indian
+                  courts.
+                </p>
+              </section>
+
+              <section>
+                <h2
+                  className={`text-xl font-semibold mb-2 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  11. Contact Information
+                </h2>
+                <p>
+                  For questions regarding these Terms & Conditions, contact us
+                  at:
+                  <br />
+                  <span className="text-green-600 font-medium">
+                    support@gpstracker.app
+                  </span>
+                </p>
+              </section>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
