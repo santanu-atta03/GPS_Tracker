@@ -9,7 +9,7 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="w-full mt-16 border-t border-gray-800 bg-slate-900/95 backdrop-blur-md">
+    <footer className="w-full mt-16 border-t border-border bg-background/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 items-start">
 
         {/* 1. Brand (Left aligned as per standard design) */}
@@ -107,7 +107,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-800">
+      <div className="border-t border-border">
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
           <p>© {new Date().getFullYear()} GPS Tracker. All rights reserved.</p>
           <p>Built with ❤️ using React & Leaflet</p>
