@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -7,16 +7,32 @@ import { setuser } from "../../Redux/auth.reducer";
 import { toast } from "sonner";
 
 const UserLogin = () => {
-  const { getAccessTokenSilently, user } = useAuth0();
+  const { getAccessTokenSilently, user, isAuthenticated } = useAuth0();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // pre-fill with Auth0 name
-  const [fullname, setFullname] = useState(user?.name || "");
+  // states
+  const [fullname, setFullname] = useState("");
+  const [otp, setOtp] = useState("");
+  const [step, setStep] = useState("FORM"); // FORM | OTP
   const [loading, setLoading] = useState(false);
 
+  // prefill name from Auth0
+  useEffect(() => {
+    if (user?.name) {
+      setFullname(user.name);
+    }
+  }, [user]);
+
+  // STEP 1: Submit name + send OTP
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!fullname.trim()) {
+      toast.error("Name is required");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -24,10 +40,11 @@ const UserLogin = () => {
         audience: "http://localhost:5000/api/v3",
       });
 
-      const res = await axios.post(
+      // save / create user
+      await axios.post(
         `${import.meta.env.VITE_BASE_URL}/user/crete/User`,
         {
-          fullname, // use value from input
+          fullname,
           email: user.email,
           picture: user.picture,
         },
@@ -35,47 +52,119 @@ const UserLogin = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      toast(res.data.message);
-      if (res.data.success) {
-        dispatch(setuser(res.data.userData));
-        navigate("/");
-      }
+
+      // send OTP to email
+      await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/email/send-otp`,
+        { email: user.email },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      toast.success("OTP sent to your Gmail");
+      setStep("OTP");
     } catch (error) {
       console.error(error);
-      const errorMessage =
-        error.response?.data?.message || error.message || "An error occurred";
-      toast.error(errorMessage);
+      toast.error(error.response?.data?.message || "Failed to send OTP");
     } finally {
       setLoading(false);
     }
   };
 
+  // STEP 2: Verify OTP
+  const verifyOtp = async () => {
+    if (!otp.trim()) {
+      toast.error("Please enter OTP");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/email/verify-otp`,
+        {
+          email: user.email,
+          otp,
+        }
+      );
+
+      if (res.data.success) {
+        dispatch(
+          setuser({
+            fullname,
+            email: user.email,
+            picture: user.picture,
+          })
+        );
+        toast.success("Login successful");
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error("Invalid or expired OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isAuthenticated) return null;
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-lg shadow-md w-80"
-      >
-        <h2 className="text-lg font-semibold mb-4 text-center">
-          Confirm your name
-        </h2>
+      <div className="bg-white p-6 rounded-lg shadow-md w-80">
+        {step === "FORM" && (
+          <form onSubmit={handleSubmit}>
+            <h2 className="text-lg font-semibold mb-4 text-center">
+              Confirm your name
+            </h2>
 
-        <input
-          type="text"
-          value={fullname}
-          onChange={(e) => setFullname(e.target.value)}
-          placeholder="Enter your name"
-          className="w-full p-2 mb-4 border rounded"
-        />
+            <input
+              type="text"
+              value={fullname}
+              onChange={(e) => setFullname(e.target.value)}
+              placeholder="Enter your name"
+              className="w-full p-2 mb-4 border rounded"
+            />
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:opacity-50"
-        >
-          {loading ? "Saving..." : "Continue"}
-        </button>
-      </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:opacity-50"
+            >
+              {loading ? "Sending OTP..." : "Continue"}
+            </button>
+          </form>
+        )}
+
+        {step === "OTP" && (
+          <>
+            <h2 className="text-lg font-semibold mb-4 text-center">
+              Verify Email
+            </h2>
+
+            <p className="text-sm text-gray-600 mb-2 text-center">
+              OTP sent to <b>{user.email}</b>
+            </p>
+
+            <input
+              type="text"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              placeholder="Enter 6-digit OTP"
+              className="w-full p-2 mb-4 border rounded"
+            />
+
+            <button
+              onClick={verifyOtp}
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+            >
+              {loading ? "Verifying..." : "Verify OTP"}
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 };
