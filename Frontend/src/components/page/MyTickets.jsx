@@ -19,7 +19,8 @@ import { toast } from "sonner";
 import { useSelector } from "react-redux";
 
 const MyTickets = () => {
-  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+  // ✅ FIX 1: Get 'isLoading' to distinguish between "checking" and "not logged in"
+  const { getAccessTokenSilently, isAuthenticated, isLoading: isAuth0Loading } = useAuth0();
   const { t } = useTranslation();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,10 +28,20 @@ const MyTickets = () => {
   const { darktheme } = useSelector((store) => store.auth);
 
   useEffect(() => {
+    // ✅ FIX 2: If Auth0 is still loading the session, wait.
+    if (isAuth0Loading) return;
+
+    // ✅ FIX 3: If Auth0 is done and user is NOT logged in, redirect.
+    if (!isAuthenticated) {
+      toast.error("Please login to view tickets");
+      navigate("/Login/User");
+      return;
+    }
+
     const fetchTickets = async () => {
       try {
         const token = await getAccessTokenSilently({
-          audience: "http://localhost:5000/api/v3",
+          audience: "http://localhost:3000/api/v3",
         });
 
         const res = await axios.get(
@@ -52,10 +63,11 @@ const MyTickets = () => {
       }
     };
 
-    if (isAuthenticated) fetchTickets();
-  }, [isAuthenticated, getAccessTokenSilently, t]);
+    fetchTickets();
+  }, [isAuthenticated, isAuth0Loading, getAccessTokenSilently, navigate, t]);
 
-  if (loading) {
+  // ✅ FIX 4: Show loader if Auth0 is checking OR API is fetching
+  if (isAuth0Loading || loading) {
     return (
       <div
         className={`min-h-screen relative overflow-hidden ${
@@ -88,7 +100,7 @@ const MyTickets = () => {
                 darktheme ? "text-gray-300" : "text-gray-700"
               }`}
             >
-              {t("tickets.loading")}
+              {isAuth0Loading ? "Checking login..." : t("tickets.loading")}
             </span>
             <span
               className={`text-sm mt-2 ${
@@ -102,6 +114,8 @@ const MyTickets = () => {
       </div>
     );
   }
+
+  // --- No changes below this line (Empty state & Data display logic remains the same) ---
 
   if (tickets.length === 0) {
     return (

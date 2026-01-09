@@ -5,10 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { toast } from "sonner";
-import { User, Mail, Shield, ArrowRight, KeyRound, Sparkles } from "lucide-react";
+import { User, Mail, Shield, ArrowRight, KeyRound, Sparkles, LogIn, Loader2 } from "lucide-react";
 
 const UserLogin = () => {
-  const { getAccessTokenSilently, user, isAuthenticated } = useAuth0();
+  // 1. Destructure loginWithRedirect and isLoading
+  const { getAccessTokenSilently, user, isAuthenticated, loginWithRedirect, isLoading } = useAuth0();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { darktheme } = useSelector((store) => store.auth);
@@ -23,6 +24,13 @@ const UserLogin = () => {
       setFullname(user.name);
     }
   }, [user]);
+
+  const handleLogin = () => {
+    // Redirect to Auth0 login, then come back to this page
+    loginWithRedirect({
+      appState: { returnTo: "/Login/User" }
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -111,8 +119,53 @@ const UserLogin = () => {
     }
   };
 
-  if (!isAuthenticated) return null;
+  // 2. Handle Loading State
+  if (isLoading) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${darktheme ? "bg-gray-900" : "bg-gray-50"}`}>
+        <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+      </div>
+    );
+  }
 
+  // 3. Handle Not Authenticated State (Show Login Button)
+  if (!isAuthenticated) {
+    return (
+      <div
+        className={`min-h-screen flex items-center justify-center relative overflow-hidden ${
+          darktheme
+            ? "bg-gradient-to-br from-gray-900 via-slate-900 to-black"
+            : "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"
+        }`}
+      >
+        <div className="w-full max-w-md px-4 relative z-10 text-center">
+          <div className={`rounded-3xl shadow-2xl p-8 backdrop-blur-sm ${
+             darktheme ? "bg-gray-800/80 border border-gray-700/50" : "bg-white/90 border border-white/50"
+          }`}>
+             <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg ${
+                darktheme ? "bg-blue-500/20" : "bg-blue-100"
+             }`}>
+                <LogIn className={`w-10 h-10 ${darktheme ? "text-blue-400" : "text-blue-600"}`} />
+             </div>
+             <h2 className={`text-2xl font-bold mb-4 ${darktheme ? "text-white" : "text-gray-800"}`}>
+               Login Required
+             </h2>
+             <p className={`mb-8 ${darktheme ? "text-gray-400" : "text-gray-600"}`}>
+               Please log in with Auth0 to access the verification page.
+             </p>
+             <button
+               onClick={handleLogin}
+               className="w-full py-4 rounded-xl font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all"
+             >
+               Login with Auth0
+             </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 4. Authenticated View (Existing Code)
   return (
     <div
       className={`min-h-screen flex items-center justify-center relative overflow-hidden ${
@@ -144,8 +197,8 @@ const UserLogin = () => {
                   <div
                     className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto shadow-lg ${
                       darktheme 
-                        ? "bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30" 
-                        : "bg-gradient-to-br from-blue-500 to-purple-500"
+                      ? "bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30" 
+                      : "bg-gradient-to-br from-blue-500 to-purple-500"
                     }`}
                   >
                     <User className={`w-10 h-10 ${darktheme ? 'text-blue-400' : 'text-white'}`} />
