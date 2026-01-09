@@ -110,7 +110,9 @@ const BusMap = () => {
         setError(t("busMap.fetchError"));
         setIsLoading(false);
         const errorMessage =
-          error.response?.data?.message || error.message || t("busMap.errorOccurred");
+          error.response?.data?.message ||
+          error.message ||
+          t("busMap.errorOccurred");
         toast.error(errorMessage);
       }
     };
@@ -139,7 +141,9 @@ const BusMap = () => {
     } catch (error) {
       setError(t("busMap.refreshError"));
       const errorMessage =
-        error.response?.data?.message || error.message || t("busMap.errorOccurred");
+        error.response?.data?.message ||
+        error.message ||
+        t("busMap.errorOccurred");
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -202,49 +206,62 @@ const BusMap = () => {
           }`}
         >
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-6">
               <div
-                className={`flex items-center text-sm ${
-                  darktheme ? "text-gray-300" : "text-gray-600"
+                className={`flex items-center gap-3 ${
+                  darktheme ? "text-gray-200" : "text-gray-700"
                 }`}
               >
-                <MapPin className="w-4 h-4 mr-1 text-green-500" />
-                <span className="font-medium">{busLocations.length}</span>{" "}{t("busMap.busesTracked")}
+                <div className="flex-shrink-0">
+                  <MapPin className="w-6 h-6 text-green-500" />
+                </div>
+                <span className="text-base font-semibold">
+                  <span className="text-green-500 font-bold text-lg">
+                    {busLocations.length}
+                  </span>{" "}
+                  {t("busMap.busesTracked")}
+                </span>
               </div>
               {lastUpdated && (
                 <div
-                  className={`flex items-center text-sm ${
-                    darktheme ? "text-gray-400" : "text-gray-500"
+                  className={`flex items-center gap-2 text-sm ${
+                    darktheme ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
-                  <Clock className="w-4 h-4 mr-1" />
-                  {t("busMap.lastUpdated")} {lastUpdated.toLocaleTimeString()}
+                  <Clock className="w-4 h-4 flex-shrink-0" />
+                  <span>
+                    {t("busMap.lastUpdated")} {lastUpdated.toLocaleTimeString()}
+                  </span>
                 </div>
               )}
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-3">
               <button
                 onClick={handleGetCurrentLocation}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 flex items-center text-sm"
+                className="px-5 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 active:bg-blue-700 transition-all duration-200 flex items-center gap-2 text-sm font-medium shadow-md hover:shadow-lg"
               >
-                <Locate className="w-4 h-4 mr-1" />
-                {t("busMap.myLocation")}
+                <Locate className="w-4 h-4 flex-shrink-0" />
+                <span>{t("busMap.myLocation")}</span>
               </button>
 
               <button
                 onClick={handleRefresh}
                 disabled={isLoading}
-                className={`px-4 py-2 rounded-lg transition-colors duration-200 flex items-center text-sm ${
+                className={`px-5 py-2.5 rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium shadow-md hover:shadow-lg ${
                   isLoading
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-green-500 text-white hover:bg-green-600"
+                    : "bg-green-500 text-white hover:bg-green-600 active:bg-green-700"
                 }`}
               >
                 <RefreshCw
-                  className={`w-4 h-4 mr-1 ${isLoading ? "animate-spin" : ""}`}
+                  className={`w-4 h-4 flex-shrink-0 ${
+                    isLoading ? "animate-spin" : ""
+                  }`}
                 />
-                {isLoading ? t("busMap.refreshing") : t("busMap.refresh")}
+                <span>
+                  {isLoading ? t("busMap.refreshing") : t("busMap.refresh")}
+                </span>
               </button>
             </div>
           </div>
@@ -259,18 +276,20 @@ const BusMap = () => {
                 : "bg-red-50 border border-red-200"
             }`}
           >
-            <div className="flex items-start">
-              <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
-              <div>
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 pt-0.5">
+                <AlertTriangle className="w-6 h-6 text-red-500" />
+              </div>
+              <div className="flex-1 min-w-0">
                 <h3
-                  className={`font-medium mb-1 ${
+                  className={`font-semibold mb-1.5 text-base ${
                     darktheme ? "text-red-300" : "text-red-800"
                   }`}
                 >
                   {t("busMap.error")}
                 </h3>
                 <p
-                  className={`text-sm ${
+                  className={`text-sm leading-relaxed ${
                     darktheme ? "text-red-400" : "text-red-700"
                   }`}
                 >
@@ -289,18 +308,20 @@ const BusMap = () => {
                 : "bg-yellow-50 border border-yellow-200"
             }`}
           >
-            <div className="flex items-start">
-              <AlertTriangle className="w-5 h-5 text-yellow-500 mt-0.5 mr-3 flex-shrink-0" />
-              <div>
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 pt-0.5">
+                <AlertTriangle className="w-6 h-6 text-yellow-500" />
+              </div>
+              <div className="flex-1 min-w-0">
                 <h3
-                  className={`font-medium mb-1 ${
+                  className={`font-semibold mb-1.5 text-base ${
                     darktheme ? "text-yellow-300" : "text-yellow-800"
                   }`}
                 >
                   {t("busMap.locationNotice")}
                 </h3>
                 <p
-                  className={`text-sm ${
+                  className={`text-sm leading-relaxed ${
                     darktheme ? "text-yellow-400" : "text-yellow-700"
                   }`}
                 >
@@ -360,7 +381,9 @@ const BusMap = () => {
                     <h3 className="font-bold text-blue-600 mb-1">
                       📍 {t("busMap.yourLocation")}
                     </h3>
-                    <p className="text-sm text-gray-600">{t("busMap.youAreHere")}</p>
+                    <p className="text-sm text-gray-600">
+                      {t("busMap.youAreHere")}
+                    </p>
                   </div>
                 </Popup>
               </Marker>
@@ -470,35 +493,42 @@ const BusMap = () => {
 
         {/* Legend */}
         <div
-          className={`rounded-2xl shadow-lg p-6 mt-6 ${
+          className={`rounded-2xl shadow-xl p-8 mt-6 backdrop-blur-sm ${
             darktheme
-              ? "bg-gray-800 border border-gray-700"
-              : "bg-white border border-green-100"
+              ? "bg-gradient-to-br from-gray-800/95 to-gray-900/95 border-2 border-gray-700/50"
+              : "bg-gradient-to-br from-green-50/95 to-white border-2 border-green-200/50"
           }`}
         >
           <h3
-            className={`text-lg font-bold mb-4 ${
+            className={`text-2xl font-bold mb-6 text-center ${
               darktheme ? "text-white" : "text-gray-800"
             }`}
           >
             {t("busMap.mapLegend")}
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Your Location */}
+            <div
+              className={`flex items-start space-x-4 p-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                darktheme
+                  ? "bg-gray-700/50 hover:bg-gray-700/70"
+                  : "bg-blue-50/50 hover:bg-blue-50/70"
+              }`}
+            >
+              <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-lg flex-shrink-0 shadow-lg ring-4 ring-blue-200/50">
                 📍
               </div>
-              <div>
+              <div className="flex-1">
                 <p
-                  className={`font-medium ${
-                    darktheme ? "text-gray-200" : "text-gray-700"
+                  className={`font-semibold text-base mb-1 ${
+                    darktheme ? "text-blue-300" : "text-blue-700"
                   }`}
                 >
                   {t("busMap.yourLocation")}
                 </p>
                 <p
-                  className={`text-sm ${
-                    darktheme ? "text-gray-400" : "text-gray-500"
+                  className={`text-sm leading-relaxed ${
+                    darktheme ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
                   {t("busMap.currentGPS")}
@@ -506,21 +536,28 @@ const BusMap = () => {
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm">
+            {/* Active Bus */}
+            <div
+              className={`flex items-start space-x-4 p-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                darktheme
+                  ? "bg-gray-700/50 hover:bg-gray-700/70"
+                  : "bg-green-50/50 hover:bg-green-50/70"
+              }`}
+            >
+              <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white text-lg flex-shrink-0 shadow-lg ring-4 ring-green-200/50">
                 🚌
               </div>
-              <div>
+              <div className="flex-1">
                 <p
-                  className={`font-medium ${
-                    darktheme ? "text-gray-200" : "text-gray-700"
+                  className={`font-semibold text-base mb-1 ${
+                    darktheme ? "text-green-300" : "text-green-700"
                   }`}
                 >
                   {t("busMap.activeBus")}
                 </p>
                 <p
-                  className={`text-sm ${
-                    darktheme ? "text-gray-400" : "text-gray-500"
+                  className={`text-sm leading-relaxed ${
+                    darktheme ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
                   {t("busMap.activeBusDescription")}
@@ -528,21 +565,28 @@ const BusMap = () => {
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center text-white text-sm">
+            {/* Inactive Bus */}
+            <div
+              className={`flex items-start space-x-4 p-4 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                darktheme
+                  ? "bg-gray-700/50 hover:bg-gray-700/70"
+                  : "bg-gray-50/50 hover:bg-gray-50/70"
+              }`}
+            >
+              <div className="w-12 h-12 bg-gray-500 rounded-full flex items-center justify-center text-white text-lg flex-shrink-0 shadow-lg ring-4 ring-gray-200/50">
                 🚌
               </div>
-              <div>
+              <div className="flex-1">
                 <p
-                  className={`font-medium ${
-                    darktheme ? "text-gray-200" : "text-gray-700"
+                  className={`font-semibold text-base mb-1 ${
+                    darktheme ? "text-gray-300" : "text-gray-700"
                   }`}
                 >
                   {t("busMap.inactiveBus")}
                 </p>
                 <p
-                  className={`text-sm ${
-                    darktheme ? "text-gray-400" : "text-gray-500"
+                  className={`text-sm leading-relaxed ${
+                    darktheme ? "text-gray-400" : "text-gray-600"
                   }`}
                 >
                   {t("busMap.inactiveBusDescription")}

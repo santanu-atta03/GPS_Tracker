@@ -42,7 +42,7 @@ export const userFindByEmail = async (req, res) => {
     const userfind = await User.findOne({ email: email });
     if (!emailfind && !userfind) {
       return res.status(404).json({
-        message: "user not exict",
+        message: "User does not exist or Profile not created",
         success: false,
       });
     }
