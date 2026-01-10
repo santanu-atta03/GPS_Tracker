@@ -119,6 +119,7 @@ function App() {
     <>
       <LocationTracker />
       <RouterProvider router={approute} />
+      <SupportChat/>
       <Footer />
     </>
   );
