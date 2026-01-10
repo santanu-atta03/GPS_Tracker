@@ -1,6 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import { MessageCircle, Send, Bot, User, X, Minimize2, Sparkles } from "lucide-react";
+import {
+  MessageCircle,
+  Send,
+  Bot,
+  User,
+  X,
+  Minimize2,
+  Sparkles,
+} from "lucide-react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
@@ -74,15 +82,20 @@ const SupportChat = () => {
             : "bg-gradient-to-br from-blue-500 to-purple-500"
         }`}
         style={{
-          animation: 'bounce 2s infinite'
+          animation: "bounce 2s infinite",
         }}
       >
         <MessageCircle className="w-7 h-7 text-white" />
         <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
         <style jsx>{`
           @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            0%,
+            100% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-10px);
+            }
           }
         `}</style>
       </button>
@@ -91,20 +104,22 @@ const SupportChat = () => {
 
   return (
     <div
-      className={`fixed bottom-6 right-6 w-[400px] shadow-2xl rounded-3xl border overflow-hidden z-50 transition-all duration-300 ${
-        isMinimized ? 'h-16' : 'h-[600px]'
+      className={`fixed bottom-6 right-6 w-5/6 sm:w-2/5 lg:w-3/12 shadow-2xl rounded-3xl border overflow-hidden z-50 transition-all duration-300 ${
+        isMinimized ? "h-16" : "h-fit"
       } ${
-        darktheme 
-          ? "bg-gray-800/95 border-gray-700/50 backdrop-blur-lg" 
+        darktheme
+          ? "bg-gray-800/95 border-gray-700/50 backdrop-blur-lg"
           : "bg-white/95 border-gray-200/50 backdrop-blur-lg"
       }`}
     >
       {/* Header */}
-      <div className={`p-4 flex items-center justify-between ${
-        darktheme
-          ? "bg-gradient-to-r from-blue-600 to-purple-600"
-          : "bg-gradient-to-r from-blue-500 to-purple-500"
-      }`}>
+      <div
+        className={`p-2 sm:p-4 flex items-center justify-between ${
+          darktheme
+            ? "bg-gradient-to-r from-blue-600 to-purple-600"
+            : "bg-gradient-to-r from-blue-500 to-purple-500"
+        }`}
+      >
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
@@ -114,11 +129,13 @@ const SupportChat = () => {
             <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
           </div>
           <div>
-            <h3 className="font-bold text-white">{t("support.title")}</h3>
+            <h3 className="text-sm sm:text-base font-bold text-white">
+              {t("support.title")}
+            </h3>
             <p className="text-xs text-white/80">{t("support.subtitle")}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <button
             onClick={() => setIsMinimized(!isMinimized)}
             className="p-2 hover:bg-white/20 rounded-lg transition-colors"
@@ -138,7 +155,7 @@ const SupportChat = () => {
         <>
           {/* Messages */}
           <div
-            className={`h-[440px] overflow-y-auto p-4 ${
+            className={`h-52  lg:h-80 overflow-y-scroll p-2 sm:p-4 ${
               darktheme
                 ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
                 : "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"
@@ -179,7 +196,7 @@ const SupportChat = () => {
 
                   {/* Message bubble */}
                   <div
-                    className={`px-4 py-3 rounded-2xl shadow-lg transition-all ${
+                    className={`p-2 sm:px-4 sm:py-3 rounded-2xl shadow-lg transition-all ${
                       m.sender === "user"
                         ? "bg-gradient-to-br from-blue-500 to-purple-500 text-white rounded-br-sm"
                         : darktheme
@@ -187,13 +204,22 @@ const SupportChat = () => {
                         : "bg-white text-gray-800 border border-gray-200 rounded-bl-sm backdrop-blur-sm"
                     }`}
                   >
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{m.text}</p>
-                    <span className={`text-xs mt-1 block ${
-                      m.sender === "user" 
-                        ? "text-white/70" 
-                        : darktheme ? "text-gray-500" : "text-gray-400"
-                    }`}>
-                      {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                      {m.text}
+                    </p>
+                    <span
+                      className={`text-xs mt-1 block ${
+                        m.sender === "user"
+                          ? "text-white/70"
+                          : darktheme
+                          ? "text-gray-500"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {new Date().toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </span>
                   </div>
                 </div>
@@ -210,7 +236,11 @@ const SupportChat = () => {
                       : "bg-gradient-to-br from-gray-200 to-gray-300"
                   }`}
                 >
-                  <Bot className={`w-4 h-4 ${darktheme ? "text-blue-400" : "text-blue-600"}`} />
+                  <Bot
+                    className={`w-4 h-4 ${
+                      darktheme ? "text-blue-400" : "text-blue-600"
+                    }`}
+                  />
                 </div>
                 <div
                   className={`px-4 py-3 rounded-2xl rounded-bl-sm ${
@@ -220,15 +250,24 @@ const SupportChat = () => {
                   }`}
                 >
                   <div className="flex gap-1">
-                    <div className={`w-2 h-2 rounded-full animate-bounce ${
-                      darktheme ? "bg-gray-400" : "bg-gray-600"
-                    }`} style={{animationDelay: '0ms'}}></div>
-                    <div className={`w-2 h-2 rounded-full animate-bounce ${
-                      darktheme ? "bg-gray-400" : "bg-gray-600"
-                    }`} style={{animationDelay: '150ms'}}></div>
-                    <div className={`w-2 h-2 rounded-full animate-bounce ${
-                      darktheme ? "bg-gray-400" : "bg-gray-600"
-                    }`} style={{animationDelay: '300ms'}}></div>
+                    <div
+                      className={`w-2 h-2 rounded-full animate-bounce ${
+                        darktheme ? "bg-gray-400" : "bg-gray-600"
+                      }`}
+                      style={{ animationDelay: "0ms" }}
+                    ></div>
+                    <div
+                      className={`w-2 h-2 rounded-full animate-bounce ${
+                        darktheme ? "bg-gray-400" : "bg-gray-600"
+                      }`}
+                      style={{ animationDelay: "150ms" }}
+                    ></div>
+                    <div
+                      className={`w-2 h-2 rounded-full animate-bounce ${
+                        darktheme ? "bg-gray-400" : "bg-gray-600"
+                      }`}
+                      style={{ animationDelay: "300ms" }}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -239,7 +278,7 @@ const SupportChat = () => {
 
           {/* Input */}
           <div
-            className={`flex border-t p-4 gap-2 ${
+            className={`flex border-t p-2 sm:p-4 gap-2 ${
               darktheme
                 ? "bg-gray-800/95 border-gray-700"
                 : "bg-white/95 border-gray-200"
@@ -251,7 +290,7 @@ const SupportChat = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder={t("support.inputPlaceholder")}
-              className={`flex-grow px-4 py-3 rounded-xl border-2 focus:ring-4 focus:outline-none transition-all duration-300 ${
+              className={`flex-grow p-2 sm:px-4 sm:py-3 rounded-xl text-xs sm:text-sm border-2 focus:ring-4 focus:outline-none transition-all duration-300 ${
                 darktheme
                   ? "bg-gray-900/50 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20"
                   : "bg-white border-gray-200 text-gray-800 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
