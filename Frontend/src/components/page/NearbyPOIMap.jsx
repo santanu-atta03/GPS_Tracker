@@ -28,6 +28,7 @@ const NearbyPOIMap = () => {
   const [markersLayer, setMarkersLayer] = useState(null);
   const routingControlRef = useRef(null);
   const { darktheme } = useSelector((store) => store.auth);
+  const latestRequestRef = useRef(null);
 
   // 🔎 Search states
   const [searchQuery, setSearchQuery] = useState("");
@@ -117,9 +118,24 @@ const NearbyPOIMap = () => {
   };
 
   const handleBadgeClick = async (type) => {
+
+    if(selectedType === type) {
+      //deselection
+      setSelectedType(null);
+    
+    if (markersLayer) {
+      markersLayer.clearLayers();
+      mapInstanceRef.current.removeLayer(markersLayer);
+      setMarkersLayer(null);
+    }
+    return;
+    }
+
     setSelectedType(type);
 
+    const requestId = ++latestRequestRef.current; 
     const places = await fetchNearbyPlaces(type);
+    if (latestRequestRef.current !== requestId) return; // Prevent race condition
 
     if (markersLayer) {
       markersLayer.clearLayers();
@@ -132,20 +148,21 @@ const NearbyPOIMap = () => {
       const lon = place.lon || place.center?.lon;
       const name = place.tags?.name || t("nearbyPOI.unnamed");
 
-      if (lat && lon) {
-        const marker = L.marker([lat, lon]).bindPopup(
-          `<strong>${name}</strong><br/>${t("nearbyPOI.type")}: ${type}<br/><button id="go-${lat}-${lon}">${t("nearbyPOI.goHere")}</button>`
-        );
+      if (!lat || !lon) return;
 
-        marker.on("popupopen", () => {
-          const btn = document.getElementById(`go-${lat}-${lon}`);
-          if (btn) {
-            btn.onclick = () => handleRoute(lat, lon);
-          }
-        });
+      const marker = L.marker([lat, lon]).bindPopup( 
+        `<strong>${name}</strong><br/>${t("nearbyPOI.type")}: ${type}<br/><button id="go-${lat}-${lon}">${t("nearbyPOI.goHere")}</button>`
+      );
 
-        newLayer.addLayer(marker);
-      }
+      marker.on("popupopen", () => {
+        const btn = document.getElementById(`go-${lat}-${lon}`);
+        if (btn) {
+          btn.onclick = () => handleRoute(lat, lon);
+        }
+      });
+
+      newLayer.addLayer(marker);
+      
     });
 
     newLayer.addTo(mapInstanceRef.current);
