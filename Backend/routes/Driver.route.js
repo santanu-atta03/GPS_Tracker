@@ -11,13 +11,13 @@ import {
 const driverRoute = express.Router();
 
 // Protected + Human verified
-driverRoute.post("/createUser", turnstileMiddleware, isAuthenticated, createDriver);
+driverRoute.post("/createUser", isAuthenticated, createDriver);
 
 // Public (no captcha needed usually)
 driverRoute.get("/veryfi/email/:email", userFindByEmail);
 
 // Protected + Human verified
-driverRoute.put("/update/profile", turnstileMiddleware, isAuthenticated, updateProfile);
+driverRoute.put("/update/profile", isAuthenticated, updateProfile);
 driverRoute.get("/allBus", isAuthenticated, DriverCreateBus);
 
 export default driverRoute;
