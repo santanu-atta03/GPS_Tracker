@@ -104,17 +104,8 @@ const ReviewForm = () => {
     >
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className={`absolute top-20 left-10 w-96 h-96 ${
-            darktheme ? "bg-blue-500/5" : "bg-blue-300/20"
-          } rounded-full blur-3xl animate-pulse`}
-        ></div>
-        <div
-          className={`absolute bottom-20 right-10 w-96 h-96 ${
-            darktheme ? "bg-purple-500/5" : "bg-purple-300/20"
-          } rounded-full blur-3xl animate-pulse`}
-          style={{ animationDelay: "1s" }}
-        ></div>
+        <div className={`absolute top-20 left-10 w-96 h-96 ${darktheme ? 'bg-blue-500/5' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
+        <div className={`absolute bottom-20 right-10 w-96 h-96 ${darktheme ? 'bg-purple-500/5' : 'bg-purple-300/20'} rounded-full blur-3xl animate-pulse`} style={{animationDelay: '1s'}}></div>
       </div>
 
       <Navbar />
@@ -122,25 +113,13 @@ const ReviewForm = () => {
         {/* Hero Section */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-3 mb-6">
-            <div
-              className={`p-3 rounded-2xl ${
-                darktheme
-                  ? "bg-blue-500/20 border border-blue-500/30"
-                  : "bg-gradient-to-br from-blue-500 to-purple-500"
-              }`}
-            >
-              <Star
-                className={`w-8 h-8 ${
-                  darktheme ? "text-blue-400" : "text-white"
-                }`}
-              />
+            <div className={`p-3 rounded-2xl ${darktheme ? 'bg-blue-500/20 border border-blue-500/30' : 'bg-gradient-to-br from-blue-500 to-purple-500'}`}>
+              <Star className={`w-8 h-8 ${darktheme ? 'text-blue-400' : 'text-white'}`} />
             </div>
           </div>
           <h1
             className={`text-5xl font-bold mb-4 bg-gradient-to-r ${
-              darktheme
-                ? "from-blue-400 via-purple-400 to-pink-400"
-                : "from-blue-600 via-purple-600 to-pink-600"
+              darktheme ? "from-blue-400 via-purple-400 to-pink-400" : "from-blue-600 via-purple-600 to-pink-600"
             } bg-clip-text text-transparent`}
           >
             {t("review.pageTitle")}
@@ -187,8 +166,7 @@ const ReviewForm = () => {
                     >
                       {[1, 2, 3, 4, 5].map((val) => (
                         <option key={val} value={val}>
-                          {val}{" "}
-                          {val === 1 ? t("review.star") : t("review.stars")}
+                          {val} {val === 1 ? t("review.star") : t("review.stars")}
                         </option>
                       ))}
                     </select>
