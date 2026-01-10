@@ -5,7 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { toast } from "sonner";
-import { User, Mail, Shield, ArrowRight, KeyRound, Sparkles } from "lucide-react";
+import {
+  User,
+  Mail,
+  Shield,
+  ArrowRight,
+  KeyRound,
+  Sparkles,
+} from "lucide-react";
+import TurnstileCaptcha from "@/components/shared/TurnstileCaptcha";
 
 const UserLogin = () => {
   const { getAccessTokenSilently, user, isAuthenticated } = useAuth0();
@@ -17,6 +25,7 @@ const UserLogin = () => {
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState("FORM");
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   useEffect(() => {
     if (user?.name) {
@@ -26,6 +35,10 @@ const UserLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!turnstileToken) {
+      toast.error("Please verify CAPTCHA");
+      return;
+    }
 
     if (!fullname.trim()) {
       toast.error("Name is required");
@@ -62,6 +75,10 @@ const UserLogin = () => {
       toast.error("Please enter OTP");
       return;
     }
+    if (!turnstileToken) {
+      toast.error("Please verify CAPTCHA");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -96,7 +113,7 @@ const UserLogin = () => {
             fullname,
             email: user.email,
             picture: user.picture,
-            ...createUserRes.data.userData
+            ...createUserRes.data.userData,
           })
         );
         toast.success("Login successful");
@@ -104,7 +121,8 @@ const UserLogin = () => {
       }
     } catch (error) {
       console.error(error);
-      const msg = error.response?.data?.message || "Invalid OTP or Creation Failed";
+      const msg =
+        error.response?.data?.message || "Invalid OTP or Creation Failed";
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -123,9 +141,23 @@ const UserLogin = () => {
     >
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute top-20 left-10 w-72 h-72 ${darktheme ? 'bg-blue-500/10' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
-        <div className={`absolute bottom-20 right-10 w-96 h-96 ${darktheme ? 'bg-purple-500/10' : 'bg-purple-300/20'} rounded-full blur-3xl animate-pulse`} style={{animationDelay: '1s'}}></div>
-        <div className={`absolute top-1/2 left-1/2 w-64 h-64 ${darktheme ? 'bg-green-500/10' : 'bg-green-300/20'} rounded-full blur-3xl animate-pulse`} style={{animationDelay: '2s'}}></div>
+        <div
+          className={`absolute top-20 left-10 w-72 h-72 ${
+            darktheme ? "bg-blue-500/10" : "bg-blue-300/20"
+          } rounded-full blur-3xl animate-pulse`}
+        ></div>
+        <div
+          className={`absolute bottom-20 right-10 w-96 h-96 ${
+            darktheme ? "bg-purple-500/10" : "bg-purple-300/20"
+          } rounded-full blur-3xl animate-pulse`}
+          style={{ animationDelay: "1s" }}
+        ></div>
+        <div
+          className={`absolute top-1/2 left-1/2 w-64 h-64 ${
+            darktheme ? "bg-green-500/10" : "bg-green-300/20"
+          } rounded-full blur-3xl animate-pulse`}
+          style={{ animationDelay: "2s" }}
+        ></div>
       </div>
 
       <div className="w-full max-w-md px-4 relative z-10">
@@ -143,21 +175,29 @@ const UserLogin = () => {
                 <div className="relative inline-block mb-4">
                   <div
                     className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto shadow-lg ${
-                      darktheme 
-                        ? "bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30" 
+                      darktheme
+                        ? "bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30"
                         : "bg-gradient-to-br from-blue-500 to-purple-500"
                     }`}
                   >
-                    <User className={`w-10 h-10 ${darktheme ? 'text-blue-400' : 'text-white'}`} />
+                    <User
+                      className={`w-10 h-10 ${
+                        darktheme ? "text-blue-400" : "text-white"
+                      }`}
+                    />
                   </div>
                   <div className="absolute -top-1 -right-1">
-                    <Sparkles className={`w-6 h-6 ${darktheme ? 'text-yellow-400' : 'text-yellow-500'} animate-pulse`} />
+                    <Sparkles
+                      className={`w-6 h-6 ${
+                        darktheme ? "text-yellow-400" : "text-yellow-500"
+                      } animate-pulse`}
+                    />
                   </div>
                 </div>
                 <h2
                   className={`text-3xl font-bold mb-2 bg-gradient-to-r ${
-                    darktheme 
-                      ? "from-blue-400 to-purple-400" 
+                    darktheme
+                      ? "from-blue-400 to-purple-400"
                       : "from-blue-600 to-purple-600"
                   } bg-clip-text text-transparent`}
                 >
@@ -174,11 +214,13 @@ const UserLogin = () => {
 
               {/* User Profile Card */}
               {user?.picture && (
-                <div className={`flex items-center gap-4 p-4 rounded-2xl ${
-                  darktheme 
-                    ? "bg-gradient-to-r from-gray-900/50 to-gray-800/50 border border-gray-700" 
-                    : "bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200"
-                }`}>
+                <div
+                  className={`flex items-center gap-4 p-4 rounded-2xl ${
+                    darktheme
+                      ? "bg-gradient-to-r from-gray-900/50 to-gray-800/50 border border-gray-700"
+                      : "bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200"
+                  }`}
+                >
                   <div className="relative">
                     <img
                       src={user.picture}
@@ -188,10 +230,18 @@ const UserLogin = () => {
                     <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-gray-800"></div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={`font-semibold truncate ${darktheme ? 'text-white' : 'text-gray-800'}`}>
-                      {user.name || 'User'}
+                    <p
+                      className={`font-semibold truncate ${
+                        darktheme ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      {user.name || "User"}
                     </p>
-                    <p className={`text-sm truncate ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <p
+                      className={`text-sm truncate ${
+                        darktheme ? "text-gray-400" : "text-gray-600"
+                      }`}
+                    >
                       {user.email}
                     </p>
                   </div>
@@ -199,20 +249,38 @@ const UserLogin = () => {
               )}
 
               {/* Email Display */}
-              <div className={`p-4 rounded-2xl ${
-                darktheme
-                  ? "bg-gray-900/50 border border-gray-700"
-                  : "bg-gray-50 border border-gray-200"
-              }`}>
+              <div
+                className={`p-4 rounded-2xl ${
+                  darktheme
+                    ? "bg-gray-900/50 border border-gray-700"
+                    : "bg-gray-50 border border-gray-200"
+                }`}
+              >
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${darktheme ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
-                    <Mail className={`w-5 h-5 ${darktheme ? 'text-blue-400' : 'text-blue-600'}`} />
+                  <div
+                    className={`p-2 rounded-lg ${
+                      darktheme ? "bg-blue-500/20" : "bg-blue-100"
+                    }`}
+                  >
+                    <Mail
+                      className={`w-5 h-5 ${
+                        darktheme ? "text-blue-400" : "text-blue-600"
+                      }`}
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-xs font-medium ${darktheme ? "text-gray-500" : "text-gray-500"}`}>
+                    <p
+                      className={`text-xs font-medium ${
+                        darktheme ? "text-gray-500" : "text-gray-500"
+                      }`}
+                    >
                       Email Address
                     </p>
-                    <p className={`text-sm font-medium truncate ${darktheme ? "text-gray-200" : "text-gray-800"}`}>
+                    <p
+                      className={`text-sm font-medium truncate ${
+                        darktheme ? "text-gray-200" : "text-gray-800"
+                      }`}
+                    >
                       {user?.email}
                     </p>
                   </div>
@@ -229,10 +297,16 @@ const UserLogin = () => {
                   Full Name
                 </label>
                 <div className="relative group">
-                  <div className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-lg ${
-                    darktheme ? 'bg-purple-500/20' : 'bg-purple-100'
-                  }`}>
-                    <User className={`w-5 h-5 ${darktheme ? 'text-purple-400' : 'text-purple-600'}`} />
+                  <div
+                    className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-lg ${
+                      darktheme ? "bg-purple-500/20" : "bg-purple-100"
+                    }`}
+                  >
+                    <User
+                      className={`w-5 h-5 ${
+                        darktheme ? "text-purple-400" : "text-purple-600"
+                      }`}
+                    />
                   </div>
                   <input
                     type="text"
@@ -249,6 +323,11 @@ const UserLogin = () => {
               </div>
 
               {/* Submit Button */}
+              {/* Turnstile CAPTCHA */}
+              <div className="flex justify-center">
+                <TurnstileCaptcha onVerify={setTurnstileToken} />
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
@@ -280,21 +359,29 @@ const UserLogin = () => {
                 <div className="relative inline-block mb-4">
                   <div
                     className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto shadow-lg ${
-                      darktheme 
-                        ? "bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30" 
+                      darktheme
+                        ? "bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30"
                         : "bg-gradient-to-br from-green-500 to-emerald-500"
                     }`}
                   >
-                    <Shield className={`w-10 h-10 ${darktheme ? 'text-green-400' : 'text-white'}`} />
+                    <Shield
+                      className={`w-10 h-10 ${
+                        darktheme ? "text-green-400" : "text-white"
+                      }`}
+                    />
                   </div>
                   <div className="absolute -top-1 -right-1">
-                    <KeyRound className={`w-6 h-6 ${darktheme ? 'text-yellow-400' : 'text-yellow-500'} animate-bounce`} />
+                    <KeyRound
+                      className={`w-6 h-6 ${
+                        darktheme ? "text-yellow-400" : "text-yellow-500"
+                      } animate-bounce`}
+                    />
                   </div>
                 </div>
                 <h2
                   className={`text-3xl font-bold mb-2 bg-gradient-to-r ${
-                    darktheme 
-                      ? "from-green-400 to-emerald-400" 
+                    darktheme
+                      ? "from-green-400 to-emerald-400"
                       : "from-green-600 to-emerald-600"
                   } bg-clip-text text-transparent`}
                 >
@@ -310,20 +397,38 @@ const UserLogin = () => {
               </div>
 
               {/* Email Display */}
-              <div className={`p-4 rounded-2xl ${
-                darktheme
-                  ? "bg-gradient-to-r from-gray-900/50 to-gray-800/50 border border-gray-700"
-                  : "bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200"
-              }`}>
+              <div
+                className={`p-4 rounded-2xl ${
+                  darktheme
+                    ? "bg-gradient-to-r from-gray-900/50 to-gray-800/50 border border-gray-700"
+                    : "bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200"
+                }`}
+              >
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${darktheme ? 'bg-green-500/20' : 'bg-green-100'}`}>
-                    <Mail className={`w-5 h-5 ${darktheme ? 'text-green-400' : 'text-green-600'}`} />
+                  <div
+                    className={`p-2 rounded-lg ${
+                      darktheme ? "bg-green-500/20" : "bg-green-100"
+                    }`}
+                  >
+                    <Mail
+                      className={`w-5 h-5 ${
+                        darktheme ? "text-green-400" : "text-green-600"
+                      }`}
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-xs font-medium ${darktheme ? "text-gray-500" : "text-gray-600"}`}>
+                    <p
+                      className={`text-xs font-medium ${
+                        darktheme ? "text-gray-500" : "text-gray-600"
+                      }`}
+                    >
                       Code sent to
                     </p>
-                    <p className={`text-sm font-semibold truncate ${darktheme ? "text-gray-200" : "text-gray-800"}`}>
+                    <p
+                      className={`text-sm font-semibold truncate ${
+                        darktheme ? "text-gray-200" : "text-gray-800"
+                      }`}
+                    >
                       {user?.email}
                     </p>
                   </div>
@@ -354,6 +459,11 @@ const UserLogin = () => {
               </div>
 
               {/* Verify Button */}
+              {/* Turnstile CAPTCHA */}
+              <div className="flex justify-center">
+                <TurnstileCaptcha onVerify={setTurnstileToken} />
+              </div>
+
               <button
                 onClick={verifyOtp}
                 disabled={loading}
@@ -378,7 +488,11 @@ const UserLogin = () => {
 
               {/* Resend Option */}
               <div className="text-center pt-2">
-                <p className={`text-sm mb-2 ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
+                <p
+                  className={`text-sm mb-2 ${
+                    darktheme ? "text-gray-400" : "text-gray-600"
+                  }`}
+                >
                   Didn't receive the code?
                 </p>
                 <button
@@ -399,7 +513,11 @@ const UserLogin = () => {
 
         {/* Trust Badge */}
         <div className="mt-6 text-center">
-          <p className={`text-xs ${darktheme ? 'text-gray-500' : 'text-gray-600'}`}>
+          <p
+            className={`text-xs ${
+              darktheme ? "text-gray-500" : "text-gray-600"
+            }`}
+          >
             🔒 Your information is secure and encrypted
           </p>
         </div>
