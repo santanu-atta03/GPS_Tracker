@@ -5,7 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { toast } from "sonner";
-import { CreditCard, Award, User, ArrowRight, Sparkles, Shield } from "lucide-react";
+import {
+  CreditCard,
+  Award,
+  User,
+  ArrowRight,
+  Sparkles,
+  Shield,
+} from "lucide-react";
 
 const DriverLogin = () => {
   const navigate = useNavigate();
@@ -27,7 +34,10 @@ const DriverLogin = () => {
           navigate("/");
         }
       } catch (error) {
-        console.log("Verification error:", error.response?.data || error.message);
+        console.log(
+          "Verification error:",
+          error.response?.data || error.message
+        );
       }
     };
     fetchData();
@@ -36,12 +46,12 @@ const DriverLogin = () => {
   const CreateDriver = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v3",
       });
-      
+
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/driver/createUser`,
         {
@@ -55,7 +65,7 @@ const DriverLogin = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      
+
       if (res.data.success) {
         dispatch(setuser(res.data.userData));
         toast.success(res.data.message);
@@ -81,8 +91,17 @@ const DriverLogin = () => {
     >
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute top-20 left-10 w-96 h-96 ${darktheme ? 'bg-blue-500/5' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
-        <div className={`absolute bottom-20 right-10 w-96 h-96 ${darktheme ? 'bg-purple-500/5' : 'bg-purple-300/20'} rounded-full blur-3xl animate-pulse`} style={{animationDelay: '1s'}}></div>
+        <div
+          className={`absolute top-20 left-10 w-96 h-96 ${
+            darktheme ? "bg-blue-500/5" : "bg-blue-300/20"
+          } rounded-full blur-3xl animate-pulse`}
+        ></div>
+        <div
+          className={`absolute bottom-20 right-10 w-96 h-96 ${
+            darktheme ? "bg-purple-500/5" : "bg-purple-300/20"
+          } rounded-full blur-3xl animate-pulse`}
+          style={{ animationDelay: "1s" }}
+        ></div>
       </div>
 
       <div className="w-full max-w-md px-4 relative z-10">
@@ -98,19 +117,23 @@ const DriverLogin = () => {
             <div className="relative inline-block mb-6">
               <div
                 className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto shadow-lg ${
-                  darktheme 
-                    ? "bg-gradient-to-br from-blue-600 to-purple-600" 
+                  darktheme
+                    ? "bg-gradient-to-br from-blue-600 to-purple-600"
                     : "bg-gradient-to-br from-blue-500 to-purple-500"
                 }`}
               >
                 <Shield className="w-10 h-10 text-white" />
               </div>
-              <Sparkles className={`absolute -top-1 -right-1 w-6 h-6 ${darktheme ? 'text-yellow-400' : 'text-yellow-500'} animate-pulse`} />
+              <Sparkles
+                className={`absolute -top-1 -right-1 w-6 h-6 ${
+                  darktheme ? "text-yellow-400" : "text-yellow-500"
+                } animate-pulse`}
+              />
             </div>
             <h2
               className={`text-3xl font-bold mb-3 bg-gradient-to-r ${
-                darktheme 
-                  ? "from-blue-400 to-purple-400" 
+                darktheme
+                  ? "from-blue-400 to-purple-400"
                   : "from-blue-600 to-purple-600"
               } bg-clip-text text-transparent`}
             >
@@ -174,10 +197,16 @@ const DriverLogin = () => {
                 License ID
               </label>
               <div className="relative group">
-                <div className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-lg ${
-                  darktheme ? 'bg-blue-500/20' : 'bg-blue-100'
-                }`}>
-                  <CreditCard className={`w-5 h-5 ${darktheme ? 'text-blue-400' : 'text-blue-600'}`} />
+                <div
+                  className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-lg ${
+                    darktheme ? "bg-blue-500/20" : "bg-blue-100"
+                  }`}
+                >
+                  <CreditCard
+                    className={`w-5 h-5 ${
+                      darktheme ? "text-blue-400" : "text-blue-600"
+                    }`}
+                  />
                 </div>
                 <input
                   type="text"
@@ -205,10 +234,16 @@ const DriverLogin = () => {
                 Driving Experience (years)
               </label>
               <div className="relative group">
-                <div className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-lg ${
-                  darktheme ? 'bg-purple-500/20' : 'bg-purple-100'
-                }`}>
-                  <Award className={`w-5 h-5 ${darktheme ? 'text-purple-400' : 'text-purple-600'}`} />
+                <div
+                  className={`absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-lg ${
+                    darktheme ? "bg-purple-500/20" : "bg-purple-100"
+                  }`}
+                >
+                  <Award
+                    className={`w-5 h-5 ${
+                      darktheme ? "text-purple-400" : "text-purple-600"
+                    }`}
+                  />
                 </div>
                 <input
                   type="number"
@@ -234,7 +269,9 @@ const DriverLogin = () => {
                 darktheme
                   ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white"
                   : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-              } ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:scale-105'}`}
+              } ${
+                loading ? "opacity-70 cursor-not-allowed" : "hover:scale-105"
+              }`}
             >
               {loading ? (
                 <>
@@ -251,7 +288,11 @@ const DriverLogin = () => {
           </form>
 
           {/* Footer Note */}
-          <div className={`mt-6 text-center text-xs ${darktheme ? 'text-gray-500' : 'text-gray-500'}`}>
+          <div
+            className={`mt-6 text-center text-xs ${
+              darktheme ? "text-gray-500" : "text-gray-500"
+            }`}
+          >
             🔒 Your information is secure and encrypted
           </div>
         </div>
