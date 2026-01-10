@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { MessageCircle, Send, Bot, User } from "lucide-react";
+import { MessageCircle, Send, Bot, User, Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { useApiCall } from "../../hooks/useApiCall";
 
 const SupportChat = () => {
   const { darktheme } = useSelector((store) => store.auth);
@@ -14,29 +15,33 @@ const SupportChat = () => {
   ]);
   const [input, setInput] = useState("");
 
+  // API hook for asking support bot
+  const { loading: askingBot, execute: askBot } = useApiCall({
+    apiFunction: (question) => 
+      axios.post(`${import.meta.env.VITE_BASE_URL}/support/ask`, { question }),
+    showSuccessToast: false,
+    showErrorToast: false,
+    onSuccess: (data) => {
+      const botMsg = { sender: "bot", text: data.answer };
+      setMessages((prev) => [...prev, botMsg]);
+    },
+    onError: () => {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: t("support.errorMessage") },
+      ]);
+    }
+  });
+
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || askingBot) return;
 
     const userMsg = { sender: "user", text: input };
     setMessages((prev) => [...prev, userMsg]);
+    const question = input;
     setInput("");
 
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/support/ask`,
-        { question: input }
-      );
-      const botMsg = { sender: "bot", text: res.data.answer };
-      setMessages((prev) => [...prev, botMsg]);
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "bot",
-          text: t("support.errorMessage"),
-        },
-      ]);
-    }
+    await askBot(question);
   };
 
   const handleKeyPress = (e) => {
@@ -118,6 +123,37 @@ const SupportChat = () => {
             </div>
           </div>
         ))}
+        
+        {/* Typing indicator when bot is thinking */}
+        {askingBot && (
+          <div className="mb-4 flex justify-start">
+            <div className="flex items-start gap-2 max-w-[80%]">
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  darktheme ? "bg-gray-700" : "bg-gray-200"
+                }`}
+              >
+                <Bot
+                  className={`w-4 h-4 ${
+                    darktheme ? "text-gray-300" : "text-gray-600"
+                  }`}
+                />
+              </div>
+              <div
+                className={`px-4 py-2.5 rounded-2xl shadow-sm rounded-tl-sm flex items-center gap-2 ${
+                  darktheme
+                    ? "bg-gray-700 border border-gray-600"
+                    : "bg-white border border-gray-200"
+                }`}
+              >
+                <Loader2 className="w-4 h-4 animate-spin text-green-500" />
+                <span className={`text-sm ${darktheme ? "text-gray-300" : "text-gray-600"}`}>
+                  Typing...
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Input */}
@@ -133,18 +169,24 @@ const SupportChat = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
+          disabled={askingBot}
           placeholder={t("support.inputPlaceholder")}
           className={`flex-grow px-4 py-2.5 rounded-xl border-2 focus:border-green-500 focus:outline-none transition-all duration-300 ${
             darktheme
               ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
               : "bg-white border-gray-200 text-gray-800 placeholder-gray-400"
-          }`}
+          } disabled:opacity-50 disabled:cursor-not-allowed`}
         />
         <button
           onClick={sendMessage}
-          className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+          disabled={askingBot || !input.trim()}
+          className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
-          <Send className="w-4 h-4" />
+          {askingBot ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Send className="w-4 h-4" />
+          )}
         </button>
       </div>
     </div>

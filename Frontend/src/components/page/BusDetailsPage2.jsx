@@ -15,10 +15,13 @@ import {
   Mail,
   CreditCard,
   Award,
+  Loader2,
 } from "lucide-react";
 import Navbar from "../shared/Navbar";
 import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
+import { useApiCall } from "../../hooks/useApiCall";
+import { toast } from "sonner";
 
 // 🚌 Custom bus icon
 const busIcon = new L.DivIcon({
@@ -55,22 +58,26 @@ const BusDetailsPage2 = () => {
   const { t } = useTranslation();
   const [bus, setBus] = useState(null);
   const [activeSlot, setActiveSlot] = useState(null);
-
   const navigate = useNavigate();
-  useEffect(() => {
-    const fetchBusData = async () => {
-      try {
-        const res = await fetch(
-          `${import.meta.env.VITE_BASE_URL}/Myroute/bus-details/${deviceID}`
-        );
-        const data = await res.json();
-        setBus(data);
-      } catch (err) {
-        console.error(t("busDetails.errorFetchingBus"), err);
+
+  // API hook for fetching bus details
+  const { loading, error, execute: fetchBusData } = useApiCall({
+    apiFunction: async () => {
+      const res = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/Myroute/bus-details/${deviceID}`
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to fetch bus details");
       }
-    };
-    fetchBusData();
-  }, [deviceID, t]);
+      return data;
+    },
+    showSuccessToast: false,
+    errorMessage: t("busDetails.errorFetchingBus"),
+    onSuccess: (data) => setBus(data),
+    immediate: true,
+    deps: [deviceID]
+  });
 
   useEffect(() => {
     if (!bus?.timeSlots) return;
@@ -84,36 +91,82 @@ const BusDetailsPage2 = () => {
     setActiveSlot(active);
   }, [bus]);
 
-  if (!bus)
+  // Loading state
+  if (loading) {
     return (
-      <>
+      <div
+        className={`min-h-screen flex items-center justify-center ${
+          darktheme
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+            : "bg-gradient-to-br from-green-50 via-white to-green-100"
+        }`}
+      >
+        <Navbar />
         <div
-          className={`min-h-screen flex items-center justify-center ${
+          className={`rounded-2xl shadow-xl p-8 flex flex-col items-center ${
             darktheme
-              ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
-              : "bg-gradient-to-br from-green-50 via-white to-green-100"
+              ? "bg-gray-800 border border-gray-700"
+              : "bg-white border border-green-100"
           }`}
         >
-          <Navbar />
-          <div
-            className={`rounded-2xl shadow-xl p-8 flex flex-col items-center ${
-              darktheme
-                ? "bg-gray-800 border border-gray-700"
-                : "bg-white border border-green-100"
+          <Loader2 className="w-12 h-12 text-green-500 animate-spin mb-4" />
+          <span
+            className={`text-lg font-medium ${
+              darktheme ? "text-gray-300" : "text-gray-600"
             }`}
           >
-            <div className="animate-spin w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full mb-4"></div>
-            <span
-              className={`text-lg font-medium ${
-                darktheme ? "text-gray-300" : "text-gray-600"
-              }`}
-            >
-              {t("busDetails.loadingMessage")}
-            </span>
-          </div>
+            {t("busDetails.loadingMessage")}
+          </span>
         </div>
-      </>
+      </div>
     );
+  }
+
+  // Error state
+  if (error || !bus) {
+    return (
+      <div
+        className={`min-h-screen flex items-center justify-center ${
+          darktheme
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+            : "bg-gradient-to-br from-green-50 via-white to-green-100"
+        }`}
+      >
+        <Navbar />
+        <div
+          className={`rounded-2xl shadow-xl p-8 flex flex-col items-center max-w-md ${
+            darktheme
+              ? "bg-gray-800 border border-gray-700"
+              : "bg-white border border-green-100"
+          }`}
+        >
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <h2
+            className={`text-xl font-bold mb-2 ${
+              darktheme ? "text-white" : "text-gray-800"
+            }`}
+          >
+            {error || "Bus not found"}
+          </h2>
+          <p
+            className={`text-center mb-6 ${
+              darktheme ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
+            Unable to load bus details. Please try again.
+          </p>
+          <Button
+            onClick={() => fetchBusData()}
+            className="bg-green-500 hover:bg-green-600"
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
