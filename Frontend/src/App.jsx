@@ -25,6 +25,7 @@ import { useSelector } from "react-redux";
 import PrivacyPolicy from "./components/page/PrivacyPolicy";
 import TermsAndConditions from "./components/page/TermsAndConditions";
 import NotFound from "./components/page/NotFound";
+import BacktoTop from "./components/shared/BacktoTop";
 
 function App() {
   const approute = createBrowserRouter([
@@ -126,6 +127,7 @@ function App() {
       <RouterProvider router={approute} />
       <SupportChat/>
       <Footer />
+      <BacktoTop/>
     </>
   );
 }
