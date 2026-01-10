@@ -110,6 +110,7 @@ const corsOptions = {
     "http://localhost:5173",
     "https://gps-map-nine.vercel.app",
     "https://gps-tracker-ecru.vercel.app",
+    "https://where-is-my-bus.netlify.app"
   ],
   credentials: true,
 };
