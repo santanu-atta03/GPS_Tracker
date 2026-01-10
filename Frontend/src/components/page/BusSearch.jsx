@@ -1,8 +1,9 @@
+
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MapPin, Bus, Search, Navigation } from "lucide-react";
+import { MapPin, Bus, Search, Navigation, ArrowRight, Clock, Users, Zap } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
@@ -105,7 +106,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
   return (
     <div className="mb-6 relative">
       <label
-        className={`block mb-2 font-medium text-sm ${
+        className={`block mb-3 font-semibold text-sm ${
           darktheme ? "text-gray-300" : "text-gray-700"
         }`}
       >
@@ -117,53 +118,55 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
         value={query}
         placeholder={t("busSearch.typePlaceholder")}
         onChange={(e) => handleSearch(e.target.value)}
-        className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
+        className={`w-full p-4 border-2 rounded-xl focus:ring-4 transition-all ${
           darktheme
-            ? "bg-gray-800 border-gray-600 text-white placeholder-gray-400"
-            : "bg-white border-gray-300 text-gray-900"
+            ? "bg-gray-900/50 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20"
+            : "bg-white border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-blue-500/20"
         }`}
       />
 
       {enableUseMyLocation && (
         <button
           type="button"
-          className={`text-sm mt-2 underline font-medium transition-colors ${
+          className={`text-sm mt-3 font-semibold transition-all flex items-center gap-2 ${
             darktheme
-              ? "text-green-400 hover:text-green-300"
-              : "text-green-600 hover:text-green-700"
+              ? "text-blue-400 hover:text-blue-300"
+              : "text-blue-600 hover:text-blue-700"
           }`}
           onClick={handleUseMyLocation}
           disabled={loadingLocation}
         >
+          <MapPin className="w-4 h-4" />
           {loadingLocation ? t("busSearch.gettingLocation") : t("busSearch.useMyLocation")}
         </button>
       )}
 
       {loading && (
         <p
-          className={`text-sm mt-2 ${
+          className={`text-sm mt-2 flex items-center gap-2 ${
             darktheme ? "text-gray-400" : "text-gray-500"
           }`}
         >
+          <div className="w-4 h-4 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
           {t("busSearch.searching")}
         </p>
       )}
 
       {suggestions.length > 0 && (
         <ul
-          className={`absolute z-10 w-full shadow-xl rounded-xl mt-2 max-h-60 overflow-y-auto border ${
+          className={`absolute z-10 w-full shadow-2xl rounded-xl mt-2 max-h-60 overflow-y-auto border backdrop-blur-sm ${
             darktheme
-              ? "bg-gray-800 border-gray-600"
-              : "bg-white border-gray-200"
+              ? "bg-gray-800/95 border-gray-700"
+              : "bg-white/95 border-gray-200"
           }`}
         >
           {suggestions.map((s, idx) => (
             <li
               key={idx}
-              className={`p-3 cursor-pointer text-sm transition-colors border-b last:border-b-0 ${
+              className={`p-4 cursor-pointer text-sm transition-all border-b last:border-b-0 flex items-start gap-3 ${
                 darktheme
-                  ? "hover:bg-gray-700 text-gray-200 border-gray-600"
-                  : "hover:bg-green-50 text-gray-900 border-gray-200"
+                  ? "hover:bg-gray-700 text-gray-200 border-gray-700"
+                  : "hover:bg-blue-50 text-gray-900 border-gray-100"
               }`}
               onClick={() => {
                 const pos = { lat: parseFloat(s.lat), lon: parseFloat(s.lon) };
@@ -173,8 +176,8 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
                 setSuggestions([]);
               }}
             >
-              <MapPin className="w-4 h-4 inline mr-2 text-green-600" />
-              {s.display_name}
+              <MapPin className={`w-5 h-5 flex-shrink-0 mt-0.5 ${darktheme ? 'text-blue-400' : 'text-blue-600'}`} />
+              <span>{s.display_name}</span>
             </li>
           ))}
         </ul>
@@ -182,8 +185,8 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
 
       {selectedPos && (
         <div
-          className={`mt-4 h-64 rounded-xl overflow-hidden shadow-lg border ${
-            darktheme ? "border-gray-600" : "border-gray-200"
+          className={`mt-4 h-72 rounded-2xl overflow-hidden shadow-2xl border-2 ${
+            darktheme ? "border-gray-700" : "border-gray-200"
           }`}
         >
           <MapContainer
@@ -313,26 +316,37 @@ const BusSearch = () => {
 
   return (
     <div
-      className={`min-h-screen ${
+      className={`min-h-screen relative overflow-hidden ${
         darktheme
-          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
-          : "bg-gradient-to-br from-green-50 via-white to-green-100"
+          ? "bg-gradient-to-br from-gray-900 via-slate-900 to-black"
+          : "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"
       }`}
     >
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className={`absolute top-20 left-10 w-96 h-96 ${darktheme ? 'bg-blue-500/5' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
+        <div className={`absolute bottom-20 right-10 w-96 h-96 ${darktheme ? 'bg-purple-500/5' : 'bg-purple-300/20'} rounded-full blur-3xl animate-pulse`} style={{animationDelay: '1s'}}></div>
+      </div>
+
       <Navbar />
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-5xl mx-auto px-4 py-12 relative z-10">
         {/* Hero Section */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-3 mb-6">
+            <div className={`p-3 rounded-2xl ${darktheme ? 'bg-blue-500/20 border border-blue-500/30' : 'bg-gradient-to-br from-blue-500 to-purple-500'}`}>
+              <Bus className={`w-8 h-8 ${darktheme ? 'text-blue-400' : 'text-white'}`} />
+            </div>
+          </div>
           <h1
-            className={`text-4xl font-bold mb-4 ${
-              darktheme ? "text-white" : "text-gray-800"
-            }`}
+            className={`text-5xl font-bold mb-4 bg-gradient-to-r ${
+              darktheme ? "from-blue-400 via-purple-400 to-pink-400" : "from-blue-600 via-purple-600 to-pink-600"
+            } bg-clip-text text-transparent`}
           >
             {t("busSearch.pageTitle")}
           </h1>
           <p
-            className={`text-lg ${
-              darktheme ? "text-gray-300" : "text-gray-600"
+            className={`text-lg max-w-2xl mx-auto ${
+              darktheme ? "text-gray-400" : "text-gray-600"
             }`}
           >
             {t("busSearch.pageDescription")}
@@ -341,14 +355,14 @@ const BusSearch = () => {
 
         {/* Search Card */}
         <div
-          className={`rounded-2xl shadow-xl p-8 mb-8 border ${
+          className={`rounded-3xl shadow-2xl p-8 mb-8 border backdrop-blur-sm ${
             darktheme
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-green-100"
+              ? "bg-gray-800/80 border-gray-700/50"
+              : "bg-white/90 border-white/50"
           }`}
         >
           <h2
-            className={`text-2xl font-bold mb-6 text-center ${
+            className={`text-2xl font-bold mb-8 text-center ${
               darktheme ? "text-white" : "text-gray-800"
             }`}
           >
@@ -356,49 +370,55 @@ const BusSearch = () => {
           </h2>
 
           {/* Search Type Selector */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-8">
             <div
-              className={`rounded-full p-2 transition-all duration-200 inline-flex flex-wrap gap-2 ${
-                darktheme ? "bg-gray-700" : "bg-gray-100"
+              className={`rounded-2xl p-2 transition-all duration-200 inline-flex flex-wrap gap-2 ${
+                darktheme ? "bg-gray-900/50 border border-gray-700" : "bg-gray-100 border border-gray-200"
               }`}
             >
               <button
                 onClick={() => setSearchType("route")}
-                className={`px-6 py-2 rounded-full transition-all duration-300 ${
+                className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center gap-2 ${
                   searchType === "route"
-                    ? "bg-green-500 text-white shadow-lg"
+                    ? darktheme 
+                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                      : "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
                     : darktheme
-                    ? "text-gray-300 hover:text-white"
-                    : "text-gray-600 hover:text-gray-800"
+                    ? "text-gray-400 hover:text-white hover:bg-gray-800"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
                 }`}
               >
-                <MapPin className="w-4 h-4 inline mr-2" />
+                <MapPin className="w-5 h-5" />
                 {t("busSearch.byRoute")}
               </button>
               <button
                 onClick={() => setSearchType("device")}
-                className={`px-6 py-2 rounded-full transition-all duration-300 ${
+                className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center gap-2 ${
                   searchType === "device"
-                    ? "bg-green-500 text-white shadow-lg"
+                    ? darktheme 
+                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                      : "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
                     : darktheme
-                    ? "text-gray-300 hover:text-white"
-                    : "text-gray-600 hover:text-gray-800"
+                    ? "text-gray-400 hover:text-white hover:bg-gray-800"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
                 }`}
               >
-                <Navigation className="w-4 h-4 inline mr-2" />
+                <Navigation className="w-5 h-5" />
                 {t("busSearch.byDeviceId")}
               </button>
               <button
                 onClick={() => setSearchType("name")}
-                className={`px-6 py-2 rounded-full transition-all duration-300 ${
+                className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center gap-2 ${
                   searchType === "name"
-                    ? "bg-green-500 text-white shadow-lg"
+                    ? darktheme 
+                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+                      : "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
                     : darktheme
-                    ? "text-gray-300 hover:text-white"
-                    : "text-gray-600 hover:text-gray-800"
+                    ? "text-gray-400 hover:text-white hover:bg-gray-800"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
                 }`}
               >
-                <Bus className="w-4 h-4 inline mr-2" />
+                <Bus className="w-5 h-5" />
                 {t("busSearch.byBusName")}
               </button>
             </div>
@@ -425,7 +445,7 @@ const BusSearch = () => {
           {searchType === "device" && (
             <div className="max-w-md mx-auto">
               <label
-                className={`block text-sm font-medium mb-2 ${
+                className={`block text-sm font-semibold mb-3 ${
                   darktheme ? "text-gray-300" : "text-gray-700"
                 }`}
               >
@@ -435,10 +455,10 @@ const BusSearch = () => {
                 placeholder={t("busSearch.deviceIdPlaceholder")}
                 value={deviceId}
                 onChange={(e) => setDeviceId(e.target.value)}
-                className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
+                className={`w-full p-4 border-2 rounded-xl focus:ring-4 transition-all ${
                   darktheme
-                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                    : "bg-white border-gray-300 text-gray-900"
+                    ? "bg-gray-900/50 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20"
+                    : "bg-white border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-blue-500/20"
                 }`}
               />
             </div>
@@ -448,7 +468,7 @@ const BusSearch = () => {
           {searchType === "name" && (
             <div className="max-w-md mx-auto">
               <label
-                className={`block text-sm font-medium mb-2 ${
+                className={`block text-sm font-semibold mb-3 ${
                   darktheme ? "text-gray-300" : "text-gray-700"
                 }`}
               >
@@ -458,47 +478,64 @@ const BusSearch = () => {
                 placeholder={t("busSearch.busNamePlaceholder")}
                 value={busName}
                 onChange={(e) => setBusName(e.target.value)}
-                className={`w-full p-4 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
+                className={`w-full p-4 border-2 rounded-xl focus:ring-4 transition-all ${
                   darktheme
-                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                    : "bg-white border-gray-300 text-gray-900"
+                    ? "bg-gray-900/50 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20"
+                    : "bg-white border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-blue-500/20"
                 }`}
               />
             </div>
           )}
 
           {/* Search Button */}
-          <div className="text-center mt-6">
+          <div className="text-center mt-8 space-y-4">
             <button
               onClick={handleSearch}
               disabled={!canSearch() || loading}
-              className={`px-8 py-4 rounded-xl font-medium transition-all duration-300 shadow-lg transform flex items-center mx-auto ${
+              className={`px-10 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg flex items-center gap-3 mx-auto ${
                 canSearch() && !loading
-                  ? "bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 hover:shadow-xl hover:scale-105"
+                  ? darktheme
+                    ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white hover:shadow-2xl hover:scale-105"
+                    : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white hover:shadow-2xl hover:scale-105"
                   : darktheme
                   ? "bg-gray-700 text-gray-500 cursor-not-allowed"
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
             >
-              <Search className="w-5 h-5 mr-2" />
-              {loading ? t("busSearch.searching") : t("busSearch.searchBuses")}
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>{t("busSearch.searching")}</span>
+                </>
+              ) : (
+                <>
+                  <Search className="w-5 h-5" />
+                  <span>{t("busSearch.searchBuses")}</span>
+                </>
+              )}
             </button>
 
             {searchType === "route" && results && (
               <button
-                className="mt-4 px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className={`px-10 py-4 rounded-xl font-semibold shadow-lg transition-all duration-300 flex items-center gap-3 mx-auto ${
+                  darktheme
+                    ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white"
+                    : "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                } hover:shadow-2xl hover:scale-105`}
                 onClick={() => navigate("/fllow/path")}
               >
-                {t("busSearch.startJourney")}
+                <Zap className="w-5 h-5" />
+                <span>{t("busSearch.startJourney")}</span>
+                <ArrowRight className="w-5 h-5" />
               </button>
             )}
           </div>
 
           {/* Search Tips */}
-          <div className="mt-4 text-center">
+          <div className="mt-6 text-center">
             <p
               className={`text-sm ${
-                darktheme ? "text-gray-400" : "text-gray-500"
+                darktheme ? "text-gray-500" : "text-gray-500"
               }`}
             >
               {searchType === "route" && t("busSearch.routeTip")}
@@ -514,117 +551,26 @@ const BusSearch = () => {
             <>
               {results.type === "direct" && (
                 <div
-                  className={`space-y-6 rounded-2xl shadow-xl p-8 border ${
+                  className={`space-y-6 rounded-3xl shadow-2xl p-8 border backdrop-blur-sm ${
                     darktheme
-                      ? "bg-gray-800 border-gray-700"
-                      : "bg-white border-green-100"
+                      ? "bg-gray-800/80 border-gray-700/50"
+                      : "bg-white/90 border-white/50"
                   }`}
                 >
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center mb-6">
+                    <div className={`p-3 rounded-2xl mb-3 ${darktheme ? 'bg-green-500/20' : 'bg-green-100'}`}>
+                      <MapPin className={`w-6 h-6 ${darktheme ? 'text-green-400' : 'text-green-600'}`} />
+                    </div>
                     <h2
-                      className={`text-lg font-bold ${
+                      className={`text-xl font-bold ${
                         darktheme ? "text-green-400" : "text-green-700"
                       }`}
                     >
                       {t("busSearch.start")}
                     </h2>
                     <p
-                      className={`text-xs mt-1 ${
-                        darktheme ? "text-gray-400" : "text-gray-500"
-                      }`}
-                    >
-                      {results.pathAddresses?.[0]?.address ||
-                        t("busSearch.unknownStartLocation")}
-                    </p>
-                  </div>
-
-                  {results.busesUsed.map((bus, idx) => (
-                    <Card
-                      key={bus._id}
-                      className={`shadow-lg border-l-4 border-green-500 cursor-pointer hover:shadow-xl transition-shadow duration-300 ${
-                        darktheme ? "bg-gray-700" : "bg-white"
-                      }`}
-                      onClick={() => navigate(`bus/${bus.deviceID}`)}
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-4">
-                          <Bus className="w-8 h-8 text-green-600" />
-                          <div>
-                            <h3
-                              className={`font-semibold text-lg ${
-                                darktheme ? "text-white" : "text-gray-900"
-                              }`}
-                            >
-                              {bus.name || "N/A"}
-                            </h3>
-                            <p
-                              className={`text-sm ${
-                                darktheme ? "text-gray-300" : "text-gray-600"
-                              }`}
-                            >
-                              {t("busSearch.route")} {bus.from || "N/A"} → {bus.to || "N/A"}
-                            </p>
-                            <p
-                              className={`text-sm ${
-                                darktheme ? "text-gray-400" : "text-gray-500"
-                              }`}
-                            >
-                              {t("busSearch.device")} {bus.deviceID}
-                            </p>
-                            {bus.nextStartTime && (
-                              <p
-                                className={`text-sm ${
-                                  darktheme ? "text-gray-400" : "text-gray-500"
-                                }`}
-                              >
-                                {t("busSearch.time")} {bus.nextStartTime.startTime} {t("busSearch.to")} {bus.nextStartTime.endTime}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-
-                  <div className="flex flex-col items-center">
-                    <h2
-                      className={`text-lg font-bold ${
-                        darktheme ? "text-red-400" : "text-red-700"
-                      }`}
-                    >
-                      {t("busSearch.destination")}
-                    </h2>
-                    <p
-                      className={`text-xs mt-1 ${
-                        darktheme ? "text-gray-400" : "text-gray-500"
-                      }`}
-                    >
-                      {results.pathAddresses?.[results.pathAddresses.length - 1]
-                        ?.address || t("busSearch.unknownDestination")}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {results.type === "multi-hop" && (
-                <div
-                  className={`space-y-6 rounded-2xl shadow-xl p-8 border ${
-                    darktheme
-                      ? "bg-gray-800 border-gray-700"
-                      : "bg-white border-green-100"
-                  }`}
-                >
-                  <div className="flex flex-col items-center">
-                    <h2
-                      className={`text-lg font-bold ${
-                        darktheme ? "text-green-400" : "text-green-700"
-                      }`}
-                    >
-                      {t("busSearch.start")}
-                    </h2>
-                    <p
-                      className={`text-xs mt-1 ${
-                        darktheme ? "text-gray-400" : "text-gray-500"
+                      className={`text-sm mt-2 text-center max-w-md ${
+                        darktheme ? "text-gray-400" : "text-gray-600"
                       }`}
                     >
                       {results.pathAddresses?.[0].address}
@@ -638,88 +584,102 @@ const BusSearch = () => {
                     return (
                       <div
                         key={bus._id}
-                        className="flex items-start gap-6"
-                        onClick={() => navigate(`bus/${bus.deviceID}`)}
+                        className="relative"
                       >
-                        <div className="flex flex-col items-center">
-                          <div
-                            className={`w-1 h-12 ${
-                              darktheme ? "bg-gray-600" : "bg-gray-400"
-                            }`}
-                          ></div>
-                          <div
-                            className={`text-sm font-medium text-center ${
-                              darktheme ? "text-gray-300" : "text-gray-700"
-                            }`}
-                          >
-                            {isLast ? t("busSearch.destination") : t("busSearch.changeHere")}
-                            {changeLocation?.address && (
-                              <p
-                                className={`text-xs mt-1 ${
-                                  darktheme ? "text-gray-400" : "text-gray-500"
-                                }`}
-                              >
-                                {changeLocation.address}
-                              </p>
-                            )}
+                        {!isLast && (
+                          <div className="flex items-center justify-center my-6">
+                            <div className={`flex items-center gap-3 px-4 py-2 rounded-full ${
+                              darktheme ? 'bg-yellow-500/20 border border-yellow-500/30' : 'bg-yellow-100 border border-yellow-200'
+                            }`}>
+                              <div className={`w-2 h-2 rounded-full ${darktheme ? 'bg-yellow-400' : 'bg-yellow-500'}`}></div>
+                              <span className={`text-sm font-semibold ${darktheme ? 'text-yellow-400' : 'text-yellow-700'}`}>
+                                {t("busSearch.changeHere")}
+                              </span>
+                            </div>
                           </div>
-                          <div
-                            className={`w-1 h-12 ${
-                              darktheme ? "bg-gray-600" : "bg-gray-400"
-                            }`}
-                          ></div>
-                        </div>
+                        )}
 
                         <Card
-                          className={`flex-1 shadow-lg border-l-4 border-green-500 cursor-pointer hover:shadow-xl transition-shadow duration-300 ${
-                            darktheme ? "bg-gray-700" : "bg-white"
+                          className={`shadow-xl border-l-4 cursor-pointer transition-all duration-300 hover:scale-[1.02] ${
+                            darktheme 
+                              ? "bg-gradient-to-r from-gray-700 to-gray-800 border-purple-500 hover:shadow-purple-500/20" 
+                              : "bg-white border-purple-500 hover:shadow-2xl"
                           }`}
+                          onClick={() => navigate(`bus/${bus.deviceID}`)}
                         >
-                          <CardContent className="p-4">
+                          <CardContent className="p-6">
                             <div className="flex items-center gap-4">
-                              <Bus className="w-8 h-8 text-green-600" />
-                              <div>
+                              <div className={`p-3 rounded-xl ${darktheme ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
+                                <Bus className={`w-8 h-8 ${darktheme ? 'text-purple-400' : 'text-purple-600'}`} />
+                              </div>
+                              <div className="flex-1">
                                 <h3
-                                  className={`font-semibold text-lg ${
+                                  className={`font-bold text-lg mb-1 ${
                                     darktheme ? "text-white" : "text-gray-900"
                                   }`}
                                 >
                                   {t("busSearch.bus")} {bus.name}
                                 </h3>
                                 <p
-                                  className={`text-sm ${
-                                    darktheme
-                                      ? "text-gray-300"
-                                      : "text-gray-600"
+                                  className={`text-sm mb-1 flex items-center gap-2 ${
+                                    darktheme ? "text-gray-300" : "text-gray-600"
                                   }`}
                                 >
+                                  <MapPin className="w-4 h-4" />
                                   {t("busSearch.route")} {bus.from} → {bus.to}
                                 </p>
                                 <p
-                                  className={`text-sm ${
-                                    darktheme
-                                      ? "text-gray-400"
-                                      : "text-gray-500"
+                                  className={`text-sm mb-1 flex items-center gap-2 ${
+                                    darktheme ? "text-gray-400" : "text-gray-500"
                                   }`}
                                 >
+                                  <Navigation className="w-4 h-4" />
                                   {t("busSearch.device")} {bus.deviceID}
                                 </p>
                                 <p
-                                  className={`text-sm ${
-                                    darktheme
-                                      ? "text-gray-400"
-                                      : "text-gray-500"
+                                  className={`text-sm flex items-center gap-2 ${
+                                    darktheme ? "text-gray-400" : "text-gray-500"
                                   }`}
                                 >
-                                  {t("busSearch.time")} {bus.nextStartTime.startTime} {t("busSearch.to")} {bus.nextStartTime.endTime}
+                                  <Clock className="w-4 h-4" />
+                                  {bus.nextStartTime.startTime} {t("busSearch.to")} {bus.nextStartTime.endTime}
                                 </p>
                               </div>
+                              <ArrowRight className={`w-6 h-6 ${darktheme ? 'text-gray-600' : 'text-gray-400'}`} />
                             </div>
                           </CardContent>
                         </Card>
+
+                        {changeLocation?.address && !isLast && (
+                          <div className="text-center mt-4">
+                            <p className={`text-sm ${darktheme ? 'text-gray-500' : 'text-gray-600'}`}>
+                              {changeLocation.address}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
+
+                  <div className="flex flex-col items-center mt-6">
+                    <div className={`p-3 rounded-2xl mb-3 ${darktheme ? 'bg-red-500/20' : 'bg-red-100'}`}>
+                      <MapPin className={`w-6 h-6 ${darktheme ? 'text-red-400' : 'text-red-600'}`} />
+                    </div>
+                    <h2
+                      className={`text-xl font-bold ${
+                        darktheme ? "text-red-400" : "text-red-700"
+                      }`}
+                    >
+                      {t("busSearch.destination")}
+                    </h2>
+                    <p
+                      className={`text-sm mt-2 text-center max-w-md ${
+                        darktheme ? "text-gray-400" : "text-gray-600"
+                      }`}
+                    >
+                      {results.pathAddresses?.[results.pathAddresses.length - 1]?.address}
+                    </p>
+                  </div>
                 </div>
               )}
             </>
@@ -728,54 +688,57 @@ const BusSearch = () => {
               {results.map((bus, idx) => (
                 <Card
                   key={idx}
-                  className={`shadow-lg rounded-2xl cursor-pointer hover:shadow-xl transition-shadow duration-300 border ${
+                  className={`shadow-xl rounded-2xl cursor-pointer transition-all duration-300 hover:scale-[1.02] border ${
                     darktheme
-                      ? "bg-gray-800 border-gray-700"
-                      : "bg-white border-green-100"
+                      ? "bg-gradient-to-r from-gray-800 to-gray-900 border-gray-700 hover:shadow-blue-500/20"
+                      : "bg-white border-gray-200 hover:shadow-2xl"
                   }`}
                   onClick={() => navigate(`bus/${bus.deviceID}`)}
                 >
                   <CardContent className="p-6 flex items-center gap-4">
                     <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                        darktheme ? "bg-green-900" : "bg-green-100"
+                      className={`w-14 h-14 rounded-xl flex items-center justify-center ${
+                        darktheme ? "bg-blue-500/20" : "bg-blue-100"
                       }`}
                     >
-                      <Bus className="w-6 h-6 text-green-600" />
+                      <Bus className={`w-7 h-7 ${darktheme ? 'text-blue-400' : 'text-blue-600'}`} />
                     </div>
                     <div className="flex-1">
                       <h2
-                        className={`text-lg font-semibold ${
+                        className={`text-lg font-bold mb-1 ${
                           darktheme ? "text-white" : "text-gray-800"
                         }`}
                       >
                         {t("busSearch.busName")} {bus.name || "N/A"}
                       </h2>
                       <p
-                        className={`text-sm ${
+                        className={`text-sm mb-1 flex items-center gap-2 ${
                           darktheme ? "text-gray-300" : "text-gray-600"
                         }`}
                       >
+                        <Navigation className="w-4 h-4" />
                         {t("busSearch.deviceId")} {bus.deviceID}
                       </p>
                       <p
-                        className={`text-sm ${
+                        className={`text-sm mb-1 flex items-center gap-2 ${
                           darktheme ? "text-gray-300" : "text-gray-600"
                         }`}
                       >
+                        <MapPin className="w-4 h-4" />
                         {t("busSearch.route")} {bus.from} → {bus.to}
                       </p>
                       {bus.driver && (
                         <p
-                          className={`text-sm ${
+                          className={`text-sm flex items-center gap-2 ${
                             darktheme ? "text-gray-400" : "text-gray-500"
                           }`}
                         >
+                          <Users className="w-4 h-4" />
                           {t("busSearch.driverId")} {bus.driver}
                         </p>
                       )}
                     </div>
-                    <MapPin className="w-6 h-6 text-blue-500" />
+                    <ArrowRight className={`w-6 h-6 ${darktheme ? 'text-gray-600' : 'text-gray-400'}`} />
                   </CardContent>
                 </Card>
               ))}
@@ -784,27 +747,31 @@ const BusSearch = () => {
             !loading &&
             results === null && (
               <div
-                className={`rounded-2xl shadow-xl p-12 text-center border ${
+                className={`rounded-3xl shadow-2xl p-12 text-center border backdrop-blur-sm ${
                   darktheme
-                    ? "bg-gray-800 border-gray-700"
-                    : "bg-white border-gray-200"
+                    ? "bg-gray-800/80 border-gray-700/50"
+                    : "bg-white/90 border-white/50"
                 }`}
               >
-                <Bus
-                  className={`w-16 h-16 mx-auto mb-4 ${
-                    darktheme ? "text-gray-600" : "text-gray-300"
-                  }`}
-                />
-                <p
-                  className={`text-lg ${
-                    darktheme ? "text-gray-300" : "text-gray-500"
+                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 ${
+                  darktheme ? 'bg-gray-700' : 'bg-gray-100'
+                }`}>
+                  <Bus
+                    className={`w-12 h-12 ${
+                      darktheme ? "text-gray-600" : "text-gray-400"
+                    }`}
+                  />
+                </div>
+                <h3
+                  className={`text-xl font-bold mb-2 ${
+                    darktheme ? "text-gray-300" : "text-gray-700"
                   }`}
                 >
                   {t("busSearch.noBusesFound")}
-                </p>
+                </h3>
                 <p
-                  className={`text-sm mt-2 ${
-                    darktheme ? "text-gray-500" : "text-gray-400"
+                  className={`text-sm ${
+                    darktheme ? "text-gray-500" : "text-gray-500"
                   }`}
                 >
                   {t("busSearch.adjustSearch")}
