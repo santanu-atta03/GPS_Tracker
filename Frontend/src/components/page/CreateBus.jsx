@@ -8,7 +8,19 @@ import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import { Bus, MapPin, Search, Clock, Plus, Trash2, Send, DollarSign, Navigation } from "lucide-react";
+import TurnstileCaptcha from "@/components/shared/TurnstileCaptcha";
+
+import {
+  Bus,
+  MapPin,
+  Search,
+  Clock,
+  Plus,
+  Trash2,
+  Send,
+  DollarSign,
+  Navigation,
+} from "lucide-react";
 
 const CreateBus = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -22,6 +34,7 @@ const CreateBus = () => {
   const [timeSlots, setTimeSlots] = useState([{ startTime: "", endTime: "" }]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(null);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   // Separate states for "From" search
   const [fromSearchQuery, setFromSearchQuery] = useState("");
@@ -59,10 +72,23 @@ const CreateBus = () => {
       const token = await getAccessTokenSilently({
         audience: "http://localhost:5000/api/v3",
       });
+      if (!turnstileToken) {
+        toast.error("Please verify CAPTCHA");
+        setLoading(false);
+        return;
+      }
 
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/Bus/createbus`,
-        { name, deviceID, from, to, timeSlots, ticketPrice },
+        {
+          name,
+          deviceID,
+          from,
+          to,
+          timeSlots,
+          ticketPrice,
+          turnstileToken, // 👈 ADD THIS
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -81,7 +107,9 @@ const CreateBus = () => {
       console.error("Error creating bus:", error);
       setSuccess(t("createBus.errorMessage"));
       const errorMessage =
-        error.response?.data?.message || error.message || t("createBus.genericError");
+        error.response?.data?.message ||
+        error.message ||
+        t("createBus.genericError");
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -164,23 +192,44 @@ const CreateBus = () => {
     >
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute top-20 left-10 w-96 h-96 ${darktheme ? 'bg-blue-500/5' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
-        <div className={`absolute bottom-20 right-10 w-96 h-96 ${darktheme ? 'bg-purple-500/5' : 'bg-purple-300/20'} rounded-full blur-3xl animate-pulse`} style={{animationDelay: '1s'}}></div>
+        <div
+          className={`absolute top-20 left-10 w-96 h-96 ${
+            darktheme ? "bg-blue-500/5" : "bg-blue-300/20"
+          } rounded-full blur-3xl animate-pulse`}
+        ></div>
+        <div
+          className={`absolute bottom-20 right-10 w-96 h-96 ${
+            darktheme ? "bg-purple-500/5" : "bg-purple-300/20"
+          } rounded-full blur-3xl animate-pulse`}
+          style={{ animationDelay: "1s" }}
+        ></div>
       </div>
 
       <Navbar />
-      
+
       <main className="max-w-5xl mx-auto px-4 py-12 relative z-10">
         {/* Hero Section */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-3 mb-6">
-            <div className={`p-3 rounded-2xl ${darktheme ? 'bg-blue-500/20 border border-blue-500/30' : 'bg-gradient-to-br from-blue-500 to-purple-500'}`}>
-              <Bus className={`w-8 h-8 ${darktheme ? 'text-blue-400' : 'text-white'}`} />
+            <div
+              className={`p-3 rounded-2xl ${
+                darktheme
+                  ? "bg-blue-500/20 border border-blue-500/30"
+                  : "bg-gradient-to-br from-blue-500 to-purple-500"
+              }`}
+            >
+              <Bus
+                className={`w-8 h-8 ${
+                  darktheme ? "text-blue-400" : "text-white"
+                }`}
+              />
             </div>
           </div>
           <h1
             className={`text-5xl font-bold mb-4 bg-gradient-to-r ${
-              darktheme ? "from-blue-400 via-purple-400 to-pink-400" : "from-blue-600 via-purple-600 to-pink-600"
+              darktheme
+                ? "from-blue-400 via-purple-400 to-pink-400"
+                : "from-blue-600 via-purple-600 to-pink-600"
             } bg-clip-text text-transparent`}
           >
             {t("createBus.pageTitle")}
@@ -331,7 +380,11 @@ const CreateBus = () => {
                               : "text-gray-700 border-gray-100 hover:bg-blue-50"
                           }`}
                         >
-                          <MapPin className={`w-5 h-5 flex-shrink-0 mt-0.5 ${darktheme ? 'text-blue-400' : 'text-blue-600'}`} />
+                          <MapPin
+                            className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                              darktheme ? "text-blue-400" : "text-blue-600"
+                            }`}
+                          />
                           <span className="flex-1">{place.display_name}</span>
                         </li>
                       ))}
@@ -389,7 +442,11 @@ const CreateBus = () => {
                               : "text-gray-700 border-gray-100 hover:bg-blue-50"
                           }`}
                         >
-                          <MapPin className={`w-5 h-5 flex-shrink-0 mt-0.5 ${darktheme ? 'text-blue-400' : 'text-blue-600'}`} />
+                          <MapPin
+                            className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                              darktheme ? "text-blue-400" : "text-blue-600"
+                            }`}
+                          />
                           <span className="flex-1">{place.display_name}</span>
                         </li>
                       ))}
@@ -415,7 +472,11 @@ const CreateBus = () => {
                         type="time"
                         value={slot.startTime}
                         onChange={(e) =>
-                          handleTimeSlotChange(index, "startTime", e.target.value)
+                          handleTimeSlotChange(
+                            index,
+                            "startTime",
+                            e.target.value
+                          )
                         }
                         required
                         className={`flex-1 p-3 border-2 rounded-xl focus:outline-none focus:ring-4 transition-all ${
@@ -425,7 +486,9 @@ const CreateBus = () => {
                         }`}
                       />
                       <span
-                        className={`text-sm font-medium ${darktheme ? "text-gray-400" : "text-gray-600"}`}
+                        className={`text-sm font-medium ${
+                          darktheme ? "text-gray-400" : "text-gray-600"
+                        }`}
                       >
                         {t("createBus.to")}
                       </span>
@@ -473,6 +536,11 @@ const CreateBus = () => {
               </div>
 
               {/* Submit Button */}
+              {/* Turnstile CAPTCHA */}
+              <div className="mt-6 flex justify-center">
+                <TurnstileCaptcha onVerify={setTurnstileToken} />
+              </div>
+
               <button
                 type="submit"
                 onClick={handleSubmit}
