@@ -2,11 +2,14 @@ import { useEffect, useRef } from "react";
 
 const TurnstileCaptcha = ({ onVerify }) => {
   const ref = useRef(null);
-const SITE_KEY =
-  window.location.hostname === "localhost"
-    ? "0x4AAAAAACLpDPvIpoBRPbMe"
-    : "0x4AAAAAACLoq3Wk-omggzWD";
-
+  let SITE_KEY = "";
+  if (hostname === "localhost") {
+    SITE_KEY =  "0x4AAAAAACLpDPvIpoBRPbMe"
+  } else if (hostname === "gps-map-nine.vercel.app") {
+    SITE_KEY =  "0x4AAAAAACLoq3Wk-omggzWD"
+  } else {
+    SITE_KEY =  "0x4AAAAAACLtFkqc1CCF60KP"
+  }
   useEffect(() => {
     if (!window.turnstile) return;
 
