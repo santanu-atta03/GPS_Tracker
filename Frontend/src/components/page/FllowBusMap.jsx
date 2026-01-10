@@ -7,7 +7,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import Navbar from "../shared/Navbar";
 import { useTranslation } from "react-i18next";
-import { MapPin, Navigation, Clock, Bus, Zap, Radio } from "lucide-react";
+// ✅ Fix for missing default Leaflet marker icons on Vercel
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import shadowUrl from "leaflet/dist/images/marker-shadow.png";
@@ -19,6 +19,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl,
 });
 
+// Routing Control Component
 const Routing = ({ pathCoordinates }) => {
   const map = useMap();
 
@@ -41,6 +42,7 @@ const Routing = ({ pathCoordinates }) => {
   return null;
 };
 
+// User icon for the map
 const userIcon = L.icon({
   iconUrl:
     "https://www.citypng.com/public/uploads/preview/red-gps-location-symbol-icon-hd-png-701751695035446zkphf8tfr3.png",
@@ -49,29 +51,32 @@ const userIcon = L.icon({
   popupAnchor: [0, -32],
 });
 
+// Bus icon for the timeline (inline SVG)
 const TimelineBusIcon = () => (
   <div
     style={{
-      background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
+      backgroundColor: "#16a34a",
       color: "white",
       fontSize: 20,
-      width: 40,
-      height: 40,
-      borderRadius: "12px",
+      width: 32,
+      height: 32,
+      borderRadius: "50%",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       border: "3px solid white",
-      boxShadow: "0 4px 12px rgba(59, 130, 246, 0.4)",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
     }}
   >
     🚌
   </div>
 );
 
+// Haversine formula to calculate distance between two lat/lon points in meters
 const getDistance = (lat1, lon1, lat2, lon2) => {
   const toRad = (value) => (value * Math.PI) / 180;
-  const R = 6371e3;
+
+  const R = 6371e3; // Earth radius in meters
   const φ1 = toRad(lat1);
   const φ2 = toRad(lat2);
   const Δφ = toRad(lat2 - lat1);
@@ -83,9 +88,10 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  return R * c;
+  return R * c; // distance in meters
 };
 
+// Find closest step index of userLocation on pathCoordinates
 const getUserStepIndex = (userLocation, pathCoordinates) => {
   if (!userLocation) return null;
 
@@ -93,9 +99,11 @@ const getUserStepIndex = (userLocation, pathCoordinates) => {
     getDistance(userLocation[0], userLocation[1], lat, lon)
   );
 
+  // Find minimum distance and corresponding index
   const minDistance = Math.min(...distances);
   let closestIndex = distances.indexOf(minDistance);
 
+  // Distances to start and end points for snapping logic
   const distToStart = getDistance(
     userLocation[0],
     userLocation[1],
@@ -107,13 +115,16 @@ const getUserStepIndex = (userLocation, pathCoordinates) => {
     ...pathCoordinates[pathCoordinates.length - 1]
   );
 
-  const snapThreshold = 100;
+  // Define snapping thresholds (meters)
+  const snapThreshold = 100; // within 100m considered at start or end
 
   if (distToStart < snapThreshold) return 0;
   if (distToEnd < snapThreshold) return pathCoordinates.length - 1;
 
+  // If user is beyond start (before the first step latitude)
   if (userLocation[0] < pathCoordinates[0][0] - 0.001) return 0;
 
+  // If user is beyond end (after the last step latitude)
   if (userLocation[0] > pathCoordinates[pathCoordinates.length - 1][0] + 0.001)
     return pathCoordinates.length - 1;
 
@@ -151,18 +162,15 @@ const FllowBusMap = () => {
   if (!path || !path.pathCoordinates || path.pathCoordinates.length === 0) {
     return (
       <div
-        className={`min-h-screen flex items-center justify-center relative overflow-hidden ${
+        className={`min-h-screen flex items-center justify-center ${
           darktheme
-            ? "bg-gradient-to-br from-gray-900 via-slate-900 to-black"
-            : "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+            : "bg-gradient-to-br from-green-50 via-white to-green-100"
         }`}
       >
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className={`absolute top-20 left-10 w-96 h-96 ${darktheme ? 'bg-blue-500/5' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
-        </div>
         <div
-          className={`text-center text-xl font-medium ${
-            darktheme ? "text-gray-400" : "text-gray-600"
+          className={`text-center ${
+            darktheme ? "text-gray-400" : "text-gray-500"
           }`}
         >
           {t("followBusMap.loadingMap")}
@@ -181,237 +189,179 @@ const FllowBusMap = () => {
   };
 
   return (
-    <div
-      className={`w-full min-h-screen relative overflow-hidden ${
-        darktheme
-          ? "bg-gradient-to-br from-gray-900 via-slate-900 to-black"
-          : "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"
-      }`}
-    >
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute top-20 left-10 w-96 h-96 ${darktheme ? 'bg-blue-500/5' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
-        <div className={`absolute bottom-20 right-10 w-96 h-96 ${darktheme ? 'bg-purple-500/5' : 'bg-purple-300/20'} rounded-full blur-3xl animate-pulse`} style={{animationDelay: '1s'}}></div>
-      </div>
-
-      <Navbar />
-
-      <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-3 mb-4">
-            <div className={`p-3 rounded-2xl ${darktheme ? 'bg-blue-500/20 border border-blue-500/30' : 'bg-gradient-to-br from-blue-500 to-purple-500'}`}>
-              <Navigation className={`w-8 h-8 ${darktheme ? 'text-blue-400' : 'text-white'}`} />
-            </div>
-          </div>
-          <h1
-            className={`text-4xl font-bold mb-3 bg-gradient-to-r ${
-              darktheme 
-                ? "from-blue-400 via-purple-400 to-pink-400" 
-                : "from-blue-600 via-purple-600 to-pink-600"
-            } bg-clip-text text-transparent`}
+    <>
+      <div
+        className={`w-full min-h-screen ${
+          darktheme
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+            : "bg-gradient-to-br from-green-50 via-white to-green-100"
+        }`}
+      >
+        <Navbar />
+        <div className="flex justify-center items-center pt-8">
+          <MapContainer
+            center={center}
+            zoom={13}
+            style={{ height: "70vh", width: "80%" }}
           >
-            Live Journey Tracking
-          </h1>
-          <div className={`flex items-center justify-center gap-2 mt-4 ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
-            <Radio className={`w-5 h-5 ${darktheme ? 'text-green-400' : 'text-green-600'} animate-pulse`} />
-            <span className="font-medium">Tracking your location in real-time</span>
-          </div>
-        </div>
+            <TileLayer
+              url={
+                darktheme
+                  ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                  : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              }
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            <Routing pathCoordinates={pathCoordinates} />
 
+            {/* Address Markers */}
+            {pathAddresses.slice(1, -1).map((loc, idx) => (
+              <Marker key={idx} position={loc.coordinates}>
+                <Popup>{extractStreetOrPlace(loc.address)}</Popup>
+              </Marker>
+            ))}
+
+            {/* Bus Markers */}
+            {busesUsed.map((bus, idx) => {
+              const coordIndex =
+                idx < pathCoordinates.length ? idx : pathCoordinates.length - 1;
+              return (
+                <Marker
+                  key={`bus-${idx}`}
+                  position={pathCoordinates[coordIndex]}
+                >
+                  <Popup>
+                    <div>
+                      <strong>{t("followBusMap.busName")}:</strong> {bus.name}
+                      <br />
+                      <strong>{t("followBusMap.from")}:</strong> {bus.from}
+                      <br />
+                      <strong>{t("followBusMap.to")}:</strong> {bus.to}
+                      <br />
+                      <strong>{t("followBusMap.time")}:</strong> {bus.nextStartTime?.startTime} {t("followBusMap.timeTo")}{" "}
+                      {bus.nextStartTime?.endTime}
+                    </div>
+                  </Popup>
+                </Marker>
+              );
+            })}
+
+            {/* User Location Marker */}
+            {userLocation && (
+              <Marker position={userLocation} icon={userIcon}>
+                <Popup>{t("followBusMap.yourLocation")}</Popup>
+              </Marker>
+            )}
+          </MapContainer>
+        </div>
         {/* Map Section */}
-        <div
-          className={`rounded-3xl shadow-2xl overflow-hidden mb-8 backdrop-blur-sm border ${
-            darktheme
-              ? "bg-gray-800/80 border-gray-700/50"
-              : "bg-white/90 border-white/50"
-          }`}
-        >
-          <div className="p-4">
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`p-2 rounded-xl ${darktheme ? 'bg-green-500/20' : 'bg-green-100'}`}>
-                <MapPin className={`w-5 h-5 ${darktheme ? 'text-green-400' : 'text-green-600'}`} />
-              </div>
-              <h2 className={`text-xl font-bold ${darktheme ? 'text-white' : 'text-gray-800'}`}>
-                Route Map
-              </h2>
-            </div>
-            <MapContainer
-              center={center}
-              zoom={13}
-              style={{ height: "500px", width: "100%", borderRadius: "16px" }}
-            >
-              <TileLayer
-                url={
-                  darktheme
-                    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                    : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                }
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              />
-              <Routing pathCoordinates={pathCoordinates} />
 
-              {pathAddresses.slice(1, -1).map((loc, idx) => (
-                <Marker key={idx} position={loc.coordinates}>
-                  <Popup>{extractStreetOrPlace(loc.address)}</Popup>
-                </Marker>
-              ))}
-
-              {busesUsed.map((bus, idx) => {
-                const coordIndex =
-                  idx < pathCoordinates.length ? idx : pathCoordinates.length - 1;
-                return (
-                  <Marker
-                    key={`bus-${idx}`}
-                    position={pathCoordinates[coordIndex]}
-                  >
-                    <Popup>
-                      <div>
-                        <strong>{t("followBusMap.busName")}:</strong> {bus.name}
-                        <br />
-                        <strong>{t("followBusMap.from")}:</strong> {bus.from}
-                        <br />
-                        <strong>{t("followBusMap.to")}:</strong> {bus.to}
-                        <br />
-                        <strong>{t("followBusMap.time")}:</strong> {bus.nextStartTime?.startTime} {t("followBusMap.timeTo")}{" "}
-                        {bus.nextStartTime?.endTime}
-                      </div>
-                    </Popup>
-                  </Marker>
-                );
-              })}
-
-              {userLocation && (
-                <Marker position={userLocation} icon={userIcon}>
-                  <Popup>{t("followBusMap.yourLocation")}</Popup>
-                </Marker>
-              )}
-            </MapContainer>
-          </div>
-        </div>
-
-        {/* Journey Timeline */}
-        <div
-          className={`rounded-3xl shadow-2xl p-8 backdrop-blur-sm border ${
-            darktheme
-              ? "bg-gray-800/80 border-gray-700/50"
-              : "bg-white/90 border-white/50"
-          }`}
-        >
-          <div className="flex items-center gap-3 mb-8">
-            <div className={`p-2 rounded-xl ${darktheme ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
-              <Zap className={`w-5 h-5 ${darktheme ? 'text-purple-400' : 'text-purple-600'}`} />
-            </div>
-            <h2 className={`text-xl font-bold ${darktheme ? 'text-white' : 'text-gray-800'}`}>
-              Journey Timeline
-            </h2>
-          </div>
-
-          <div className="relative pl-8">
-            {/* Vertical Line */}
-            <div className={`absolute left-4 top-0 bottom-0 w-0.5 ${darktheme ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
-
+        {/* Vertical Journey Timeline */}
+        <div className="w-full mt-10 pb-10 flex justify-center">
+          <div
+            className={`relative border-l-4 pl-6 ${
+              darktheme ? "border-gray-600" : "border-gray-300"
+            }`}
+          >
             {pathAddresses.map((addr, idx) => {
               const isStart = idx === 0;
               const isEnd = idx === pathAddresses.length - 1;
               const hasBus = busesUsed[idx];
               const showBusIcon = userStepIndex === idx;
 
+              // Skip rendering if it's not start/end and there's no bus and user is not here
               if (!isStart && !isEnd && !hasBus && !showBusIcon) return null;
 
               return (
                 <div
                   key={`step-${idx}`}
-                  className="relative mb-8 last:mb-0"
+                  className={`flex flex-col items-start space-y-2 relative border-l-2 pl-6 pb-8 ${
+                    darktheme ? "border-gray-600" : "border-gray-300"
+                  }`}
                 >
                   {/* Timeline Dot */}
-                  <div className={`absolute left-[-18px] top-2 w-4 h-4 rounded-full border-4 ${
-                    isStart 
-                      ? darktheme ? 'bg-green-500 border-green-400' : 'bg-green-500 border-green-400'
-                      : isEnd 
-                      ? darktheme ? 'bg-red-500 border-red-400' : 'bg-red-500 border-red-400'
-                      : darktheme ? 'bg-blue-500 border-blue-400' : 'bg-blue-500 border-blue-400'
-                  }`}></div>
+                  <div className="w-3 h-3 bg-green-500 rounded-full absolute -left-1 top-1"></div>
 
                   {/* User Bus Icon */}
                   {showBusIcon && (
                     <div
-                      className="absolute -left-[38px] top-0"
+                      className="absolute -left-8 top-0"
                       title={t("followBusMap.yourLocationTooltip")}
                     >
                       <TimelineBusIcon />
                     </div>
                   )}
 
-                  {/* Content */}
-                  <div className="pl-4">
-                    {/* Label */}
-                    <div className={`text-sm font-bold uppercase tracking-wide mb-2 ${
-                      isStart 
-                        ? darktheme ? 'text-green-400' : 'text-green-600'
-                        : isEnd 
-                        ? darktheme ? 'text-red-400' : 'text-red-600'
-                        : darktheme ? 'text-blue-400' : 'text-blue-600'
-                    }`}>
-                      {isStart ? t("followBusMap.start") : isEnd ? t("followBusMap.destination") : t("followBusMap.changeHere")}
-                    </div>
-
-                    {/* Address */}
-                    {(isStart || isEnd || hasBus) && (
-                      <div
-                        className={`text-sm mb-3 ${
-                          darktheme ? "text-gray-400" : "text-gray-600"
-                        }`}
-                      >
-                        {addr.address}
-                      </div>
-                    )}
-
-                    {/* Bus Info Card */}
-                    {hasBus && (
-                      <div
-                        className={`rounded-2xl p-5 border ${
-                          darktheme
-                            ? "bg-gray-900/50 border-blue-500/30"
-                            : "bg-blue-50 border-blue-200"
-                        }`}
-                      >
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className={`p-2 rounded-xl ${darktheme ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
-                            <Bus className={`w-5 h-5 ${darktheme ? 'text-blue-400' : 'text-blue-600'}`} />
-                          </div>
-                          <div
-                            className={`text-lg font-bold ${
-                              darktheme ? "text-white" : "text-gray-900"
-                            }`}
-                          >
-                            {busesUsed[idx].name}
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className={`flex items-center gap-2 text-sm ${darktheme ? "text-gray-300" : "text-gray-700"}`}>
-                            <Navigation className="w-4 h-4" />
-                            <span><strong>{t("followBusMap.route")}:</strong> {busesUsed[idx].from} → {busesUsed[idx].to}</span>
-                          </div>
-                          <div className={`flex items-center gap-2 text-sm ${darktheme ? "text-gray-300" : "text-gray-700"}`}>
-                            <MapPin className="w-4 h-4" />
-                            <span><strong>{t("followBusMap.device")}:</strong> {busesUsed[idx].deviceID}</span>
-                          </div>
-                          <div className={`flex items-center gap-2 text-sm ${darktheme ? "text-gray-300" : "text-gray-700"}`}>
-                            <Clock className="w-4 h-4" />
-                            <span><strong>{t("followBusMap.time")}:</strong> {busesUsed[idx].nextStartTime?.startTime} {t("followBusMap.timeTo")} {busesUsed[idx].nextStartTime?.endTime}</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                  {/* Label */}
+                  <div
+                    className={`text-sm font-semibold ${
+                      darktheme ? "text-green-400" : "text-green-600"
+                    }`}
+                  >
+                    {isStart ? t("followBusMap.start") : isEnd ? t("followBusMap.destination") : t("followBusMap.changeHere")}
                   </div>
+
+                  {/* Address */}
+                  {(isStart || isEnd || hasBus) && (
+                    <div
+                      className={`text-sm max-w-md ${
+                        darktheme ? "text-gray-300" : "text-gray-700"
+                      }`}
+                    >
+                      {addr.address}
+                    </div>
+                  )}
+
+                  {/* Bus Info */}
+                  {hasBus && (
+                    <div
+                      className={`border-2 rounded-xl p-4 shadow-md w-full text-sm ${
+                        darktheme
+                          ? "bg-gray-800 border-green-600"
+                          : "bg-white border-green-400"
+                      }`}
+                    >
+                      <div
+                        className={`font-semibold text-lg mb-1 ${
+                          darktheme ? "text-white" : "text-gray-900"
+                        }`}
+                      >
+                        {t("followBusMap.busLabel")}: {busesUsed[idx].name}
+                      </div>
+                      <div
+                        className={`mb-1 ${
+                          darktheme ? "text-gray-300" : "text-gray-800"
+                        }`}
+                      >
+                        <span className="font-semibold">{t("followBusMap.route")}:</span>{" "}
+                        {busesUsed[idx].from} → {busesUsed[idx].to}
+                      </div>
+                      <div
+                        className={`mb-1 ${
+                          darktheme ? "text-gray-300" : "text-gray-800"
+                        }`}
+                      >
+                        <span className="font-semibold">{t("followBusMap.device")}:</span>{" "}
+                        {busesUsed[idx].deviceID}
+                      </div>
+                      <div
+                        className={
+                          darktheme ? "text-gray-300" : "text-gray-800"
+                        }
+                      >
+                        <span className="font-semibold">{t("followBusMap.time")}:</span>{" "}
+                        {busesUsed[idx].nextStartTime?.startTime} {t("followBusMap.timeTo")}{" "}
+                        {busesUsed[idx].nextStartTime?.endTime}
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
