@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setuser } from "../../Redux/auth.reducer";
 import { toast } from "sonner";
 import { User, Mail, Shield, ArrowRight } from "lucide-react";
+import { useApiCall } from "../../hooks/useApiCall";
+import { LoadingButton } from "../ui/loading-button";
 
 const UserLogin = () => {
   const { getAccessTokenSilently, user, isAuthenticated } = useAuth0();
@@ -17,7 +19,67 @@ const UserLogin = () => {
   const [fullname, setFullname] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState("FORM"); // FORM | OTP
-  const [loading, setLoading] = useState(false);
+
+  // API hooks for OTP send
+  const { loading: sendingOtp, execute: sendOTP } = useApiCall({
+    apiFunction: async (email) => {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v3",
+      });
+      return axios.post(
+        `${import.meta.env.VITE_BASE_URL}/email/send-otp`,
+        { email },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    },
+    successMessage: "OTP sent to your Gmail",
+    onSuccess: () => setStep("OTP")
+  });
+
+  // API hook for OTP verification and user creation
+  const { loading: verifyingOtp, execute: verifyAndCreateUser } = useApiCall({
+    apiFunction: async ({ otp, fullname }) => {
+      // Verify OTP
+      const verifyRes = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/email/verify-otp`,
+        { email: user.email, otp }
+      );
+
+      if (!verifyRes.data.success) {
+        throw new Error("Invalid OTP");
+      }
+
+      // Get token for user creation
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v3",
+      });
+
+      // Create user
+      const createUserRes = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/user/crete/User`,
+        {
+          fullname,
+          email: user.email,
+          picture: user.picture,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      return createUserRes.data;
+    },
+    successMessage: "Login successful",
+    onSuccess: (data) => {
+      dispatch(
+        setuser({
+          fullname,
+          email: user.email,
+          picture: user.picture,
+          ...data.userData
+        })
+      );
+      navigate("/");
+    }
+  });
 
   // prefill name from Auth0
   useEffect(() => {
@@ -34,30 +96,7 @@ const UserLogin = () => {
       return;
     }
 
-    try {
-      setLoading(true);
-
-      const token = await getAccessTokenSilently({
-        audience: "http://localhost:5000/api/v3",
-      });
-
-      // send OTP to email
-      await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/email/send-otp`,
-        { email: user.email },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      toast.success("OTP sent to your Gmail");
-      setStep("OTP");
-    } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.message || "Failed to send OTP");
-    } finally {
-      setLoading(false);
-    }
+    await sendOTP(user.email);
   };
 
   const verifyOtp = async () => {
@@ -66,52 +105,7 @@ const UserLogin = () => {
       return;
     }
 
-    try {
-      setLoading(true);
-
-      const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/email/verify-otp`,
-        {
-          email: user.email,
-          otp,
-        }
-      );
-
-      if (res.data.success) {
-        const token = await getAccessTokenSilently({
-          audience: "http://localhost:5000/api/v3",
-        });
-
-        const createUserRes = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/user/crete/User`,
-          {
-            fullname,
-            email: user.email,
-            picture: user.picture,
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        dispatch(
-          setuser({
-            fullname,
-            email: user.email,
-            picture: user.picture,
-            ...createUserRes.data.userData
-          })
-        );
-        toast.success("Login successful");
-        navigate("/");
-      }
-    } catch (error) {
-      console.error(error);
-      const msg = error.response?.data?.message || "Invalid OTP or Creation Failed";
-      toast.error(msg);
-    } finally {
-      setLoading(false);
-    }
+    await verifyAndCreateUser({ otp, fullname });
   };
 
   if (!isAuthenticated) return null;
@@ -229,20 +223,15 @@ const UserLogin = () => {
               </div>
 
               {/* Submit Button */}
-              <button
+              <LoadingButton
                 type="submit"
-                disabled={loading}
+                loading={sendingOtp}
+                loadingText="Sending OTP..."
                 className="w-full py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-medium transition-all duration-300 shadow-lg hover:from-green-600 hover:to-green-700 hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center"
               >
-                {loading ? (
-                  <span>Sending OTP...</span>
-                ) : (
-                  <>
-                    <span>Continue</span>
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </>
-                )}
-              </button>
+                <span>Continue</span>
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </LoadingButton>
             </form>
           )}
 
@@ -326,26 +315,21 @@ const UserLogin = () => {
               </div>
 
               {/* Verify Button */}
-              <button
+              <LoadingButton
                 onClick={verifyOtp}
-                disabled={loading}
+                loading={verifyingOtp}
+                loadingText="Verifying..."
                 className="w-full py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-medium transition-all duration-300 shadow-lg hover:from-green-600 hover:to-green-700 hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center"
               >
-                {loading ? (
-                  <span>Verifying...</span>
-                ) : (
-                  <>
-                    <Shield className="w-5 h-5 mr-2" />
-                    <span>Verify OTP</span>
-                  </>
-                )}
-              </button>
+                <Shield className="w-5 h-5 mr-2" />
+                <span>Verify OTP</span>
+              </LoadingButton>
 
               {/* Resend Option */}
               <div className="mt-4 text-center">
                 <button
                   onClick={handleSubmit}
-                  disabled={loading}
+                  disabled={sendingOtp || verifyingOtp}
                   className={`text-sm font-medium transition-colors ${
                     darktheme
                       ? "text-green-400 hover:text-green-300"
