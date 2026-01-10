@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
-import { Navigation, Globe, Menu, X } from "lucide-react";
+import { Navigation, Globe, Menu, X, Sparkles, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -25,6 +25,7 @@ const Navbar = () => {
     localStorage.getItem("selectedLanguage") || "en"
   );
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const LANGUAGES = {
     en: { name: "English", flag: "🇺🇸" },
@@ -37,7 +38,6 @@ const Navbar = () => {
     gu: { name: "ગુજરાતી", flag: "🇮🇳" },
     mr: { name: "मराठी", flag: "🇮🇳" },
     pa: { name: "ਪੰਜਾਬੀ", flag: "🇮🇳" },
-
     kok: { name: "कोंकणी", flag: "🇮🇳" },
     or: { name: "ଓଡ଼ିଆ", flag: "🇮🇳" },
     ne: { name: "नेपाली", flag: "🇳🇵" },
@@ -48,12 +48,8 @@ const Navbar = () => {
     as: { name: "অসমীয়া", flag: "🇮🇳" },
   };
 
-  // Check if route is active
-  const isActiveRoute = (path) => {
-    return location.pathname === path;
-  };
+  const isActiveRoute = (path) => location.pathname === path;
 
-  // Language Change
   const handleLanguageChange = (langCode) => {
     if (!langCode) return;
     setSelectedLang(langCode);
@@ -61,7 +57,6 @@ const Navbar = () => {
     i18n.changeLanguage(langCode);
   };
 
-  // Navigation
   const handleNavigation = (path) => {
     navigate(path);
     setIsMobileMenuOpen(false);
@@ -73,7 +68,7 @@ const Navbar = () => {
       logoutParams: { returnTo: window.location.origin },
     });
   };
-  // Init Language on Mount
+
   useEffect(() => {
     const savedLang = localStorage.getItem("selectedLanguage");
     if (savedLang && savedLang !== i18n.language) {
@@ -82,7 +77,14 @@ const Navbar = () => {
     }
   }, [i18n]);
 
-  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (isMobileMenuOpen && !event.target.closest(".mobile-menu-container")) {
@@ -95,472 +97,301 @@ const Navbar = () => {
 
   return (
     <div
-      className={`w-full backdrop-blur-md shadow-lg px-4 sm:px-6 py-3 relative ${
+      className={`w-full sticky top-0 z-50 transition-all duration-300 ${
+        scrolled ? "shadow-xl" : "shadow-lg"
+      } ${
         darktheme
-          ? "bg-gray-800/80 border-b border-gray-700"
-          : "bg-white/80 border-b border-green-100"
-      }`}
+          ? "bg-gray-900/95 border-b border-gray-800"
+          : "bg-white/95 border-b border-gray-200"
+      } backdrop-blur-lg`}
     >
-      <header className="max-w-7xl mx-auto flex justify-between items-center">
-        {/* Left Side - Logo & App Name */}
-        <div className="flex items-center space-x-3 flex-shrink-0">
-          <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
-            <Navigation className="w-5 sm:w-7 h-5 sm:h-7 text-white" />
-          </div>
-          {/* Desktop Title */}
-          <div className="hidden md:block">
-            <h1 className="text-2xl sm:text-2xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
-              {t("navbar.appName")}
-            </h1>
-            <p
-              className={`text-xs sm:text-sm ${
-                darktheme ? "text-gray-400" : "text-gray-600"
-              }`}
-            >
-              {t("navbar.tagline")}
-            </p>
-          </div>
-          {/* Mobile Title */}
-          <div className="block md:hidden">
-            <h1 className="text-lg font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
-              {t("navbar.appName")}
-            </h1>
-          </div>
-        </div>
+      <header className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+        <div className="flex justify-between items-center">
+          {/* Logo Section */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className={`relative group cursor-pointer ${scrolled ? 'scale-95' : ''} transition-transform`}>
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-all ${
+                darktheme 
+                  ? "bg-gradient-to-br from-blue-600 to-purple-600" 
+                  : "bg-gradient-to-br from-blue-500 to-purple-500"
+              }`}>
+                <Navigation className="w-6 h-6 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1">
+                <Sparkles className={`w-4 h-4 ${darktheme ? 'text-yellow-400' : 'text-yellow-500'} animate-pulse`} />
+              </div>
+            </div>
+            
+            <div className="hidden md:block">
+              <h1 className={`text-2xl font-bold bg-gradient-to-r ${
+                darktheme ? "from-blue-400 to-purple-400" : "from-blue-600 to-purple-600"
+              } bg-clip-text text-transparent`}>
+                {t("navbar.appName")}
+              </h1>
+              <p className={`text-xs ${darktheme ? "text-gray-400" : "text-gray-600"}`}>
+                {t("navbar.tagline")}
+              </p>
+            </div>
 
-        {/* Center Badge (Desktop only) */}
+            <div className="block md:hidden">
+              <h1 className={`text-lg font-bold bg-gradient-to-r ${
+                darktheme ? "from-blue-400 to-purple-400" : "from-blue-600 to-purple-600"
+              } bg-clip-text text-transparent`}>
+                {t("navbar.appName")}
+              </h1>
+            </div>
+          </div>
 
-        {/* Right Side */}
-        <div className="flex items-center gap-2 sm:gap-4">
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-6">
-            {/* Nav Links */}
-            <div className="flex items-center gap-6">
-              <div
-                onClick={() => handleNavigation("/")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
-                  isActiveRoute("/")
-                    ? darktheme
-                      ? "text-green-400"
-                      : "text-green-600"
-                    : darktheme
-                    ? "text-gray-300 hover:text-green-400"
-                    : "text-gray-700 hover:text-green-600"
-                }`}
-              >
-                {t("navbar.home")}
-                <span
-                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                    isActiveRoute("/") ? "w-full" : "w-0 group-hover:w-full"
-                  }`}
-                ></span>
-              </div>
-              {usere?.status === "driver" ? (
-                <div
-                  onClick={() => handleNavigation("/Bus")}
-                  className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
-                    isActiveRoute("/Bus")
+            {/* Navigation Links */}
+            <nav className="flex items-center gap-1">
+              {[
+                { path: "/", label: t("navbar.home") },
+                ...(usere?.status === "driver" ? [{ path: "/Bus", label: t("navbar.busDetails") }] : []),
+                { path: "/view/map", label: t("navbar.map") },
+                { path: "/find/ticket", label: t("navbar.ticket") },
+                { path: "/nearBy/search", label: t("navbar.nearBy") },
+                { path: "/see-history", label: t("navbar.history") },
+              ].map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => handleNavigation(item.path)}
+                  className={`relative px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    isActiveRoute(item.path)
                       ? darktheme
-                        ? "text-green-400"
-                        : "text-green-600"
+                        ? "text-white bg-blue-600/20"
+                        : "text-blue-700 bg-blue-100"
                       : darktheme
-                      ? "text-gray-300 hover:text-green-400"
-                      : "text-gray-700 hover:text-green-600"
+                      ? "text-gray-300 hover:text-white hover:bg-gray-800"
+                      : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                   }`}
                 >
-                  {t("navbar.busDetails")}
-                  <span
-                    className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                      isActiveRoute("/Bus")
-                        ? "w-full"
-                        : "w-0 group-hover:w-full"
-                    }`}
-                  ></span>
-                </div>
-              ) : null}
+                  {item.label}
+                  {isActiveRoute(item.path) && (
+                    <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full ${
+                      darktheme ? "bg-blue-500" : "bg-blue-600"
+                    }`}></span>
+                  )}
+                </button>
+              ))}
+            </nav>
 
-              <div
-                onClick={() => handleNavigation("/view/map")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
-                  isActiveRoute("/view/map")
-                    ? darktheme
-                      ? "text-green-400"
-                      : "text-green-600"
-                    : darktheme
-                    ? "text-gray-300 hover:text-green-400"
-                    : "text-gray-700 hover:text-green-600"
-                }`}
-              >
-                {t("navbar.map")}
-                <span
-                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                    isActiveRoute("/view/map")
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
-                  }`}
-                ></span>
-              </div>
-              <div
-                onClick={() => handleNavigation("/find/ticket")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
-                  isActiveRoute("/find/ticket")
-                    ? darktheme
-                      ? "text-green-400"
-                      : "text-green-600"
-                    : darktheme
-                    ? "text-gray-300 hover:text-green-400"
-                    : "text-gray-700 hover:text-green-600"
-                }`}
-              >
-                {t("navbar.ticket")}
-                <span
-                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                    isActiveRoute("/find/ticket")
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
-                  }`}
-                ></span>
-              </div>
-              <div
-                onClick={() => handleNavigation("/nearBy/search")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
-                  isActiveRoute("/nearBy/search")
-                    ? darktheme
-                      ? "text-green-400"
-                      : "text-green-600"
-                    : darktheme
-                    ? "text-gray-300 hover:text-green-400"
-                    : "text-gray-700 hover:text-green-600"
-                }`}
-              >
-                {t("navbar.nearBy")}
-                <span
-                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                    isActiveRoute("/nearBy/search")
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
-                  }`}
-                ></span>
-              </div>
-              <div
-                onClick={() => handleNavigation("/see-history")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
-                  isActiveRoute("/see-history")
-                    ? darktheme
-                      ? "text-green-400"
-                      : "text-green-600"
-                    : darktheme
-                    ? "text-gray-300 hover:text-green-400"
-                    : "text-gray-700 hover:text-green-600"
-                }`}
-              >
-                {t("navbar.history")}
-                <span
-                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                    isActiveRoute("/see-history")
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
-                  }`}
-                ></span>
-              </div>
+            {/* Live Badge */}
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-full border ${
+              darktheme
+                ? "bg-green-500/10 border-green-500/30"
+                : "bg-green-50 border-green-200"
+            }`}>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className={`text-sm font-semibold ${
+                darktheme ? "text-green-400" : "text-green-700"
+              }`}>
+                {t("navbar.liveTracking")}
+              </span>
             </div>
 
             {/* Language Selector */}
-            <div className="flex items-center space-x-2">
-              <Globe className="w-4 h-4 text-green-600" />
-              <select
-                value={selectedLang}
-                onChange={(e) => handleLanguageChange(e.target.value)}
-                className={`border rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 ${
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all ${
                   darktheme
-                    ? "bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600"
-                    : "bg-white/70 border-green-200 text-gray-700 hover:bg-white"
-                }`}
-              >
-                {Object.entries(LANGUAGES).map(([code, { name, flag }]) => (
-                  <option key={code} value={code}>
-                    {flag} {name}
-                  </option>
-                ))}
-              </select>
-            </div>
+                    ? "bg-gray-800 border-gray-700 hover:bg-gray-750 text-gray-200"
+                    : "bg-white border-gray-200 hover:bg-gray-50 text-gray-700"
+                }`}>
+                  <Globe className="w-4 h-4" />
+                  <span className="text-sm font-medium">{LANGUAGES[selectedLang].flag}</span>
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className={`w-56 max-h-80 overflow-y-auto ${
+                darktheme
+                  ? "bg-gray-800/95 border-gray-700"
+                  : "bg-white/95 border-gray-200"
+              } backdrop-blur-lg`}>
+                <div className="space-y-1">
+                  {Object.entries(LANGUAGES).map(([code, { name, flag }]) => (
+                    <button
+                      key={code}
+                      onClick={() => handleLanguageChange(code)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
+                        selectedLang === code
+                          ? darktheme
+                            ? "bg-blue-600/20 text-blue-400"
+                            : "bg-blue-100 text-blue-700"
+                          : darktheme
+                          ? "hover:bg-gray-700 text-gray-300"
+                          : "hover:bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      <span className="text-lg">{flag}</span>
+                      <span className="text-sm font-medium">{name}</span>
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
 
             {/* Authentication */}
             {isAuthenticated ? (
               <Popover>
                 <PopoverTrigger asChild>
-                  <div
-                    className={`flex items-center cursor-pointer space-x-3 rounded-full px-3 py-2 transition-all duration-200 border ${
-                      darktheme
-                        ? "bg-gray-700/50 hover:bg-gray-700 border-gray-600 hover:border-gray-500"
-                        : "bg-white/50 hover:bg-white/80 border-gray-200 hover:border-green-200"
-                    }`}
-                  >
-                    {user?.picture ? (
-                      <Avatar className="w-10 h-10 border-2 border-green-200">
-                        <AvatarImage
-                          src={
-                            user?.picture ||
-                            usere?.picture ||
-                            `https://api.dicebear.com/6.x/initials/svg?seed=${user?.name}`
-                          }
-                          alt={user?.name}
-                          className="object-cover"
-                        />
-                      </Avatar>
-                    ) : (
-                      <Avatar className="w-10 h-10 border-2 border-green-200">
-                        <AvatarFallback className="bg-green-100 text-green-700 font-semibold">
-                          {user?.name?.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
-                    <span
-                      className={`font-medium hidden xl:block ${
-                        darktheme ? "text-gray-200" : "text-gray-800"
-                      }`}
-                    >
+                  <button className={`flex items-center gap-3 px-3 py-2 rounded-xl border transition-all ${
+                    darktheme
+                      ? "bg-gray-800 border-gray-700 hover:bg-gray-750"
+                      : "bg-white border-gray-200 hover:bg-gray-50"
+                  }`}>
+                    <Avatar className="w-9 h-9 ring-2 ring-blue-500/30">
+                      <AvatarImage
+                        src={user?.picture || usere?.picture || `https://api.dicebear.com/6.x/initials/svg?seed=${user?.name}`}
+                        alt={user?.name}
+                      />
+                      <AvatarFallback className={`${
+                        darktheme ? "bg-blue-600" : "bg-blue-500"
+                      } text-white font-semibold`}>
+                        {user?.name?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className={`font-medium hidden xl:block ${
+                      darktheme ? "text-gray-200" : "text-gray-800"
+                    }`}>
                       {user?.name}
                     </span>
-                  </div>
+                    <ChevronDown className={`w-4 h-4 ${darktheme ? "text-gray-400" : "text-gray-600"}`} />
+                  </button>
                 </PopoverTrigger>
 
-                <PopoverContent
-                  align="end"
-                  className={`w-48 backdrop-blur-md shadow-xl ${
-                    darktheme
-                      ? "bg-gray-800/95 border border-gray-700"
-                      : "bg-white/95 border border-green-100"
-                  }`}
-                >
-                  <Button
-                    variant="outline"
-                    className={`w-full mb-2 ${
-                      darktheme
-                        ? "border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-gray-500 bg-gray-900"
-                        : "border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300"
-                    }`}
-                    onClick={() => navigate("/profile")}
-                  >
-                    {t("navbar.viewProfile")}
-                  </Button>
-                  <Button
-                    className="w-full bg-[#dc2626] hover:bg-[#b91c1c] text-white border-0"
-                    onClick={handleLogout}
-                  >
-                    {t("navbar.logout")}
-                  </Button>
+                <PopoverContent align="end" className={`w-56 ${
+                  darktheme
+                    ? "bg-gray-800/95 border-gray-700"
+                    : "bg-white/95 border-gray-200"
+                } backdrop-blur-lg`}>
+                  <div className="space-y-2">
+                    <Button
+                      variant="outline"
+                      className={`w-full justify-start ${
+                        darktheme
+                          ? "border-gray-700 text-gray-200 hover:bg-gray-700 bg-gray-800"
+                          : "border-gray-200 text-gray-700 hover:bg-gray-50"
+                      }`}
+                      onClick={() => navigate("/profile")}
+                    >
+                      {t("navbar.viewProfile")}
+                    </Button>
+                    <Button
+                      className="w-full bg-red-600 hover:bg-red-700 text-white"
+                      onClick={handleLogout}
+                    >
+                      {t("navbar.logout")}
+                    </Button>
+                  </div>
                 </PopoverContent>
               </Popover>
             ) : (
               <Button
                 onClick={() => loginWithRedirect()}
-                className="bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 px-6 py-2 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
+                className={`px-6 py-2 rounded-xl font-semibold shadow-lg transition-all ${
+                  darktheme
+                    ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
+                    : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                } text-white`}
               >
                 {t("navbar.login")}
               </Button>
             )}
-            <ThemeToggle />
           </div>
 
-          {/* Mobile Live Badge */}
-          <div
-            className={`lg:hidden flex items-center space-x-2 rounded-full px-3 py-1.5 border ${
+          {/* Mobile Right Section */}
+          <div className="lg:hidden flex items-center gap-3">
+            {/* Live Badge Mobile */}
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${
               darktheme
-                ? "bg-gradient-to-r from-green-900/50 to-green-800/50 border-green-700"
-                : "bg-gradient-to-r from-green-50 to-green-100 border-green-200"
-            }`}
-          >
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span
-              className={`text-xs sm:text-sm font-medium whitespace-nowrap ${
+                ? "bg-green-500/10 border-green-500/30"
+                : "bg-green-50 border-green-200"
+            }`}>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className={`text-xs font-semibold ${
                 darktheme ? "text-green-400" : "text-green-700"
-              }`}
-            >
-              {t("navbar.liveTracking")}
-            </span>
-          </div>
+              }`}>
+                {t("navbar.liveTracking")}
+              </span>
+            </div>
 
-          {/* Mobile Menu Button */}
-          <div className="lg:hidden mobile-menu-container">
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`p-2 rounded-lg border transition-all duration-200 ${
+              className={`p-2 rounded-xl border transition-all mobile-menu-container ${
                 darktheme
-                  ? "bg-gray-700/50 border-gray-600 hover:bg-gray-700"
-                  : "bg-white/50 border-gray-200 hover:bg-white/80"
+                  ? "bg-gray-800 border-gray-700 hover:bg-gray-750"
+                  : "bg-white border-gray-200 hover:bg-gray-50"
               }`}
-              aria-label={t("navbar.toggleMenu")}
             >
               {isMobileMenuOpen ? (
-                <X
-                  className={`w-6 h-6 ${
-                    darktheme ? "text-gray-300" : "text-gray-700"
-                  }`}
-                />
+                <X className={`w-6 h-6 ${darktheme ? "text-gray-300" : "text-gray-700"}`} />
               ) : (
-                <Menu
-                  className={`w-6 h-6 ${
-                    darktheme ? "text-gray-300" : "text-gray-700"
-                  }`}
-                />
+                <Menu className={`w-6 h-6 ${darktheme ? "text-gray-300" : "text-gray-700"}`} />
               )}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div
-          className={`lg:hidden w-full backdrop-blur-md shadow-xl border-b z-50 mobile-menu-container ${
-            darktheme
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-green-100"
-          }`}
-        >
-          <div className="px-4 py-4 space-y-4">
-            {/* Links */}
-            <div className="space-y-3">
-              <div
-                onClick={() => handleNavigation("/")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
-                  isActiveRoute("/")
-                    ? darktheme
-                      ? "text-green-400"
-                      : "text-green-600"
-                    : darktheme
-                    ? "text-gray-300 hover:text-green-400"
-                    : "text-gray-700 hover:text-green-600"
-                }`}
-              >
-                {t("navbar.home")}
-                <span
-                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                    isActiveRoute("/") ? "w-full" : "w-0 group-hover:w-full"
-                  }`}
-                ></span>
-              </div>
-              {usere?.status === "driver" ? (
-                <div
-                  onClick={() => handleNavigation("/Bus")}
-                  className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
-                    isActiveRoute("/Bus")
+        <div className={`lg:hidden mobile-menu-container border-t ${
+          darktheme
+            ? "bg-gray-900/98 border-gray-800"
+            : "bg-white/98 border-gray-200"
+        } backdrop-blur-lg`}>
+          <div className="px-4 py-4 space-y-4 max-h-[calc(100vh-80px)] overflow-y-auto">
+            {/* Navigation Links */}
+            <nav className="space-y-2">
+              {[
+                { path: "/", label: t("navbar.home") },
+                ...(usere?.status === "driver" ? [{ path: "/Bus", label: t("navbar.busDetails") }] : []),
+                { path: "/view/map", label: t("navbar.map") },
+                { path: "/find/ticket", label: t("navbar.ticket") },
+                { path: "/nearBy/search", label: t("navbar.nearBy") },
+                { path: "/see-history", label: t("navbar.history") },
+              ].map((item) => (
+                <button
+                  key={item.path}
+                  onClick={() => handleNavigation(item.path)}
+                  className={`w-full text-left px-4 py-3 rounded-xl font-medium transition-all ${
+                    isActiveRoute(item.path)
                       ? darktheme
-                        ? "text-green-400"
-                        : "text-green-600"
+                        ? "bg-blue-600/20 text-blue-400"
+                        : "bg-blue-100 text-blue-700"
                       : darktheme
-                      ? "text-gray-300 hover:text-green-400"
-                      : "text-gray-700 hover:text-green-600"
+                      ? "text-gray-300 hover:bg-gray-800"
+                      : "text-gray-700 hover:bg-gray-100"
                   }`}
                 >
-                  {t("navbar.busDetails")}
-                  <span
-                    className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                      isActiveRoute("/Bus")
-                        ? "w-full"
-                        : "w-0 group-hover:w-full"
-                    }`}
-                  ></span>
-                </div>
-              ) : null}
-
-              <div
-                onClick={() => handleNavigation("/view/map")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
-                  isActiveRoute("/view/map")
-                    ? darktheme
-                      ? "text-green-400"
-                      : "text-green-600"
-                    : darktheme
-                    ? "text-gray-300 hover:text-green-400"
-                    : "text-gray-700 hover:text-green-600"
-                }`}
-              >
-                {t("navbar.map")}
-                <span
-                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                    isActiveRoute("/view/map")
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
-                  }`}
-                ></span>
-              </div>
-              <div
-                onClick={() => handleNavigation("/find/ticket")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
-                  isActiveRoute("/find/ticket")
-                    ? darktheme
-                      ? "text-green-400"
-                      : "text-green-600"
-                    : darktheme
-                    ? "text-gray-300 hover:text-green-400"
-                    : "text-gray-700 hover:text-green-600"
-                }`}
-              >
-                {t("navbar.ticket")}
-                <span
-                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                    isActiveRoute("/find/ticket")
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
-                  }`}
-                ></span>
-              </div>
-              <div
-                onClick={() => handleNavigation("/nearBy/search")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
-                  isActiveRoute("/nearBy/search")
-                    ? darktheme
-                      ? "text-green-400"
-                      : "text-green-600"
-                    : darktheme
-                    ? "text-gray-300 hover:text-green-400"
-                    : "text-gray-700 hover:text-green-600"
-                }`}
-              >
-                {t("navbar.nearBy")}
-                <span
-                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                    isActiveRoute("/nearBy/search")
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
-                  }`}
-                ></span>
-              </div>
-              <div
-                onClick={() => handleNavigation("/see-history")}
-                className={`cursor-pointer font-semibold transition-colors duration-200 relative group ${
-                  isActiveRoute("/see-history")
-                    ? darktheme
-                      ? "text-green-400"
-                      : "text-green-600"
-                    : darktheme
-                    ? "text-gray-300 hover:text-green-400"
-                    : "text-gray-700 hover:text-green-600"
-                }`}
-              >
-                {t("navbar.history")}
-                <span
-                  className={`absolute -bottom-1 left-0 h-0.5 bg-green-600 transition-all duration-200 ${
-                    isActiveRoute("/see-history")
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
-                  }`}
-                ></span>
-              </div>
-            </div>
+                  {item.label}
+                </button>
+              ))}
+            </nav>
 
             {/* Language Selector */}
-            <div className="flex items-center space-x-3 py-2 px-3">
-              <Globe className="w-4 h-4 text-green-600" />
+            <div className={`p-4 rounded-xl border ${
+              darktheme ? "bg-gray-800/50 border-gray-700" : "bg-gray-50 border-gray-200"
+            }`}>
+              <div className="flex items-center gap-2 mb-3">
+                <Globe className={`w-4 h-4 ${darktheme ? "text-blue-400" : "text-blue-600"}`} />
+                <span className={`text-sm font-semibold ${darktheme ? "text-gray-300" : "text-gray-700"}`}>
+                  Language
+                </span>
+              </div>
               <select
                 value={selectedLang}
                 onChange={(e) => handleLanguageChange(e.target.value)}
-                className={`flex-1 border rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                className={`w-full px-3 py-2 rounded-lg border text-sm font-medium ${
                   darktheme
-                    ? "bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600"
-                    : "bg-white/70 border-green-200 text-gray-700 hover:bg-white"
+                    ? "bg-gray-900 border-gray-700 text-gray-200"
+                    : "bg-white border-gray-200 text-gray-700"
                 }`}
               >
                 {Object.entries(LANGUAGES).map(([code, { name, flag }]) => (
@@ -571,81 +402,69 @@ const Navbar = () => {
               </select>
             </div>
 
-            {/* Auth */}
-            <div
-              className={`px-3 pt-2 ${darktheme ? "bg-gray-800" : "bg-white"}`}
-            >
-              {isAuthenticated ? (
-                <div className="space-y-3">
-                  <div
-                    className={`flex items-center space-x-3 rounded-lg px-3 py-3 border ${
-                      darktheme
-                        ? "bg-gray-700/50 border-gray-600"
-                        : "bg-white/50 border-gray-200"
-                    }`}
-                  >
-                    {user?.picture ? (
-                      <Avatar className="w-10 h-10 border-2 border-green-200">
-                        <AvatarImage
-                          src={
-                            user?.picture ||
-                            usere?.picture ||
-                            `https://api.dicebear.com/6.x/initials/svg?seed=${user?.name}`
-                          }
-                          alt={user?.name}
-                          className="object-cover"
-                        />
-                      </Avatar>
-                    ) : (
-                      <Avatar className="w-10 h-10 border-2 border-green-200">
-                        <AvatarFallback className="bg-green-100 text-green-700 font-semibold">
-                          {user?.name?.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
-                    <span
-                      className={`font-medium ${
-                        darktheme ? "text-gray-200" : "text-gray-800"
-                      }`}
-                    >
-                      {user?.name}
-                    </span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    className={`w-full mb-2 ${
-                      darktheme
-                        ? "border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-gray-500 bg-gray-900"
-                        : "border-green-200 text-gray-700 hover:bg-green-50 hover:border-green-300"
-                    }`}
-                    onClick={() => {
-                      navigate("/profile");
-                      setIsMobileMenuOpen(false);
-                    }}
-                  >
-                    {t("navbar.viewProfile")}
-                  </Button>
-                  <Button
-                    className="w-full bg-[#dc2626] hover:bg-[#b91c1c] text-white border-0"
-                    onClick={handleLogout}
-                  >
-                    {t("navbar.logout")}
-                  </Button>
+            {/* Theme Toggle Mobile */}
+            <div className={`p-4 rounded-xl border ${
+              darktheme ? "bg-gray-800/50 border-gray-700" : "bg-gray-50 border-gray-200"
+            }`}>
+              <ThemeToggle />
+            </div>
+
+            {/* Authentication */}
+            {isAuthenticated ? (
+              <div className="space-y-3">
+                <div className={`flex items-center gap-3 p-4 rounded-xl border ${
+                  darktheme ? "bg-gray-800/50 border-gray-700" : "bg-gray-50 border-gray-200"
+                }`}>
+                  <Avatar className="w-12 h-12 ring-2 ring-blue-500/30">
+                    <AvatarImage
+                      src={user?.picture || usere?.picture || `https://api.dicebear.com/6.x/initials/svg?seed=${user?.name}`}
+                      alt={user?.name}
+                    />
+                    <AvatarFallback className="bg-blue-600 text-white font-semibold">
+                      {user?.name?.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className={`font-medium ${darktheme ? "text-gray-200" : "text-gray-800"}`}>
+                    {user?.name}
+                  </span>
                 </div>
-              ) : (
                 <Button
+                  variant="outline"
+                  className={`w-full ${
+                    darktheme
+                      ? "border-gray-700 text-gray-200 hover:bg-gray-800 bg-gray-900"
+                      : "border-gray-200 text-gray-700 hover:bg-gray-50"
+                  }`}
                   onClick={() => {
-                    loginWithRedirect();
+                    navigate("/profile");
                     setIsMobileMenuOpen(false);
                   }}
-                  className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 px-6 py-3 rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
-                  {t("navbar.login")}
+                  {t("navbar.viewProfile")}
                 </Button>
-              )}
-            </div>
+                <Button
+                  className="w-full bg-red-600 hover:bg-red-700 text-white"
+                  onClick={handleLogout}
+                >
+                  {t("navbar.logout")}
+                </Button>
+              </div>
+            ) : (
+              <Button
+                onClick={() => {
+                  loginWithRedirect();
+                  setIsMobileMenuOpen(false);
+                }}
+                className={`w-full py-3 rounded-xl font-semibold shadow-lg ${
+                  darktheme
+                    ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500"
+                    : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                } text-white`}
+              >
+                {t("navbar.login")}
+              </Button>
+            )}
           </div>
-          <ThemeToggle />
         </div>
       )}
     </div>
