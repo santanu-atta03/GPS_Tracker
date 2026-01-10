@@ -15,16 +15,12 @@ import {
   Mail,
   CreditCard,
   Award,
-  Ticket,
-  Star,
-  Navigation,
-  Activity,
-  Sparkles,
 } from "lucide-react";
 import Navbar from "../shared/Navbar";
 import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
 
+// 🚌 Custom bus icon
 const busIcon = new L.DivIcon({
   html: "🚌",
   className: "text-3xl",
@@ -32,6 +28,7 @@ const busIcon = new L.DivIcon({
   iconAnchor: [20, 20],
 });
 
+// 🗺️ Routing component
 function Routing({ path }) {
   const map = useMap();
 
@@ -42,7 +39,7 @@ function Routing({ path }) {
       waypoints: path.map((p) => L.latLng(p.coordinates[0], p.coordinates[1])),
       addWaypoints: false,
       lineOptions: { styles: [{ color: "blue", weight: 4 }] },
-      show: false,
+      show: false, // disable popup route summary
       createMarker: () => null,
     }).addTo(map);
 
@@ -60,7 +57,6 @@ const BusDetailsPage2 = () => {
   const [activeSlot, setActiveSlot] = useState(null);
 
   const navigate = useNavigate();
-  
   useEffect(() => {
     const fetchBusData = async () => {
       try {
@@ -90,359 +86,373 @@ const BusDetailsPage2 = () => {
 
   if (!bus)
     return (
-      <div
-        className={`min-h-screen flex items-center justify-center relative overflow-hidden ${
-          darktheme
-            ? "bg-gradient-to-br from-gray-900 via-slate-900 to-black"
-            : "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"
-        }`}
-      >
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className={`absolute top-20 left-10 w-96 h-96 ${darktheme ? 'bg-blue-500/5' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
-        </div>
-        <Navbar />
+      <>
         <div
-          className={`rounded-3xl shadow-2xl p-12 flex flex-col items-center backdrop-blur-sm border ${
+          className={`min-h-screen flex items-center justify-center ${
             darktheme
-              ? "bg-gray-800/80 border-gray-700/50"
-              : "bg-white/90 border-white/50"
+              ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+              : "bg-gradient-to-br from-green-50 via-white to-green-100"
           }`}
         >
-          <div className="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-6"></div>
-          <span
-            className={`text-xl font-semibold ${
-              darktheme ? "text-gray-300" : "text-gray-700"
+          <Navbar />
+          <div
+            className={`rounded-2xl shadow-xl p-8 flex flex-col items-center ${
+              darktheme
+                ? "bg-gray-800 border border-gray-700"
+                : "bg-white border border-green-100"
             }`}
           >
-            {t("busDetails.loadingMessage")}
-          </span>
+            <div className="animate-spin w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full mb-4"></div>
+            <span
+              className={`text-lg font-medium ${
+                darktheme ? "text-gray-300" : "text-gray-600"
+              }`}
+            >
+              {t("busDetails.loadingMessage")}
+            </span>
+          </div>
         </div>
-      </div>
+      </>
     );
 
   return (
-    <div
-      className={`min-h-screen relative overflow-hidden ${
-        darktheme
-          ? "bg-gradient-to-br from-gray-900 via-slate-900 to-black"
-          : "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"
-      }`}
-    >
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute top-20 left-10 w-96 h-96 ${darktheme ? 'bg-blue-500/5' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
-        <div className={`absolute bottom-20 right-10 w-96 h-96 ${darktheme ? 'bg-purple-500/5' : 'bg-purple-300/20'} rounded-full blur-3xl animate-pulse`} style={{animationDelay: '1s'}}></div>
-      </div>
-
-      <Navbar />
-      <main className="max-w-7xl mx-auto px-4 py-12 relative z-10">
-        {/* Header */}
-        <div className="text-center mb-12">
-           
-          
-          <div
-            className={`rounded-3xl shadow-2xl p-8 mb-6 backdrop-blur-sm border ${
-              darktheme
-                ? "bg-gray-800/80 border-gray-700/50"
-                : "bg-white/90 border-white/50"
-            }`}
-          >
-            <h1
-              className={`text-4xl font-bold mb-4 bg-gradient-to-r ${
-                darktheme 
-                  ? "from-blue-400 via-purple-400 to-pink-400" 
-                  : "from-blue-600 via-purple-600 to-pink-600"
-              } bg-clip-text text-transparent`}
-            >
-              {bus.name}
-            </h1>
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 ${
-              darktheme ? 'bg-blue-500/10 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'
-            }`}>
-              <Navigation className={`w-4 h-4 ${darktheme ? 'text-blue-400' : 'text-blue-600'}`} />
-              <span className={`font-semibold ${darktheme ? 'text-blue-400' : 'text-blue-700'}`}>
-                {bus.deviceID}
-              </span>
-            </div>
-            
+    <>
+      <div
+        className={`min-h-screen ${
+          darktheme
+            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+            : "bg-gradient-to-br from-green-50 via-white to-green-100"
+        }`}
+      >
+        <Navbar />
+        <main className="max-w-7xl mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="text-center mb-8">
             <div
-              className={`flex items-center justify-center gap-3 mb-6 ${
-                darktheme ? "text-gray-300" : "text-gray-700"
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                <div className={`p-2 rounded-lg ${darktheme ? 'bg-green-500/20' : 'bg-green-100'}`}>
-                  <MapPin className={`w-5 h-5 ${darktheme ? 'text-green-400' : 'text-green-600'}`} />
-                </div>
-                <span className="font-semibold">{bus.from}</span>
-              </div>
-              <div className="text-2xl">→</div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold">{bus.to}</span>
-                <div className={`p-2 rounded-lg ${darktheme ? 'bg-red-500/20' : 'bg-red-100'}`}>
-                  <MapPin className={`w-5 h-5 ${darktheme ? 'text-red-400' : 'text-red-600'}`} />
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                onClick={() => navigate(`/bus/review/${bus.deviceID}`)}
-                className={`px-8 py-4 rounded-xl font-semibold shadow-lg transition-all duration-300 flex items-center gap-2 ${
-                  darktheme
-                    ? "bg-gray-700 hover:bg-gray-600 text-white"
-                    : "bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-200"
-                } hover:scale-105`}
-              >
-                <Star className="w-5 h-5" />
-                {t("busDetails.reviewButton")}
-              </Button>
-
-              <Button
-                onClick={() => navigate(`/makepayment/${bus.deviceID}`)}
-                className={`px-8 py-4 rounded-xl font-semibold shadow-lg transition-all duration-300 flex items-center gap-2 ${
-                  darktheme
-                    ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white"
-                    : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                } hover:scale-105`}
-              >
-                <Ticket className="w-5 h-5" />
-                {t("busDetails.getTicketButton")}
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Driver Card */}
-            <div
-              className={`rounded-3xl shadow-2xl p-6 backdrop-blur-sm border ${
+              className={`rounded-2xl shadow-lg p-6 ${
                 darktheme
-                  ? "bg-gray-800/80 border-gray-700/50"
-                  : "bg-white/90 border-white/50"
+                  ? "bg-gray-800 border border-gray-700"
+                  : "bg-white border border-green-100"
               }`}
             >
-              <div className="flex items-center gap-3 mb-6">
-                <div className={`p-2 rounded-xl ${darktheme ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
-                  <User className={`w-5 h-5 ${darktheme ? 'text-blue-400' : 'text-blue-600'}`} />
-                </div>
-                <h3
-                  className={`text-xl font-bold ${
-                    darktheme ? "text-white" : "text-gray-800"
-                  }`}
-                >
-                  {t("busDetails.driverDetails")}
-                </h3>
-              </div>
-              
-              <div className="flex items-center gap-4 mb-6">
-                <div className="relative">
-                  <img
-                    src={bus.driver.picture}
-                    alt={bus.driver.name}
-                    className="w-20 h-20 rounded-2xl object-cover ring-4 ring-blue-500/30 shadow-lg"
-                  />
-                  <Sparkles className={`absolute -top-2 -right-2 w-5 h-5 ${darktheme ? 'text-yellow-400' : 'text-yellow-500'}`} />
-                </div>
-                <div className="flex-1">
-                  <p
-                    className={`font-bold text-lg mb-1 ${
-                      darktheme ? "text-white" : "text-gray-800"
-                    }`}
-                  >
-                    {bus.driver.name}
-                  </p>
-                  <div
-                    className={`flex items-center gap-2 text-sm ${
-                      darktheme ? "text-gray-400" : "text-gray-600"
-                    }`}
-                  >
-                    <Mail className="w-4 h-4" />
-                    <p className="truncate">{bus.driver.email}</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div
-                className={`space-y-3 rounded-2xl p-4 border ${
-                  darktheme ? "bg-gray-900/50 border-gray-700" : "bg-gray-50 border-gray-200"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${darktheme ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
-                    <CreditCard className={`w-4 h-4 ${darktheme ? 'text-purple-400' : 'text-purple-600'}`} />
-                  </div>
-                  <div>
-                    <p className={`text-xs ${darktheme ? 'text-gray-500' : 'text-gray-500'}`}>
-                      {t("busDetails.licenseId")}
-                    </p>
-                    <p className={`font-semibold ${darktheme ? "text-gray-300" : "text-gray-700"}`}>
-                      {bus.driver.licenceId}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${darktheme ? 'bg-green-500/20' : 'bg-green-100'}`}>
-                    <Award className={`w-4 h-4 ${darktheme ? 'text-green-400' : 'text-green-600'}`} />
-                  </div>
-                  <div>
-                    <p className={`text-xs ${darktheme ? 'text-gray-500' : 'text-gray-500'}`}>
-                      {t("busDetails.experience")}
-                    </p>
-                    <p className={`font-semibold ${darktheme ? "text-gray-300" : "text-gray-700"}`}>
-                      {bus.driver.driverExp} {t("busDetails.years")}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Time Slots */}
-            <div
-              className={`rounded-3xl shadow-2xl p-6 backdrop-blur-sm border ${
-                darktheme
-                  ? "bg-gray-800/80 border-gray-700/50"
-                  : "bg-white/90 border-white/50"
-              }`}
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className={`p-2 rounded-xl ${darktheme ? 'bg-orange-500/20' : 'bg-orange-100'}`}>
-                  <Clock className={`w-5 h-5 ${darktheme ? 'text-orange-400' : 'text-orange-600'}`} />
-                </div>
-                <h3
-                  className={`text-xl font-bold ${
-                    darktheme ? "text-white" : "text-gray-800"
-                  }`}
-                >
-                  {t("busDetails.timeSlots")}
-                </h3>
-              </div>
-              <div className="space-y-3">
-                {bus.timeSlots.map((slot) => (
-                  <div
-                    key={slot._id}
-                    className={`p-4 rounded-xl text-center font-semibold transition-all duration-300 ${
-                      activeSlot && activeSlot._id === slot._id
-                        ? darktheme
-                          ? "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg scale-105 ring-2 ring-green-500/50"
-                          : "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg scale-105"
-                        : darktheme
-                        ? "bg-gray-900/50 text-gray-300 border border-gray-700 hover:border-gray-600"
-                        : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100"
-                    }`}
-                  >
-                    {slot.startTime} - {slot.endTime}
-                    {activeSlot && activeSlot._id === slot._id && (
-                      <div className="flex items-center justify-center gap-2 mt-2 text-xs">
-                        <Activity className="w-3 h-3 animate-pulse" />
-                        <span>Active Now</span>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Map & Stats */}
-          <div
-            className={`col-span-1 lg:col-span-2 rounded-3xl shadow-2xl p-6 backdrop-blur-sm border ${
-              darktheme
-                ? "bg-gray-800/80 border-gray-700/50"
-                : "bg-white/90 border-white/50"
-            }`}
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <div className={`p-2 rounded-xl ${darktheme ? 'bg-green-500/20' : 'bg-green-100'}`}>
-                <MapPin className={`w-5 h-5 ${darktheme ? 'text-green-400' : 'text-green-600'}`} />
-              </div>
-              <h3
-                className={`text-xl font-bold ${
+              <h1
+                className={`text-3xl font-bold mb-2 ${
                   darktheme ? "text-white" : "text-gray-800"
                 }`}
               >
-                {t("busDetails.liveLocation")}
-              </h3>
-              <div className={`flex items-center gap-2 ml-auto px-3 py-1.5 rounded-full ${
-                darktheme ? 'bg-red-500/10 border border-red-500/30' : 'bg-red-50 border border-red-200'
-              }`}>
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                <span className={`text-xs font-semibold ${darktheme ? 'text-red-400' : 'text-red-600'}`}>
-                  LIVE
-                </span>
+                {t("busDetails.busTitle")} {bus.name} ({bus.deviceID})
+              </h1>
+              <div
+                className={`flex items-center justify-center gap-2 ${
+                  darktheme ? "text-gray-300" : "text-gray-600"
+                }`}
+              >
+                <MapPin className="w-5 h-5 text-green-600" />
+                <p className="text-lg">
+                  <span className="font-semibold">{bus.from}</span>
+                  <span className="mx-2">→</span>
+                  <span className="font-semibold">{bus.to}</span>
+                </p>
+              </div>
+              <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+                <Button
+                  variant={darktheme ? "outline" : "secondary"}
+                  className={`px-6 py-2 rounded-lg font-medium border ${
+                    darktheme
+                      ? "bg-gray-900 text-white border-gray-700 hover:bg-gray-700"
+                      : "bg-white text-gray-800 border-green-300 hover:bg-green-100"
+                  }`}
+                  onClick={() => navigate(`/bus/review/${bus.deviceID}`)}
+                >
+                  {t("busDetails.reviewButton")}
+                </Button>
+
+                <Button
+                  variant="default"
+                  className={`px-6 py-2 rounded-lg font-medium ${
+                    darktheme
+                      ? "bg-green-600 text-white hover:bg-green-700"
+                      : "bg-green-500 text-white hover:bg-green-600"
+                  }`}
+                  onClick={() => navigate(`/makepayment/${bus.deviceID}`)}
+                >
+                  {t("busDetails.getTicketButton")}
+                </Button>
               </div>
             </div>
+          </div>
 
-            <MapContainer
-              center={bus.liveLocation.coordinates}
-              zoom={14}
-              style={{ height: "400px", width: "100%", borderRadius: "16px" }}
-              className="mb-6 shadow-lg"
-            >
-              <TileLayer
-                url={
+          {/* Main Grid Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* LEFT COLUMN → Driver + Time Slots */}
+            <div className="flex flex-col gap-4">
+              {/* Driver Details */}
+              <div
+                className={`rounded-2xl shadow-lg p-4 h-fit ${
                   darktheme
-                    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                    : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                }
-              />
-              <Routing path={bus.path} />
-              <Marker position={bus.liveLocation.coordinates} icon={busIcon}>
-                <Popup>
-                  <b>{t("busDetails.busLiveLocation")}</b>
-                  <br />
-                  {bus.name}
-                </Popup>
-              </Marker>
-            </MapContainer>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              {[
-                { icon: Gauge, label: t("busDetails.speed"), value: `${bus.speed} ${t("busDetails.kmh")}`, color: 'green' },
-                { icon: RouteIcon, label: t("busDetails.total"), value: `${bus.totalDistance} ${t("busDetails.km")}`, color: 'gray' },
-                { icon: MapPin, label: t("busDetails.covered"), value: `${bus.coveredDistance} ${t("busDetails.km")}`, color: 'blue' },
-                { icon: RouteIcon, label: t("busDetails.remaining"), value: `${bus.remainingDistance} ${t("busDetails.km")}`, color: 'orange' },
-                { icon: Clock, label: t("busDetails.eta"), value: bus.ETA, color: 'purple' },
-              ].map((stat, idx) => {
-                const Icon = stat.icon;
-                return (
-                  <div
-                    key={idx}
-                    className={`rounded-2xl p-4 text-center border ${
-                      darktheme
-                        ? `bg-${stat.color}-500/10 border-${stat.color}-500/30`
-                        : `bg-${stat.color}-50 border-${stat.color}-200`
-                    }`}
-                  >
-                    <Icon className={`w-6 h-6 mx-auto mb-2 ${
-                      darktheme ? `text-${stat.color}-400` : `text-${stat.color}-600`
-                    }`} />
+                    ? "bg-gray-800 border border-gray-700"
+                    : "bg-white border border-green-100"
+                }`}
+              >
+                <h3
+                  className={`text-xl font-semibold mb-4 flex items-center gap-2 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  <User className="w-5 h-5 text-green-600" />
+                  {t("busDetails.driverDetails")}
+                </h3>
+                <div className="flex items-center space-x-4 mb-4">
+                  <img
+                    src={bus.driver.picture}
+                    alt={bus.driver.name}
+                    className="w-16 h-16 rounded-full border-2 border-green-200 shadow-md"
+                  />
+                  <div className="flex-1">
                     <p
-                      className={`text-xs mb-1 ${
-                        darktheme ? "text-gray-500" : "text-gray-500"
-                      }`}
-                    >
-                      {stat.label}
-                    </p>
-                    <p
-                      className={`font-bold text-sm ${
+                      className={`font-semibold text-lg ${
                         darktheme ? "text-white" : "text-gray-800"
                       }`}
                     >
-                      {stat.value}
+                      {bus.driver.name}
                     </p>
+                    <div
+                      className={`flex items-center gap-1 text-sm mt-1 ${
+                        darktheme ? "text-gray-400" : "text-gray-600"
+                      }`}
+                    >
+                      <Mail className="w-3 h-3" />
+                      <p>{bus.driver.email}</p>
+                    </div>
                   </div>
-                );
-              })}
+                </div>
+                <div
+                  className={`space-y-3 rounded-xl p-4 ${
+                    darktheme ? "bg-gray-900/50" : "bg-gray-50"
+                  }`}
+                >
+                  <div
+                    className={`flex items-center gap-2 text-sm ${
+                      darktheme ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    <CreditCard className="w-4 h-4 text-green-600" />
+                    <span className="font-medium">{t("busDetails.licenseId")}</span>
+                    <span>{bus.driver.licenceId}</span>
+                  </div>
+                  <div
+                    className={`flex items-center gap-2 text-sm ${
+                      darktheme ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    <Award className="w-4 h-4 text-green-600" />
+                    <span className="font-medium">{t("busDetails.experience")}</span>
+                    <span>{bus.driver.driverExp} {t("busDetails.years")}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Time Slots */}
+              <div
+                className={`rounded-2xl shadow-lg p-6 ${
+                  darktheme
+                    ? "bg-gray-800 border border-gray-700"
+                    : "bg-white border border-green-100"
+                }`}
+              >
+                <h3
+                  className={`text-xl font-semibold mb-4 flex items-center gap-2 ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  <Clock className="w-5 h-5 text-green-600" />
+                  {t("busDetails.timeSlots")}
+                </h3>
+                <ul className="space-y-3">
+                  {bus.timeSlots.map((slot) => (
+                    <li
+                      key={slot._id}
+                      className={`p-4 rounded-xl text-center font-medium shadow-sm transition-all duration-300 ${
+                        activeSlot && activeSlot._id === slot._id
+                          ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg scale-105"
+                          : darktheme
+                          ? "bg-gray-900/50 text-gray-300 border border-gray-700"
+                          : "bg-gray-50 text-gray-700 border border-gray-200"
+                      }`}
+                    >
+                      {slot.startTime} - {slot.endTime}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* RIGHT COLUMN → Map + Stats */}
+            <div
+              className={`col-span-1 lg:col-span-2 rounded-2xl shadow-lg p-4 ${
+                darktheme
+                  ? "bg-gray-800 border border-gray-700"
+                  : "bg-white border border-green-100"
+              }`}
+            >
+              <h3
+                className={`text-xl font-semibold mb-4 flex items-center gap-2 ${
+                  darktheme ? "text-white" : "text-gray-800"
+                }`}
+              >
+                <MapPin className="w-5 h-5 text-green-600" />
+                {t("busDetails.liveLocation")}
+              </h3>
+
+              <MapContainer
+                center={bus.liveLocation.coordinates}
+                zoom={14}
+                style={{ height: "400px", width: "100%", borderRadius: "12px" }}
+              >
+                <TileLayer
+                  url={
+                    darktheme
+                      ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                      : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  }
+                />
+                <Routing path={bus.path} />
+                <Marker position={bus.liveLocation.coordinates} icon={busIcon}>
+                  <Popup>
+                    <b>{t("busDetails.busLiveLocation")}</b>
+                    <br />
+                    {bus.name}
+                  </Popup>
+                </Marker>
+              </MapContainer>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-4">
+                <div
+                  className={`rounded-xl p-3 text-center ${
+                    darktheme
+                      ? "bg-green-900/30 border border-green-800"
+                      : "bg-green-50 border border-green-100"
+                  }`}
+                >
+                  <Gauge className="w-5 h-5 text-green-600 mx-auto mb-1" />
+                  <p
+                    className={`text-xs mb-1 ${
+                      darktheme ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
+                    {t("busDetails.speed")}
+                  </p>
+                  <p
+                    className={`font-bold ${
+                      darktheme ? "text-white" : "text-gray-800"
+                    }`}
+                  >
+                    {bus.speed} {t("busDetails.kmh")}
+                  </p>
+                </div>
+                <div
+                  className={`rounded-xl p-3 text-center ${
+                    darktheme
+                      ? "bg-gray-900/50 border border-gray-700"
+                      : "bg-gray-50 border border-gray-200"
+                  }`}
+                >
+                  <RouteIcon
+                    className={`w-5 h-5 mx-auto mb-1 ${
+                      darktheme ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  />
+                  <p
+                    className={`text-xs mb-1 ${
+                      darktheme ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
+                    {t("busDetails.total")}
+                  </p>
+                  <p
+                    className={`font-bold ${
+                      darktheme ? "text-white" : "text-gray-800"
+                    }`}
+                  >
+                    {bus.totalDistance} {t("busDetails.km")}
+                  </p>
+                </div>
+                <div
+                  className={`rounded-xl p-3 text-center ${
+                    darktheme
+                      ? "bg-blue-900/30 border border-blue-800"
+                      : "bg-blue-50 border border-blue-100"
+                  }`}
+                >
+                  <MapPin className="w-5 h-5 text-blue-600 mx-auto mb-1" />
+                  <p
+                    className={`text-xs mb-1 ${
+                      darktheme ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
+                    {t("busDetails.covered")}
+                  </p>
+                  <p
+                    className={`font-bold ${
+                      darktheme ? "text-white" : "text-gray-800"
+                    }`}
+                  >
+                    {bus.coveredDistance} {t("busDetails.km")}
+                  </p>
+                </div>
+                <div
+                  className={`rounded-xl p-3 text-center ${
+                    darktheme
+                      ? "bg-orange-900/30 border border-orange-800"
+                      : "bg-orange-50 border border-orange-100"
+                  }`}
+                >
+                  <RouteIcon className="w-5 h-5 text-orange-600 mx-auto mb-1" />
+                  <p
+                    className={`text-xs mb-1 ${
+                      darktheme ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
+                    {t("busDetails.remaining")}
+                  </p>
+                  <p
+                    className={`font-bold ${
+                      darktheme ? "text-white" : "text-gray-800"
+                    }`}
+                  >
+                    {bus.remainingDistance} {t("busDetails.km")}
+                  </p>
+                </div>
+                <div
+                  className={`rounded-xl p-3 text-center ${
+                    darktheme
+                      ? "bg-purple-900/30 border border-purple-800"
+                      : "bg-purple-50 border border-purple-100"
+                  }`}
+                >
+                  <Clock className="w-5 h-5 text-purple-600 mx-auto mb-1" />
+                  <p
+                    className={`text-xs mb-1 ${
+                      darktheme ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
+                    {t("busDetails.eta")}
+                  </p>
+                  <p
+                    className={`font-bold ${
+                      darktheme ? "text-white" : "text-gray-800"
+                    }`}
+                  >
+                    {bus.ETA}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </>
   );
 };
 
