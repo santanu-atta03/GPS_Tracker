@@ -24,6 +24,7 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import PrivacyPolicy from "./components/page/PrivacyPolicy";
 import TermsAndConditions from "./components/page/TermsAndConditions";
+import NotFound from "./components/page/NotFound";
 
 function App() {
   const approute = createBrowserRouter([
@@ -37,7 +38,7 @@ function App() {
     },
     {
       path: "/terms-and-conditions",
-      element: <TermsAndConditions />
+      element: <TermsAndConditions />,
     },
     {
       path: "/bus/:deviceID",
@@ -103,8 +104,12 @@ function App() {
       path: "/see-history",
       element: <History />,
     },
+    {
+      path: "*",
+      element: <NotFound />,
+    },
   ]);
-   const { darktheme } = useSelector((store) => store.auth);
+  const { darktheme } = useSelector((store) => store.auth);
 
   useEffect(() => {
     const root = document.documentElement;
