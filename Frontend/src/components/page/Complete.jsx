@@ -41,6 +41,7 @@ const Complete = () => {
         setLoading(false);
       }
     };
+    
 
     fetchData();
   }, [user, dispatch, navigate]);
