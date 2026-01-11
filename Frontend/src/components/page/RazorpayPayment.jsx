@@ -239,9 +239,11 @@ const RazorpayPayment = () => {
   const { darktheme } = useSelector((store) => store.auth);
   const { t } = useTranslation();
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [loadingPrice, setLoadingPrice] = useState(false);
+
   const handleCalculatePrice = async () => {
     if (!from || !to) {
-      alert(t("payment.selectBothLocations"));
+      toast.error(t("payment.selectBothLocations"));
       return;
     }
 
@@ -253,49 +255,26 @@ const RazorpayPayment = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ busId: deviceid, fromLat, fromLng, toLat, toLng }),
+          body: JSON.stringify({
+            busId: deviceid,
+            fromLat: from.lat,
+            fromLng: from.lon,
+            toLat: to.lat,
+            toLng: to.lon,
+          }),
         }
       );
       const data = await res.json();
       if (!data.success) {
         throw new Error(data.message || "Failed to calculate price");
       }
-      return data;
-    },
-    showSuccessToast: false,
-    onSuccess: (data) => setTicketData(data.data)
-  });
-
-  // API hook for payment verification
-  const { loading: verifyingPayment, execute: verifyPayment } = useApiCall({
-    apiFunction: async (paymentData) => {
-      const token = await getAccessTokenSilently({
-        audience: "http://localhost:5000/api/v3",
-      });
-      return axios.post(
-        `${import.meta.env.VITE_BASE_URL}/Bus/verify-payment`,
-        paymentData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    },
-    successMessage: (data) => data.message || "Payment successful!",
-    onSuccess: (data) => {
-      console.log("✅ Payment verified:", data);
+      setTicketData(data.data);
+    } catch (error) {
+      console.error("Calculate price error:", error);
+      toast.error(error.message || "Failed to calculate price");
+    } finally {
+      setLoadingPrice(false);
     }
-  });
-
-  const handleCalculatePrice = async () => {
-    if (!from || !to) {
-      toast.error(t("payment.selectBothLocations"));
-      return;
-    }
-
-    await calculatePrice({
-      fromLat: from.lat,
-      fromLng: from.lon,
-      toLat: to.lat,
-      toLng: to.lon,
-    });
   };
 
   return (
@@ -564,7 +543,8 @@ const RazorpayPayment = () => {
                     : "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
                 } hover:scale-105`}
                 onClick={async () => {
-                  const res = await fetch(
+                  try {
+                    const res = await fetch(
                     `${import.meta.env.VITE_BASE_URL}/Bus/create-order`,
                     {
                       method: "POST",
