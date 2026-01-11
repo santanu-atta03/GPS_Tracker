@@ -108,7 +108,7 @@ app.use((req, res, next) => {
 const corsOptions = {
   origin: [
     "http://localhost:5173",
-    "https://gps-map-nine.vercel.app",
+    "https://gps-tracker-umber.vercel.app",
     "https://gps-tracker-ecru.vercel.app",
     "https://where-is-my-bus.netlify.app"
   ],
