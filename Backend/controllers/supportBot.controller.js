@@ -54,8 +54,7 @@ export const askSupportBot = async (req, res) => {
     }
 
     const result = await store.similaritySearch(question, 1);
-    const bestMatch =
-      result[0]?.metadata?.answer || "Sorry, I don't know the answer.";
+    const bestMatch = result[0]?.metadata?.answer || "Sorry, I don't know the answer.";
 
     res.json({ answer: bestMatch });
   } catch (err) {
