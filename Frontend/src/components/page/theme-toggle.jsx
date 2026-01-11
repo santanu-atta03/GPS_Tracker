@@ -24,8 +24,8 @@ export function ThemeToggle() {
       <div
         className={`absolute inset-0 transition-all duration-700 ${
           darktheme
-            ? "bg-gradient-to-b from-slate-900 via-indigo-900 to-slate-800"
-            : "bg-gradient-to-b from-sky-400 via-sky-300 to-sky-200"
+            ? "bg-linear-to-b from-slate-900 via-indigo-900 to-slate-800"
+            : "bg-linear-to-b from-sky-400 via-sky-300 to-sky-200"
         }`}
       />
 
@@ -41,7 +41,7 @@ export function ThemeToggle() {
           <div className="absolute top-3.5 right-12 w-1 h-1 bg-yellow-100 rounded-full animate-pulse" 
                style={{animationDuration: '2.2s', animationDelay: '0.9s'}} />
           {/* Shooting star */}
-          <div className="absolute top-1 right-10 w-4 h-0.5 bg-gradient-to-r from-white to-transparent rounded-full opacity-70 animate-pulse"
+          <div className="absolute top-1 right-10 w-4 h-0.5 bg-linear-to-r from-white to-transparent rounded-full opacity-70 animate-pulse"
                style={{transform: 'rotate(-30deg)', animationDuration: '3s'}} />
         </>
       )}
