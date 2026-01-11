@@ -36,7 +36,7 @@ const SupportChat = () => {
 
   // API hook for asking support bot
   const { loading: askingBot, execute: askBot } = useApiCall({
-    apiFunction: (question) =>
+    apiFunction: (question) => 
       axios.post(`${import.meta.env.VITE_BASE_URL}/support/ask`, { question }),
     showSuccessToast: false,
     showErrorToast: false,
@@ -49,7 +49,7 @@ const SupportChat = () => {
         ...prev,
         { sender: "bot", text: t("support.errorMessage") },
       ]);
-    },
+    }
   });
 
   const sendMessage = async () => {
