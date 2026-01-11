@@ -545,77 +545,71 @@ const RazorpayPayment = () => {
                 onClick={async () => {
                   try {
                     const res = await fetch(
-                      `${import.meta.env.VITE_BASE_URL}/Bus/create-order`,
-                      {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          amount: ticketData.ticketPrice,
-                        }),
-                      }
-                    );
-                    const order = await res.json();
+                    `${import.meta.env.VITE_BASE_URL}/Bus/create-order`,
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ amount: ticketData.ticketPrice }),
+                    }
+                  );
+                  const order = await res.json();
 
-                    const options = {
-                      key: "rzp_test_RPcZFwp7G16Gjf",
-                      amount: order.amount,
-                      currency: order.currency,
-                      name: t("payment.busTicketBooking"),
-                      description: `${t("payment.ticketFor")} ${busId}`,
-                      order_id: order.id,
-                      handler: async function (response) {
-                        try {
-                          if (!turnstileToken) {
-                            toast.error("Please verify CAPTCHA");
-                            return;
-                          }
-
-                          const token = await getAccessTokenSilently({
-                            audience: "http://localhost:5000/api/v3",
-                          });
-
-                          const verifyRes = await axios.post(
-                            `${
-                              import.meta.env.VITE_BASE_URL
-                            }/Bus/verify-payment`,
-                            {
-                              razorpay_order_id: response.razorpay_order_id,
-                              razorpay_payment_id: response.razorpay_payment_id,
-                              razorpay_signature: response.razorpay_signature,
-                              ticketData,
-                              busId: deviceid,
-                              fromLat: from.lat,
-                              fromLng: from.lon,
-                              toLat: to.lat,
-                              toLng: to.lon,
-                              turnstileToken,
-                            },
-                            { headers: { Authorization: `Bearer ${token}` } }
-                          );
-
-                          const verifyData = verifyRes.data; // ✅ correct
-                          toast.success(verifyData.message);
-                          console.log("✅ Verify Response:", verifyData);
-                        } catch (err) {
-                          console.error("Payment verification failed:", err);
-                          toast.error("Payment verification failed");
+                  const options = {
+                    key: "rzp_test_RPcZFwp7G16Gjf",
+                    amount: order.amount,
+                    currency: order.currency,
+                    name: t("payment.busTicketBooking"),
+                    description: `${t("payment.ticketFor")} ${busId}`,
+                    order_id: order.id,
+                    handler: async function (response) {
+                      try {
+                        if (!turnstileToken) {
+                          toast.error("Please verify CAPTCHA");
+                          return;
                         }
-                      },
 
-                      prefill: {
-                        name: "Ayan Manna",
-                        email: "mannaayan777@gmail.com",
-                        contact: "9907072795",
-                      },
-                      theme: { color: "#3399cc" },
-                    };
+                        const token = await getAccessTokenSilently({
+                          audience: "http://localhost:5000/api/v3",
+                        });
+
+                        const verifyRes = await axios.post(
+                          `${import.meta.env.VITE_BASE_URL}/Bus/verify-payment`,
+                          {
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            ticketData,
+                            busId: deviceid,
+                            fromLat: from.lat,
+                            fromLng: from.lon,
+                            toLat: to.lat,
+                            toLng: to.lon,
+                            turnstileToken,
+                          },
+                          { headers: { Authorization: `Bearer ${token}` } }
+                        );
+
+                        const verifyData = verifyRes.data; // ✅ correct
+                        toast.success(verifyData.message);
+                        console.log("✅ Verify Response:", verifyData);
+                      } catch (err) {
+                        console.error("Payment verification failed:", err);
+                        toast.error("Payment verification failed");
+                      }
+                    },
+
+                    prefill: {
+                      name: "Ayan Manna",
+                      email: "mannaayan777@gmail.com",
+                      contact: "9907072795",
+                    },
+                    theme: { color: "#3399cc" },
+                  };
 
                     const rzp1 = new window.Razorpay(options);
-                    rzp1.on("payment.failed", function (response) {
+                    rzp1.on('payment.failed', function (response) {
                       setProcessingPayment(false);
-                      toast.error(
-                        response.error.description || "Payment failed"
-                      );
+                      toast.error(response.error.description || "Payment failed");
                     });
                     rzp1.open();
                   } catch (error) {

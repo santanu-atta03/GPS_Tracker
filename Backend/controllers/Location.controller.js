@@ -110,7 +110,7 @@ export const updatelocation = async (req, res) => {
       bus.prevlocation = {
         type: "Point",
         coordinates: bus.location.coordinates, // old location
-        timestamp: bus.location.timestamp,
+        timestamp: bus.location.timestamp
       };
 
       bus.location = {
@@ -319,10 +319,10 @@ export const getAllBus = async (req, res) => {
       debug:
         process.env.NODE_ENV === "development"
           ? {
-              searchParams: { latitude, longitude, searchRadius },
-              errorType: err.name,
-              mongoError: err.code,
-            }
+            searchParams: { latitude, longitude, searchRadius },
+            errorType: err.name,
+            mongoError: err.code,
+          }
           : undefined,
     });
   }
@@ -526,13 +526,13 @@ export const getAllBusDetails = async (req, res) => {
         },
         location: loc
           ? {
-              coordinates: loc.location?.coordinates || [0, 0],
-              lastUpdated: loc.lastUpdated || null,
-            }
+            coordinates: loc.location?.coordinates || [0, 0],
+            lastUpdated: loc.lastUpdated || null,
+          }
           : {
-              coordinates: [0, 0],
-              lastUpdated: null,
-            },
+            coordinates: [0, 0],
+            lastUpdated: null,
+          },
       };
     });
 
@@ -829,24 +829,24 @@ export const getBusesAlongRoute = async (req, res) => {
       debug:
         process.env.NODE_ENV === "development"
           ? {
-              fromSearchCoords: [fromLongitude, fromLatitude],
-              toSearchCoords: [toLongitude, toLatitude],
-              routeDistance: calculateDistance(
-                fromLatitude,
-                fromLongitude,
-                toLatitude,
-                toLongitude
-              ),
-              analysisResults: analyzedBuses.slice(0, 3).map((bus) => ({
-                deviceID: bus.deviceID,
-                score: bus.routeRelevanceScore,
-                distanceFromStart: Math.round(bus.distanceFromStart),
-                distanceToEnd: Math.round(bus.distanceToEnd),
-                detourRatio: bus.detourRatio?.toFixed(2),
-                passesThrough: bus.routeAnalysis?.passesThrough,
-                isCorrectDirection: bus.routeAnalysis?.isCorrectDirection,
-              })),
-            }
+            fromSearchCoords: [fromLongitude, fromLatitude],
+            toSearchCoords: [toLongitude, toLatitude],
+            routeDistance: calculateDistance(
+              fromLatitude,
+              fromLongitude,
+              toLatitude,
+              toLongitude
+            ),
+            analysisResults: analyzedBuses.slice(0, 3).map((bus) => ({
+              deviceID: bus.deviceID,
+              score: bus.routeRelevanceScore,
+              distanceFromStart: Math.round(bus.distanceFromStart),
+              distanceToEnd: Math.round(bus.distanceToEnd),
+              detourRatio: bus.detourRatio?.toFixed(2),
+              passesThrough: bus.routeAnalysis?.passesThrough,
+              isCorrectDirection: bus.routeAnalysis?.isCorrectDirection,
+            })),
+          }
           : undefined,
     });
   } catch (err) {
@@ -1176,7 +1176,7 @@ function calculateBusStatistics(bus) {
   if (nonZeroSpeeds.length > 0) {
     stats.averageSpeed = Math.round(
       nonZeroSpeeds.reduce((sum, speed) => sum + speed, 0) /
-        nonZeroSpeeds.length
+      nonZeroSpeeds.length
     );
     stats.maxSpeed = Math.max(...nonZeroSpeeds);
   }
@@ -1208,7 +1208,7 @@ function calculateBusStatistics(bus) {
           bus.destinationCoords[1]
         ) /
           1000) *
-          100
+        100
       ) / 100;
   }
 
