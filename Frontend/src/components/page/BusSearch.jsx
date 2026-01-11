@@ -1,9 +1,17 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MapPin, Bus, Search, Navigation, ArrowRight, Clock, Users, Zap } from "lucide-react";
+import {
+  MapPin,
+  Bus,
+  Search,
+  Navigation,
+  ArrowRight,
+  Clock,
+  Users,
+  Zap,
+} from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
@@ -137,7 +145,9 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
           disabled={loadingLocation}
         >
           <MapPin className="w-4 h-4" />
-          {loadingLocation ? t("busSearch.gettingLocation") : t("busSearch.useMyLocation")}
+          {loadingLocation
+            ? t("busSearch.gettingLocation")
+            : t("busSearch.useMyLocation")}
         </button>
       )}
 
@@ -176,7 +186,11 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
                 setSuggestions([]);
               }}
             >
-              <MapPin className={`w-5 h-5 flex-shrink-0 mt-0.5 ${darktheme ? 'text-blue-400' : 'text-blue-600'}`} />
+              <MapPin
+                className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                  darktheme ? "text-blue-400" : "text-blue-600"
+                }`}
+              />
               <span>{s.display_name}</span>
             </li>
           ))}
@@ -288,7 +302,6 @@ const BusSearch = () => {
             })
           );
         }
-        
 
         console.log(data);
 
@@ -301,7 +314,9 @@ const BusSearch = () => {
     } catch (error) {
       console.error("Error:", error);
       const errorMessage =
-        error.response?.data?.message || error.message || t("busSearch.errorOccurred");
+        error.response?.data?.message ||
+        error.message ||
+        t("busSearch.errorOccurred");
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -325,8 +340,17 @@ const BusSearch = () => {
     >
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute top-20 left-10 w-96 h-96 ${darktheme ? 'bg-blue-500/5' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
-        <div className={`absolute bottom-20 right-10 w-96 h-96 ${darktheme ? 'bg-purple-500/5' : 'bg-purple-300/20'} rounded-full blur-3xl animate-pulse`} style={{animationDelay: '1s'}}></div>
+        <div
+          className={`absolute top-20 left-10 w-96 h-96 ${
+            darktheme ? "bg-blue-500/5" : "bg-blue-300/20"
+          } rounded-full blur-3xl animate-pulse`}
+        ></div>
+        <div
+          className={`absolute bottom-20 right-10 w-96 h-96 ${
+            darktheme ? "bg-purple-500/5" : "bg-purple-300/20"
+          } rounded-full blur-3xl animate-pulse`}
+          style={{ animationDelay: "1s" }}
+        ></div>
       </div>
 
       <Navbar />
@@ -334,13 +358,25 @@ const BusSearch = () => {
         {/* Hero Section */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-3 mb-6">
-            <div className={`p-3 rounded-2xl ${darktheme ? 'bg-blue-500/20 border border-blue-500/30' : 'bg-gradient-to-br from-blue-500 to-purple-500'}`}>
-              <Bus className={`w-8 h-8 ${darktheme ? 'text-blue-400' : 'text-white'}`} />
+            <div
+              className={`p-3 rounded-2xl ${
+                darktheme
+                  ? "bg-blue-500/20 border border-blue-500/30"
+                  : "bg-gradient-to-br from-blue-500 to-purple-500"
+              }`}
+            >
+              <Bus
+                className={`w-8 h-8 ${
+                  darktheme ? "text-blue-400" : "text-white"
+                }`}
+              />
             </div>
           </div>
           <h1
             className={`text-5xl font-bold mb-4 bg-gradient-to-r ${
-              darktheme ? "from-blue-400 via-purple-400 to-pink-400" : "from-blue-600 via-purple-600 to-pink-600"
+              darktheme
+                ? "from-blue-400 via-purple-400 to-pink-400"
+                : "from-blue-600 via-purple-600 to-pink-600"
             } bg-clip-text text-transparent`}
           >
             {t("busSearch.pageTitle")}
@@ -374,14 +410,16 @@ const BusSearch = () => {
           <div className="flex justify-center mb-8">
             <div
               className={`rounded-2xl p-2 transition-all duration-200 inline-flex flex-wrap gap-2 ${
-                darktheme ? "bg-gray-900/50 border border-gray-700" : "bg-gray-100 border border-gray-200"
+                darktheme
+                  ? "bg-gray-900/50 border border-gray-700"
+                  : "bg-gray-100 border border-gray-200"
               }`}
             >
               <button
                 onClick={() => setSearchType("route")}
                 className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center gap-2 ${
                   searchType === "route"
-                    ? darktheme 
+                    ? darktheme
                       ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
                       : "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
                     : darktheme
@@ -396,7 +434,7 @@ const BusSearch = () => {
                 onClick={() => setSearchType("device")}
                 className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center gap-2 ${
                   searchType === "device"
-                    ? darktheme 
+                    ? darktheme
                       ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
                       : "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
                     : darktheme
@@ -411,7 +449,7 @@ const BusSearch = () => {
                 onClick={() => setSearchType("name")}
                 className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center gap-2 ${
                   searchType === "name"
-                    ? darktheme 
+                    ? darktheme
                       ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
                       : "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
                     : darktheme
@@ -559,8 +597,16 @@ const BusSearch = () => {
                   }`}
                 >
                   <div className="flex flex-col items-center mb-6">
-                    <div className={`p-3 rounded-2xl mb-3 ${darktheme ? 'bg-green-500/20' : 'bg-green-100'}`}>
-                      <MapPin className={`w-6 h-6 ${darktheme ? 'text-green-400' : 'text-green-600'}`} />
+                    <div
+                      className={`p-3 rounded-2xl mb-3 ${
+                        darktheme ? "bg-green-500/20" : "bg-green-100"
+                      }`}
+                    >
+                      <MapPin
+                        className={`w-6 h-6 ${
+                          darktheme ? "text-green-400" : "text-green-600"
+                        }`}
+                      />
                     </div>
                     <h2
                       className={`text-xl font-bold ${
@@ -583,17 +629,28 @@ const BusSearch = () => {
                     const changeLocation = results.pathAddresses?.[idx + 2];
 
                     return (
-                      <div
-                        key={bus._id}
-                        className="relative"
-                      >
+                      <div key={bus._id} className="relative">
                         {!isLast && (
                           <div className="flex items-center justify-center my-6">
-                            <div className={`flex items-center gap-3 px-4 py-2 rounded-full ${
-                              darktheme ? 'bg-yellow-500/20 border border-yellow-500/30' : 'bg-yellow-100 border border-yellow-200'
-                            }`}>
-                              <div className={`w-2 h-2 rounded-full ${darktheme ? 'bg-yellow-400' : 'bg-yellow-500'}`}></div>
-                              <span className={`text-sm font-semibold ${darktheme ? 'text-yellow-400' : 'text-yellow-700'}`}>
+                            <div
+                              className={`flex items-center gap-3 px-4 py-2 rounded-full ${
+                                darktheme
+                                  ? "bg-yellow-500/20 border border-yellow-500/30"
+                                  : "bg-yellow-100 border border-yellow-200"
+                              }`}
+                            >
+                              <div
+                                className={`w-2 h-2 rounded-full ${
+                                  darktheme ? "bg-yellow-400" : "bg-yellow-500"
+                                }`}
+                              ></div>
+                              <span
+                                className={`text-sm font-semibold ${
+                                  darktheme
+                                    ? "text-yellow-400"
+                                    : "text-yellow-700"
+                                }`}
+                              >
                                 {t("busSearch.changeHere")}
                               </span>
                             </div>
@@ -602,16 +659,28 @@ const BusSearch = () => {
 
                         <Card
                           className={`shadow-xl border-l-4 cursor-pointer transition-all duration-300 hover:scale-[1.02] ${
-                            darktheme 
-                              ? "bg-gradient-to-r from-gray-700 to-gray-800 border-purple-500 hover:shadow-purple-500/20" 
+                            darktheme
+                              ? "bg-gradient-to-r from-gray-700 to-gray-800 border-purple-500 hover:shadow-purple-500/20"
                               : "bg-white border-purple-500 hover:shadow-2xl"
                           }`}
                           onClick={() => navigate(`bus/${bus.deviceID}`)}
                         >
                           <CardContent className="p-6">
                             <div className="flex items-center gap-4">
-                              <div className={`p-3 rounded-xl ${darktheme ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
-                                <Bus className={`w-8 h-8 ${darktheme ? 'text-purple-400' : 'text-purple-600'}`} />
+                              <div
+                                className={`p-3 rounded-xl ${
+                                  darktheme
+                                    ? "bg-purple-500/20"
+                                    : "bg-purple-100"
+                                }`}
+                              >
+                                <Bus
+                                  className={`w-8 h-8 ${
+                                    darktheme
+                                      ? "text-purple-400"
+                                      : "text-purple-600"
+                                  }`}
+                                />
                               </div>
                               <div className="flex-1">
                                 <h3
@@ -623,7 +692,9 @@ const BusSearch = () => {
                                 </h3>
                                 <p
                                   className={`text-sm mb-1 flex items-center gap-2 ${
-                                    darktheme ? "text-gray-300" : "text-gray-600"
+                                    darktheme
+                                      ? "text-gray-300"
+                                      : "text-gray-600"
                                   }`}
                                 >
                                   <MapPin className="w-4 h-4" />
@@ -631,7 +702,9 @@ const BusSearch = () => {
                                 </p>
                                 <p
                                   className={`text-sm mb-1 flex items-center gap-2 ${
-                                    darktheme ? "text-gray-400" : "text-gray-500"
+                                    darktheme
+                                      ? "text-gray-400"
+                                      : "text-gray-500"
                                   }`}
                                 >
                                   <Navigation className="w-4 h-4" />
@@ -639,21 +712,33 @@ const BusSearch = () => {
                                 </p>
                                 <p
                                   className={`text-sm flex items-center gap-2 ${
-                                    darktheme ? "text-gray-400" : "text-gray-500"
+                                    darktheme
+                                      ? "text-gray-400"
+                                      : "text-gray-500"
                                   }`}
                                 >
                                   <Clock className="w-4 h-4" />
-                                  {bus.nextStartTime.startTime} {t("busSearch.to")} {bus.nextStartTime.endTime}
+                                  {bus.nextStartTime.startTime}{" "}
+                                  {t("busSearch.to")}{" "}
+                                  {bus.nextStartTime.endTime}
                                 </p>
                               </div>
-                              <ArrowRight className={`w-6 h-6 ${darktheme ? 'text-gray-600' : 'text-gray-400'}`} />
+                              <ArrowRight
+                                className={`w-6 h-6 ${
+                                  darktheme ? "text-gray-600" : "text-gray-400"
+                                }`}
+                              />
                             </div>
                           </CardContent>
                         </Card>
 
                         {changeLocation?.address && !isLast && (
                           <div className="text-center mt-4">
-                            <p className={`text-sm ${darktheme ? 'text-gray-500' : 'text-gray-600'}`}>
+                            <p
+                              className={`text-sm ${
+                                darktheme ? "text-gray-500" : "text-gray-600"
+                              }`}
+                            >
                               {changeLocation.address}
                             </p>
                           </div>
@@ -663,8 +748,16 @@ const BusSearch = () => {
                   })}
 
                   <div className="flex flex-col items-center mt-6">
-                    <div className={`p-3 rounded-2xl mb-3 ${darktheme ? 'bg-red-500/20' : 'bg-red-100'}`}>
-                      <MapPin className={`w-6 h-6 ${darktheme ? 'text-red-400' : 'text-red-600'}`} />
+                    <div
+                      className={`p-3 rounded-2xl mb-3 ${
+                        darktheme ? "bg-red-500/20" : "bg-red-100"
+                      }`}
+                    >
+                      <MapPin
+                        className={`w-6 h-6 ${
+                          darktheme ? "text-red-400" : "text-red-600"
+                        }`}
+                      />
                     </div>
                     <h2
                       className={`text-xl font-bold ${
@@ -678,7 +771,11 @@ const BusSearch = () => {
                         darktheme ? "text-gray-400" : "text-gray-600"
                       }`}
                     >
-                      {results.pathAddresses?.[results.pathAddresses.length - 1]?.address}
+                      {
+                        results.pathAddresses?.[
+                          results.pathAddresses.length - 1
+                        ]?.address
+                      }
                     </p>
                   </div>
                 </div>
@@ -702,7 +799,11 @@ const BusSearch = () => {
                         darktheme ? "bg-blue-500/20" : "bg-blue-100"
                       }`}
                     >
-                      <Bus className={`w-7 h-7 ${darktheme ? 'text-blue-400' : 'text-blue-600'}`} />
+                      <Bus
+                        className={`w-7 h-7 ${
+                          darktheme ? "text-blue-400" : "text-blue-600"
+                        }`}
+                      />
                     </div>
                     <div className="flex-1">
                       <h2
@@ -739,7 +840,11 @@ const BusSearch = () => {
                         </p>
                       )}
                     </div>
-                    <ArrowRight className={`w-6 h-6 ${darktheme ? 'text-gray-600' : 'text-gray-400'}`} />
+                    <ArrowRight
+                      className={`w-6 h-6 ${
+                        darktheme ? "text-gray-600" : "text-gray-400"
+                      }`}
+                    />
                   </CardContent>
                 </Card>
               ))}
@@ -754,9 +859,11 @@ const BusSearch = () => {
                     : "bg-white/90 border-white/50"
                 }`}
               >
-                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 ${
-                  darktheme ? 'bg-gray-700' : 'bg-gray-100'
-                }`}>
+                <div
+                  className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 ${
+                    darktheme ? "bg-gray-700" : "bg-gray-100"
+                  }`}
+                >
                   <Bus
                     className={`w-12 h-12 ${
                       darktheme ? "text-gray-600" : "text-gray-400"
