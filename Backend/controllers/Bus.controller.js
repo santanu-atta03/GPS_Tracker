@@ -66,17 +66,47 @@ export const CreateBus = async (req, res) => {
 
 export const getAllBUs = async (req, res) => {
   try {
-    const allBus = await Bus.find({}).populate("driver").populate("location");
+    // 1. Parse valid page/limit from query params
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
 
+    // Ensure valid positive integers
+    const validPage = page > 0 ? page : 1;
+    const validLimit = limit > 0 ? limit : 20;
+
+    const skip = (validPage - 1) * validLimit;
+
+    // 2. Fetch total count & paginated data in parallel
+    const [totalItems, allBus] = await Promise.all([
+      Bus.countDocuments({}),
+      Bus.find({})
+        .populate("driver")
+        .populate("location")
+        .skip(skip)
+        .limit(validLimit)
+        .exec(),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / validLimit);
+
+    // 3. Handle case where no data is found (optional: could also return empty array with metadata)
     if (!allBus || allBus.length === 0) {
-      return res.status(404).json({
-        message: "No bus created",
-        success: false,
-      });
+      // It's often better to valid JSON with empty data than 404 for a list endpoint,
+      // but sticking to previous behavior for "No bus created" if the DB is actually empty
+      // implies check against totalItems or just return empty list.
+      // If the page is out of range, allBus will be empty, which is valid.
+      // Let's return the metadata even if data is empty, unless the DB is truly empty?
+      // The original code returned 404 if no buses existed at all.
+      // Let's preserve that behavior if totalItems === 0.
+      if (totalItems === 0) {
+         return res.status(404).json({
+          message: "No bus created",
+          success: false,
+        });
+      }
     }
-    console.log(allBus)
 
-    // Transform each bus to match UI expectations
+    // 4. Transform data
     const formattedBuses = allBus.map((busData) => {
       return {
         // Core identifiers
@@ -84,7 +114,7 @@ export const getAllBUs = async (req, res) => {
         id: busData.deviceID,
         deviceId: busData.deviceID,
 
-        // Basic info (with defaults for missing data)
+        // Basic info
         name: busData.name || `Bus ${busData.deviceID}`,
         busName: busData.busName || `Bus ${busData.deviceID}`,
         status: busData.status || "Active",
@@ -92,15 +122,15 @@ export const getAllBUs = async (req, res) => {
         // Location data
         location: busData.location,
         currentLocation: busData.currentLocation || "Live tracking available",
-        lat: busData.location?.location.coordinates?.[0] || 0, // GeoJSON format is [lng, lat]
-        lng: busData.location?.location.coordinates?.[1] || 0,
-        latitude: busData.location?.location.coordinates?.[0] || 0,
-        longitude: busData.location?.location.coordinates?.[1] || 0,
+        lat: busData.location?.location?.coordinates?.[0] || 0,
+        lng: busData.location?.location?.coordinates?.[1] || 0,
+        latitude: busData.location?.location?.coordinates?.[0] || 0,
+        longitude: busData.location?.location?.coordinates?.[1] || 0,
 
         // Route data
         route: busData.route || [],
 
-        // Time data (with defaults)
+        // Time data
         lastUpdated: busData.lastUpdated,
         timestamp: busData.lastUpdated,
         updatedAt: busData.lastUpdated,
@@ -108,7 +138,7 @@ export const getAllBUs = async (req, res) => {
         expectedTime: busData.expectedTime || "Calculating...",
         destinationTime: busData.destinationTime || "08:00 PM",
 
-        // Driver data (with defaults)
+        // Driver data
         driverName: busData.driver?.name || "Driver Available",
         driver: busData.driver?.name || "Driver Available",
         driverPhone: busData.driver?.phone || "Contact Support",
@@ -119,9 +149,16 @@ export const getAllBUs = async (req, res) => {
       };
     });
 
+    // 5. Return response with metadata
     return res.status(200).json({
       message: "All buses fetched successfully",
       success: true,
+      metadata: {
+        page: validPage,
+        limit: validLimit,
+        totalItems,
+        totalPages,
+      },
       data: formattedBuses,
     });
   } catch (error) {
