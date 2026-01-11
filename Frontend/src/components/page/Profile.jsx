@@ -72,7 +72,7 @@ const Profile = () => {
       });
       const res = await axios.put(
         `${import.meta.env.VITE_BASE_URL}/driver/update/profile`,
-        { name, licenceId, driverExp },
+        { name, licenceId, driverExp, picture: usere.picture },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       dispatch(setuser(res.data.newDetails));
