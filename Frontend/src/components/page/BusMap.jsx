@@ -560,6 +560,7 @@ const BusMap = () => {
               </div>
             </div>
 
+
             {/* Active Bus */}
             <div
               className={`flex items-start gap-4 p-5 rounded-2xl transition-all duration-300 hover:scale-105 ${

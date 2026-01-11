@@ -28,7 +28,10 @@ const DriverLogin = () => {
         }
       } catch (error) {
         // Silent error - driver doesn't exist yet, which is expected
-        console.log("Driver verification:", error.response?.data || error.message);
+        console.log(
+          "Driver verification:",
+          error.response?.data || error.message
+        );
       }
     };
     fetchData();
