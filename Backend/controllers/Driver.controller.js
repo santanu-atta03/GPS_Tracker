@@ -64,7 +64,7 @@ export const userFindByEmail = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { fullname, licenceId, driverExp, picture } = req.body;
+    const { fullname, licenceId, driverExp } = req.body;
     const userId = req.auth.sub;
     let user = await Driver.findOne({ auth0Id: userId });
     if (!user) {
@@ -81,9 +81,6 @@ export const updateProfile = async (req, res) => {
     }
     if (driverExp) {
       user.driverExp = driverExp;
-    }
-    if (picture) {
-      user.picture = picture;
     }
     const newDetails = await user.save();
 
