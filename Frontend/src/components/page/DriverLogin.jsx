@@ -27,14 +27,12 @@ const DriverLogin = () => {
           navigate("/");
         }
       } catch (error) {
-        console.log("Verification error:", error.response?.data || error.message);
+        // Silent error - driver doesn't exist yet, which is expected
+        console.log("Driver verification:", error.response?.data || error.message);
       }
-    },
-    onError: (error) => {
-      // Silent error - driver doesn't exist yet, which is expected
-      console.log("Driver verification:", error.response?.data || error.message);
-    }
-  });
+    };
+    fetchData();
+  }, [user, navigate]);
 
   const CreateDriver = async (e) => {
     e.preventDefault();
@@ -70,12 +68,6 @@ const DriverLogin = () => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
-
-  // Create new driver
-  const CreateDriver = async (e) => {
-    e.preventDefault();
-    await createDriver({ licenceId, driverExp });
   };
 
   return (
