@@ -377,51 +377,56 @@ const BusSearch = () => {
                 darktheme ? "bg-gray-900/50 border border-gray-700" : "bg-gray-100 border border-gray-200"
               }`}
             >
-              <button
-                onClick={() => setSearchType("route")}
-                className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center gap-2 ${
-                  searchType === "route"
-                    ? darktheme 
-                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
-                      : "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
-                    : darktheme
-                    ? "text-gray-400 hover:text-white hover:bg-gray-800"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
-                }`}
-              >
-                <MapPin className="w-5 h-5" />
-                {t("busSearch.byRoute")}
-              </button>
-              <button
-                onClick={() => setSearchType("device")}
-                className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center gap-2 ${
-                  searchType === "device"
-                    ? darktheme 
-                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
-                      : "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
-                    : darktheme
-                    ? "text-gray-400 hover:text-white hover:bg-gray-800"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
-                }`}
-              >
-                <Navigation className="w-5 h-5" />
-                {t("busSearch.byDeviceId")}
-              </button>
-              <button
-                onClick={() => setSearchType("name")}
-                className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center gap-2 ${
-                  searchType === "name"
-                    ? darktheme 
-                      ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
-                      : "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
-                    : darktheme
-                    ? "text-gray-400 hover:text-white hover:bg-gray-800"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
-                }`}
-              >
-                <Bus className="w-5 h-5" />
-                {t("busSearch.byBusName")}
-              </button>
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 w-full mt-6">
+  <button
+    onClick={() => setSearchType("route")}
+    className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center gap-2 ${
+      searchType === "route"
+        ? darktheme
+          ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+          : "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+        : darktheme
+        ? "text-gray-400 hover:text-white hover:bg-gray-800"
+        : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+    }`}
+  >
+    <MapPin className="w-5 h-5" />
+    {t("busSearch.byRoute")}
+  </button>
+
+  <button
+    onClick={() => setSearchType("device")}
+    className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center gap-2 ${
+      searchType === "device"
+        ? darktheme
+          ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+          : "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+        : darktheme
+        ? "text-gray-400 hover:text-white hover:bg-gray-800"
+        : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+    }`}
+  >
+    <Navigation className="w-5 h-5" />
+    {t("busSearch.byDeviceId")}
+  </button>
+
+  <button
+    onClick={() => setSearchType("name")}
+    className={`px-6 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center gap-2 ${
+      searchType === "name"
+        ? darktheme
+          ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
+          : "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+        : darktheme
+        ? "text-gray-400 hover:text-white hover:bg-gray-800"
+        : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
+    }`}
+  >
+    <Bus className="w-5 h-5" />
+    {t("busSearch.byBusName")}
+  </button>
+</div>
+
             </div>
           </div>
 
