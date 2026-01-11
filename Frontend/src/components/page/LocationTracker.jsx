@@ -1,9 +1,5 @@
- feature/exponential-backoff-gps-sync
-import { useEffect, useRef } from "react";
-
 // components/LocationTracker.jsx
-import { useEffect, useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 
@@ -14,33 +10,36 @@ const BACKOFF_MULTIPLIER = 2;
 const LocationTracker = () => {
   const activeBusIDs = useSelector((state) => state.location.activeBusIDs);
 
- feature/exponential-backoff-gps-sync
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const retryDelayRef = useRef(INITIAL_DELAY);
   const timeoutRef = useRef(null);
 
   const syncLocationWithBackoff = () => {
+    // If no active buses, stop syncing
+    if (!activeBusIDs || activeBusIDs.length === 0) return;
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+    // If user is offline, wait and retry later
+    if (!navigator.onLine) {
+      retryDelayRef.current = Math.min(
+        retryDelayRef.current * BACKOFF_MULTIPLIER,
+        MAX_DELAY
+      );
 
-  useEffect(() => {
+      timeoutRef.current = setTimeout(
+        syncLocationWithBackoff,
+        retryDelayRef.current
+      );
+      return;
+    }
 
-    if (activeBusIDs.length === 0) return;
-    if (!navigator.onLine) return;
+    setIsLoading(true);
+    setError(null);
 
- feature/exponential-backoff-gps-sync
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-
-    const fetchLocationAndUpdate = () => {
-      setIsLoading(true);
-      setError(null);
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-
 
         try {
           await Promise.all(
@@ -50,57 +49,41 @@ const LocationTracker = () => {
                 latitude,
                 longitude,
               })
- feature/exponential-backoff-gps-sync
             )
           );
 
-          // ✅ Reset delay on success
+          // ✅ Success → reset delay
           retryDelayRef.current = INITIAL_DELAY;
         } catch (err) {
           console.error("Failed to sync GPS location:", err);
+          setError("Failed to update location.");
 
-          // ❌ Increase delay on failure
+          // ❌ Failure → increase delay
           retryDelayRef.current = Math.min(
             retryDelayRef.current * BACKOFF_MULTIPLIER,
             MAX_DELAY
           );
-        }
-
-              .catch((err) => {
-                console.error(`Failed to send location for ${busId}`, err);
-                setError("Failed to update location.");
-              });
-          });
-
+        } finally {
           setIsLoading(false);
-        },
-        (err) => {
-          console.error("Geolocation error:", err);
-          setError("Unable to fetch GPS location.");
-          setIsLoading(false);
+
+          // Schedule next attempt using current delay
+          timeoutRef.current = setTimeout(
+            syncLocationWithBackoff,
+            retryDelayRef.current
+          );
         }
-      );
-    };
-
-    // Initial fetch
-    fetchLocationAndUpdate();
-
-    // Repeat every 5 seconds
-    const intervalId = setInterval(fetchLocationAndUpdate, 5000);
-
-
-        timeoutRef.current = setTimeout(
-          syncLocationWithBackoff,
-          retryDelayRef.current
-        );
       },
       (err) => {
         console.error("Geolocation error:", err);
+        setError("Unable to fetch GPS location.");
 
+        // ❌ GPS error → increase delay
         retryDelayRef.current = Math.min(
           retryDelayRef.current * BACKOFF_MULTIPLIER,
           MAX_DELAY
         );
+
+        setIsLoading(false);
 
         timeoutRef.current = setTimeout(
           syncLocationWithBackoff,
@@ -111,10 +94,12 @@ const LocationTracker = () => {
   };
 
   useEffect(() => {
-    if (activeBusIDs.length === 0) return;
+    if (!activeBusIDs || activeBusIDs.length === 0) return;
 
+    // Start syncing
     syncLocationWithBackoff();
 
+    // When internet comes back online, reset delay and sync immediately
     const handleOnline = () => {
       retryDelayRef.current = INITIAL_DELAY;
       syncLocationWithBackoff();
@@ -130,7 +115,6 @@ const LocationTracker = () => {
     };
   }, [activeBusIDs]);
 
-  // UI feedback (minimal, global-safe)
   return (
     <>
       {isLoading && (
