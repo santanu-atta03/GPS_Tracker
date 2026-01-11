@@ -22,24 +22,22 @@ This project is built with a modern tech stack and follows open-source best prac
 
 ## 🧑‍💻 Target Audience
 
-- Daily commuters
-- Travelers using public transportation
-- Users who need real-time bus location updates
-- Transport management systems
+- Daily commuters  
+- Travelers using public transportation  
+- Users who need real-time bus location updates  
+- Transport management systems  
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-
 - React (Vite)
 - JavaScript
 - Google Maps API
 - HTML, CSS
 
 ### Backend
-
 - Node.js
 - Express.js
 - MongoDB
@@ -79,21 +77,17 @@ GPS_Tracker/
 ```bash
 git clone https://github.com/ayanmanna123/GPS_Tracker.git
 ```
-
 ```bash
 cd GPS_Tracker
 ```
 
 🔧 Backend Setup
-
 ```bash
 cd Backend
 ```
-
 ```bash
 npm install
 ```
-
 Create .env file in backend/
 
 ```bash
@@ -108,43 +102,37 @@ GOOGLE_API_KEY=""
 OPENAI_API_KEY=""
 REDIS_URI=""
 ```
-
 Start Backend Server
-
 ```bash
 npm run dev
 ```
 
-Backend will run on:
 
+Backend will run on:
 ```bash
 http://localhost:5000
 ```
 
-🎨 Frontend Setup
 
+🎨 Frontend Setup
 ```bash
 cd Frontend
 ```
-
 ```bash
 npm install
 ```
 
 Create .env file in frontend/
-
 ```bash
 VITE_BASE_URL=http://localhost:5000/api/v1
 ```
 
 Start Frontend
-
 ```bash
 npm run dev
 ```
 
 Frontend will run on:
-
 ```bash
 http://localhost:5173
 ```
@@ -152,7 +140,7 @@ http://localhost:5173
 Steps to run both Frontend and Backend:
 
 ```bash
-cd .\Frontend\
+cd .\Frontend\ 
 npm run both
 ```
 
@@ -202,3 +190,4 @@ If you like this project, please consider giving it a ⭐ on GitHub
 It helps the project grow and motivates contributors!
 
 Made with ❤️ by Ayan Manna
+
