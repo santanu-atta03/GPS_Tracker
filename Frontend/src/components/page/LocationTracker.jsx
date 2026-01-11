@@ -1,7 +1,11 @@
 // components/LocationTracker.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
+
+const INITIAL_DELAY = 2000;   // 2 seconds
+const MAX_DELAY = 60000;      // 60 seconds
+const BACKOFF_MULTIPLIER = 2;
 
 const LocationTracker = () => {
   const activeBusIDs = useSelector((state) => state.location.activeBusIDs);
@@ -9,50 +13,108 @@ const LocationTracker = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (activeBusIDs.length === 0) return;
+  const retryDelayRef = useRef(INITIAL_DELAY);
+  const timeoutRef = useRef(null);
 
-    const fetchLocationAndUpdate = () => {
-      setIsLoading(true);
-      setError(null);
+  const syncLocationWithBackoff = () => {
+    // If no active buses, stop syncing
+    if (!activeBusIDs || activeBusIDs.length === 0) return;
 
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
+    // If user is offline, wait and retry later
+    if (!navigator.onLine) {
+      retryDelayRef.current = Math.min(
+        retryDelayRef.current * BACKOFF_MULTIPLIER,
+        MAX_DELAY
+      );
 
-          activeBusIDs.forEach((busId) => {
-            axios
-              .put(`${import.meta.env.VITE_BASE_URL}/update/location`, {
+      timeoutRef.current = setTimeout(
+        syncLocationWithBackoff,
+        retryDelayRef.current
+      );
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+
+        try {
+          await Promise.all(
+            activeBusIDs.map((busId) =>
+              axios.put(`${import.meta.env.VITE_BASE_URL}/update/location`, {
                 deviceID: busId,
                 latitude,
                 longitude,
               })
-              .catch((err) => {
-                console.error(`Failed to send location for ${busId}`, err);
-                setError("Failed to update location.");
-              });
-          });
+            )
+          );
 
+          // ✅ Success → reset delay
+          retryDelayRef.current = INITIAL_DELAY;
+        } catch (err) {
+          console.error("Failed to sync GPS location:", err);
+          setError("Failed to update location.");
+
+          // ❌ Failure → increase delay
+          retryDelayRef.current = Math.min(
+            retryDelayRef.current * BACKOFF_MULTIPLIER,
+            MAX_DELAY
+          );
+        } finally {
           setIsLoading(false);
-        },
-        (err) => {
-          console.error("Geolocation error:", err);
-          setError("Unable to fetch GPS location.");
-          setIsLoading(false);
+
+          // Schedule next attempt using current delay
+          timeoutRef.current = setTimeout(
+            syncLocationWithBackoff,
+            retryDelayRef.current
+          );
         }
-      );
+      },
+      (err) => {
+        console.error("Geolocation error:", err);
+        setError("Unable to fetch GPS location.");
+
+        // ❌ GPS error → increase delay
+        retryDelayRef.current = Math.min(
+          retryDelayRef.current * BACKOFF_MULTIPLIER,
+          MAX_DELAY
+        );
+
+        setIsLoading(false);
+
+        timeoutRef.current = setTimeout(
+          syncLocationWithBackoff,
+          retryDelayRef.current
+        );
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (!activeBusIDs || activeBusIDs.length === 0) return;
+
+    // Start syncing
+    syncLocationWithBackoff();
+
+    // When internet comes back online, reset delay and sync immediately
+    const handleOnline = () => {
+      retryDelayRef.current = INITIAL_DELAY;
+      syncLocationWithBackoff();
     };
 
-    // Initial fetch
-    fetchLocationAndUpdate();
+    window.addEventListener("online", handleOnline);
 
-    // Repeat every 5 seconds
-    const intervalId = setInterval(fetchLocationAndUpdate, 5000);
-
-    return () => clearInterval(intervalId);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      window.removeEventListener("online", handleOnline);
+    };
   }, [activeBusIDs]);
 
-  // UI feedback (minimal, global-safe)
   return (
     <>
       {isLoading && (

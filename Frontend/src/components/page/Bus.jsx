@@ -127,17 +127,8 @@ const Bus = () => {
     >
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className={`absolute top-20 left-10 w-96 h-96 ${
-            darktheme ? "bg-blue-500/5" : "bg-blue-300/20"
-          } rounded-full blur-3xl animate-pulse`}
-        ></div>
-        <div
-          className={`absolute bottom-20 right-10 w-96 h-96 ${
-            darktheme ? "bg-purple-500/5" : "bg-purple-300/20"
-          } rounded-full blur-3xl animate-pulse`}
-          style={{ animationDelay: "1s" }}
-        ></div>
+        <div className={`absolute top-20 left-10 w-96 h-96 ${darktheme ? 'bg-blue-500/5' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
+        <div className={`absolute bottom-20 right-10 w-96 h-96 ${darktheme ? 'bg-purple-500/5' : 'bg-purple-300/20'} rounded-full blur-3xl animate-pulse`} style={{animationDelay: '1s'}}></div>
       </div>
 
       <Navbar />
@@ -161,8 +152,8 @@ const Bus = () => {
             <div>
               <h1
                 className={`text-5xl font-bold mb-3 bg-gradient-to-r ${
-                  darktheme
-                    ? "from-blue-400 via-purple-400 to-pink-400"
+                  darktheme 
+                    ? "from-blue-400 via-purple-400 to-pink-400" 
                     : "from-blue-600 via-purple-600 to-pink-600"
                 } bg-clip-text text-transparent`}
               >
@@ -196,11 +187,7 @@ const Bus = () => {
           <div className="flex justify-center items-center py-20">
             <div className="text-center">
               <div className="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
-              <p
-                className={`text-lg font-medium ${
-                  darktheme ? "text-gray-400" : "text-gray-600"
-                }`}
-              >
+              <p className={`text-lg font-medium ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
                 Loading your buses...
               </p>
             </div>
@@ -209,28 +196,18 @@ const Bus = () => {
 
         {/* Error State */}
         {error && !loading && (
-          <div
-            className={`rounded-2xl p-8 border ${
-              darktheme
-                ? "bg-red-500/10 border-red-500/30"
-                : "bg-red-50 border-red-200"
-            }`}
-          >
+          <div className={`rounded-2xl p-8 border ${
+            darktheme 
+              ? "bg-red-500/10 border-red-500/30" 
+              : "bg-red-50 border-red-200"
+          }`}>
             <div className="flex items-center gap-3 mb-2">
-              <AlertCircle
-                className={`w-6 h-6 ${
-                  darktheme ? "text-red-400" : "text-red-600"
-                }`}
-              />
-              <h3
-                className={`text-lg font-semibold ${
-                  darktheme ? "text-red-400" : "text-red-700"
-                }`}
-              >
+              <AlertCircle className={`w-6 h-6 ${darktheme ? 'text-red-400' : 'text-red-600'}`} />
+              <h3 className={`text-lg font-semibold ${darktheme ? 'text-red-400' : 'text-red-700'}`}>
                 Error Loading Buses
               </h3>
             </div>
-            <p className={darktheme ? "text-red-300" : "text-red-600"}>
+            <p className={darktheme ? 'text-red-300' : 'text-red-600'}>
               {error}
             </p>
           </div>
@@ -243,7 +220,7 @@ const Bus = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {buses.map((bus) => {
                   const isActive = activeBusIDs.includes(bus.deviceID);
-
+                  
                   return (
                     <div
                       key={bus._id}
@@ -254,11 +231,9 @@ const Bus = () => {
                       } hover:scale-[1.02]`}
                     >
                       {/* Bus Header with Status */}
-                      <div
-                        className={`p-6 border-b ${
-                          darktheme ? "border-gray-700" : "border-gray-200"
-                        }`}
-                      >
+                      <div className={`p-6 border-b ${
+                        darktheme ? 'border-gray-700' : 'border-gray-200'
+                      }`}>
                         <div className="flex items-center justify-between mb-4">
                           <div
                             className="flex items-center gap-3 cursor-pointer flex-1"
@@ -275,17 +250,11 @@ const Bus = () => {
                                   : "bg-gray-100"
                               }`}
                             >
-                              <BusIcon
-                                className={`w-6 h-6 ${
-                                  isActive
-                                    ? darktheme
-                                      ? "text-green-400"
-                                      : "text-green-600"
-                                    : darktheme
-                                    ? "text-gray-400"
-                                    : "text-gray-600"
-                                }`}
-                              />
+                              <BusIcon className={`w-6 h-6 ${
+                                isActive
+                                  ? darktheme ? 'text-green-400' : 'text-green-600'
+                                  : darktheme ? 'text-gray-400' : 'text-gray-600'
+                              }`} />
                             </div>
                             <div className="flex-1 min-w-0">
                               <h3
@@ -296,27 +265,15 @@ const Bus = () => {
                                 {bus.deviceID}
                               </h3>
                               <div className="flex items-center gap-2 mt-1">
-                                <div
-                                  className={`w-2 h-2 rounded-full ${
-                                    isActive
-                                      ? "bg-green-500 animate-pulse"
-                                      : darktheme
-                                      ? "bg-gray-600"
-                                      : "bg-gray-400"
-                                  }`}
-                                ></div>
-                                <span
-                                  className={`text-xs font-medium ${
-                                    isActive
-                                      ? darktheme
-                                        ? "text-green-400"
-                                        : "text-green-600"
-                                      : darktheme
-                                      ? "text-gray-500"
-                                      : "text-gray-500"
-                                  }`}
-                                >
-                                  {isActive ? "Active" : "Inactive"}
+                                <div className={`w-2 h-2 rounded-full ${
+                                  isActive ? 'bg-green-500 animate-pulse' : darktheme ? 'bg-gray-600' : 'bg-gray-400'
+                                }`}></div>
+                                <span className={`text-xs font-medium ${
+                                  isActive
+                                    ? darktheme ? 'text-green-400' : 'text-green-600'
+                                    : darktheme ? 'text-gray-500' : 'text-gray-500'
+                                }`}>
+                                  {isActive ? 'Active' : 'Inactive'}
                                 </span>
                               </div>
                             </div>
@@ -330,41 +287,27 @@ const Bus = () => {
                               checked={isActive}
                               onChange={() => toggleBusActive(bus.deviceID)}
                             />
-                            <div
-                              className={`w-14 h-7 rounded-full transition-colors ${
-                                isActive
-                                  ? "bg-green-500"
-                                  : darktheme
-                                  ? "bg-gray-700"
-                                  : "bg-gray-300"
-                              }`}
-                            >
-                              <div
-                                className={`absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform shadow-lg ${
-                                  isActive ? "translate-x-7" : "translate-x-0"
-                                }`}
-                              ></div>
+                            <div className={`w-14 h-7 rounded-full transition-colors ${
+                              isActive
+                                ? 'bg-green-500'
+                                : darktheme ? 'bg-gray-700' : 'bg-gray-300'
+                            }`}>
+                              <div className={`absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform shadow-lg ${
+                                isActive ? 'translate-x-7' : 'translate-x-0'
+                              }`}></div>
                             </div>
                           </label>
                         </div>
 
                         {/* Live Tracking Badge */}
                         {isActive && (
-                          <div
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
-                              darktheme ? "bg-green-500/10" : "bg-green-50"
-                            }`}
-                          >
-                            <Radio
-                              className={`w-4 h-4 ${
-                                darktheme ? "text-green-400" : "text-green-600"
-                              }`}
-                            />
-                            <span
-                              className={`text-xs font-semibold ${
-                                darktheme ? "text-green-400" : "text-green-700"
-                              }`}
-                            >
+                          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
+                            darktheme ? 'bg-green-500/10' : 'bg-green-50'
+                          }`}>
+                            <Radio className={`w-4 h-4 ${darktheme ? 'text-green-400' : 'text-green-600'}`} />
+                            <span className={`text-xs font-semibold ${
+                              darktheme ? 'text-green-400' : 'text-green-700'
+                            }`}>
                               Live Tracking Active
                             </span>
                           </div>
@@ -375,30 +318,22 @@ const Bus = () => {
                       <div className="p-6 space-y-4">
                         <div>
                           <div className="flex items-start gap-3">
-                            <div
-                              className={`p-2 rounded-lg mt-1 ${
-                                darktheme ? "bg-blue-500/20" : "bg-blue-100"
-                              }`}
-                            >
-                              <MapPin
-                                className={`w-4 h-4 ${
-                                  darktheme ? "text-blue-400" : "text-blue-600"
-                                }`}
-                              />
+                            <div className={`p-2 rounded-lg mt-1 ${
+                              darktheme ? 'bg-blue-500/20' : 'bg-blue-100'
+                            }`}>
+                              <MapPin className={`w-4 h-4 ${
+                                darktheme ? 'text-blue-400' : 'text-blue-600'
+                              }`} />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <span
-                                className={`text-xs font-semibold uppercase tracking-wide ${
-                                  darktheme ? "text-gray-500" : "text-gray-500"
-                                }`}
-                              >
+                              <span className={`text-xs font-semibold uppercase tracking-wide ${
+                                darktheme ? 'text-gray-500' : 'text-gray-500'
+                              }`}>
                                 {t("bus.from")}
                               </span>
-                              <p
-                                className={`text-sm font-medium truncate mt-1 ${
-                                  darktheme ? "text-gray-300" : "text-gray-700"
-                                }`}
-                              >
+                              <p className={`text-sm font-medium truncate mt-1 ${
+                                darktheme ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
                                 {bus.from}
                               </p>
                             </div>
@@ -407,32 +342,22 @@ const Bus = () => {
 
                         <div>
                           <div className="flex items-start gap-3">
-                            <div
-                              className={`p-2 rounded-lg mt-1 ${
-                                darktheme ? "bg-purple-500/20" : "bg-purple-100"
-                              }`}
-                            >
-                              <Navigation
-                                className={`w-4 h-4 ${
-                                  darktheme
-                                    ? "text-purple-400"
-                                    : "text-purple-600"
-                                }`}
-                              />
+                            <div className={`p-2 rounded-lg mt-1 ${
+                              darktheme ? 'bg-purple-500/20' : 'bg-purple-100'
+                            }`}>
+                              <Navigation className={`w-4 h-4 ${
+                                darktheme ? 'text-purple-400' : 'text-purple-600'
+                              }`} />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <span
-                                className={`text-xs font-semibold uppercase tracking-wide ${
-                                  darktheme ? "text-gray-500" : "text-gray-500"
-                                }`}
-                              >
+                              <span className={`text-xs font-semibold uppercase tracking-wide ${
+                                darktheme ? 'text-gray-500' : 'text-gray-500'
+                              }`}>
                                 {t("bus.to")}
                               </span>
-                              <p
-                                className={`text-sm font-medium truncate mt-1 ${
-                                  darktheme ? "text-gray-300" : "text-gray-700"
-                                }`}
-                              >
+                              <p className={`text-sm font-medium truncate mt-1 ${
+                                darktheme ? 'text-gray-300' : 'text-gray-700'
+                              }`}>
                                 {bus.to}
                               </p>
                             </div>
@@ -459,68 +384,44 @@ const Bus = () => {
                           </h4>
                           <div className="space-y-3">
                             <div className="flex items-center gap-3">
-                              <div
-                                className={`p-2 rounded-lg ${
-                                  darktheme ? "bg-gray-800" : "bg-white"
-                                }`}
-                              >
-                                <User
-                                  className={`w-3 h-3 ${
-                                    darktheme
-                                      ? "text-gray-400"
-                                      : "text-gray-600"
-                                  }`}
-                                />
+                              <div className={`p-2 rounded-lg ${
+                                darktheme ? 'bg-gray-800' : 'bg-white'
+                              }`}>
+                                <User className={`w-3 h-3 ${
+                                  darktheme ? 'text-gray-400' : 'text-gray-600'
+                                }`} />
                               </div>
-                              <span
-                                className={`text-sm ${
-                                  darktheme ? "text-gray-300" : "text-gray-700"
-                                }`}
-                              >
+                              <span className={`text-sm ${
+                                darktheme ? "text-gray-300" : "text-gray-700"
+                              }`}>
                                 {bus.driver.name}
                               </span>
                             </div>
                             <div className="flex items-center gap-3">
-                              <div
-                                className={`p-2 rounded-lg ${
-                                  darktheme ? "bg-gray-800" : "bg-white"
-                                }`}
-                              >
-                                <Mail
-                                  className={`w-3 h-3 ${
-                                    darktheme
-                                      ? "text-gray-400"
-                                      : "text-gray-600"
-                                  }`}
-                                />
+                              <div className={`p-2 rounded-lg ${
+                                darktheme ? 'bg-gray-800' : 'bg-white'
+                              }`}>
+                                <Mail className={`w-3 h-3 ${
+                                  darktheme ? 'text-gray-400' : 'text-gray-600'
+                                }`} />
                               </div>
-                              <span
-                                className={`text-sm truncate ${
-                                  darktheme ? "text-gray-300" : "text-gray-700"
-                                }`}
-                              >
+                              <span className={`text-sm truncate ${
+                                darktheme ? "text-gray-300" : "text-gray-700"
+                              }`}>
                                 {bus.driver.email}
                               </span>
                             </div>
                             <div className="flex items-center gap-3">
-                              <div
-                                className={`p-2 rounded-lg ${
-                                  darktheme ? "bg-gray-800" : "bg-white"
-                                }`}
-                              >
-                                <CreditCard
-                                  className={`w-3 h-3 ${
-                                    darktheme
-                                      ? "text-gray-400"
-                                      : "text-gray-600"
-                                  }`}
-                                />
+                              <div className={`p-2 rounded-lg ${
+                                darktheme ? 'bg-gray-800' : 'bg-white'
+                              }`}>
+                                <CreditCard className={`w-3 h-3 ${
+                                  darktheme ? 'text-gray-400' : 'text-gray-600'
+                                }`} />
                               </div>
-                              <span
-                                className={`text-sm ${
-                                  darktheme ? "text-gray-300" : "text-gray-700"
-                                }`}
-                              >
+                              <span className={`text-sm ${
+                                darktheme ? "text-gray-300" : "text-gray-700"
+                              }`}>
                                 {t("bus.license")} {bus.driver.licenceId}
                               </span>
                             </div>
@@ -529,16 +430,14 @@ const Bus = () => {
                       ) : (
                         <div
                           className={`p-6 border-t text-center ${
-                            darktheme
-                              ? "bg-gray-900/50 border-gray-700"
+                            darktheme 
+                              ? "bg-gray-900/50 border-gray-700" 
                               : "bg-gray-50 border-gray-200"
                           }`}
                         >
-                          <AlertCircle
-                            className={`w-8 h-8 mx-auto mb-2 ${
-                              darktheme ? "text-gray-600" : "text-gray-400"
-                            }`}
-                          />
+                          <AlertCircle className={`w-8 h-8 mx-auto mb-2 ${
+                            darktheme ? 'text-gray-600' : 'text-gray-400'
+                          }`} />
                           <p
                             className={`text-sm font-medium ${
                               darktheme ? "text-gray-500" : "text-gray-500"
@@ -553,36 +452,26 @@ const Bus = () => {
                 })}
               </div>
             ) : (
-              <div
-                className={`rounded-3xl shadow-2xl p-16 text-center backdrop-blur-sm border ${
-                  darktheme
-                    ? "bg-gray-800/80 border-gray-700/50"
-                    : "bg-white/90 border-white/50"
-                }`}
-              >
-                <div
-                  className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 ${
-                    darktheme ? "bg-gray-700" : "bg-gray-100"
-                  }`}
-                >
-                  <BusIcon
-                    className={`w-12 h-12 ${
-                      darktheme ? "text-gray-600" : "text-gray-400"
-                    }`}
-                  />
+              <div className={`rounded-3xl shadow-2xl p-16 text-center backdrop-blur-sm border ${
+                darktheme
+                  ? "bg-gray-800/80 border-gray-700/50"
+                  : "bg-white/90 border-white/50"
+              }`}>
+                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 ${
+                  darktheme ? 'bg-gray-700' : 'bg-gray-100'
+                }`}>
+                  <BusIcon className={`w-12 h-12 ${
+                    darktheme ? 'text-gray-600' : 'text-gray-400'
+                  }`} />
                 </div>
-                <h3
-                  className={`text-xl font-bold mb-2 ${
-                    darktheme ? "text-gray-300" : "text-gray-700"
-                  }`}
-                >
+                <h3 className={`text-xl font-bold mb-2 ${
+                  darktheme ? 'text-gray-300' : 'text-gray-700'
+                }`}>
                   {t("bus.noBusesFound")}
                 </h3>
-                <p
-                  className={`text-sm mb-6 ${
-                    darktheme ? "text-gray-500" : "text-gray-500"
-                  }`}
-                >
+                <p className={`text-sm mb-6 ${
+                  darktheme ? 'text-gray-500' : 'text-gray-500'
+                }`}>
                   Get started by creating your first bus
                 </p>
                 <button
