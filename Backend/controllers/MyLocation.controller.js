@@ -58,15 +58,7 @@ export const findBusByRoute = async (req, res) => {
       fromLng
     )}->${roundTo2(toLat)},${roundTo2(toLng)}`;
 
-    let cachedRoute = null;
-    try {
-      if (redisClient.isOpen) {
-        cachedRoute = await redisClient.get(cacheKey);
-      }
-    } catch (err) {
-      console.log("Redis cache skip");
-    }
-
+    const cachedRoute = await redisClient.get(cacheKey);
     if (cachedRoute) {
       return res.status(200).json(JSON.parse(cachedRoute));
     }
@@ -275,13 +267,7 @@ export const findBusByRoute = async (req, res) => {
       pathAddresses,
     };
 
-    try {
-      if (redisClient.isOpen) {
-        await redisClient.setEx(cacheKey, 3600, JSON.stringify(responsePayload));
-      }
-    } catch (err) {
-      console.log("Redis cache skip");
-    }
+    await redisClient.setEx(cacheKey, 3600, JSON.stringify(responsePayload));
 
     return res.status(200).json({
       message: "Multi-hop route found",
@@ -352,8 +338,8 @@ function haversineDistance(coord1, coord2) {
   const a =
     Math.sin(dLat / 2) ** 2 +
     Math.cos((lat1 * Math.PI) / 180) *
-    Math.cos((lat2 * Math.PI) / 180) *
-    Math.sin(dLon / 2) ** 2;
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
