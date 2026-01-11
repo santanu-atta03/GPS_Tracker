@@ -19,12 +19,27 @@ import SupportChat from "./components/page/SupportChat";
 import History from "./components/page/History";
 import BusDetailsPage2 from "./components/page/BusDetailsPage2";
 import LocationTracker from "./components/page/LocationTracker";
+import Footer from "./components/shared/Footer";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
+import PrivacyPolicy from "./components/page/PrivacyPolicy";
+import TermsAndConditions from "./components/page/TermsAndConditions";
+import NotFound from "./components/page/NotFound";
+import backtoTop from "./components/shared/backtoTop";
 
 function App() {
   const approute = createBrowserRouter([
     {
       path: "/",
       element: <Home />,
+    },
+    {
+      path: "/privacy-policy",
+      element: <PrivacyPolicy />,
+    },
+    {
+      path: "/terms-and-conditions",
+      element: <TermsAndConditions />,
     },
     {
       path: "/bus/:deviceID",
@@ -90,12 +105,29 @@ function App() {
       path: "/see-history",
       element: <History />,
     },
+    {
+      path: "*",
+      element: <NotFound />,
+    },
   ]);
+  const { darktheme } = useSelector((store) => store.auth);
 
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (darktheme) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [darktheme]);
   return (
     <>
       <LocationTracker />
       <RouterProvider router={approute} />
+      <SupportChat/>
+      <Footer />
+      <backtoTop/>
     </>
   );
 }

@@ -9,6 +9,16 @@ import Navbar from "../shared/Navbar";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import L from "leaflet";
+import {
+  MapPin,
+  Calculator,
+  CreditCard,
+  Navigation,
+  Route as RouteIcon,
+  IndianRupee,
+  CheckCircle,
+} from "lucide-react";
+import TurnstileCaptcha from "@/components/shared/TurnstileCaptcha";
 
 const GEOCODE_API = "https://nominatim.openstreetmap.org/search";
 const markerIcon = new L.Icon({
@@ -68,7 +78,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
 
   const handleUseMyLocation = async () => {
     if (!navigator.geolocation) {
-      alert(t("payment.geolocationNotSupported"));
+      toast.error(t("payment.geolocationNotSupported"));
       return;
     }
 
@@ -78,7 +88,6 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
         const { latitude, longitude } = position.coords;
         try {
           const address = await reverseGeocode(latitude, longitude);
-
           setQuery(address);
           setSelectedPos({ lat: latitude, lon: longitude });
           onSelect({ lat: latitude, lon: longitude, address });
@@ -89,16 +98,16 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
       },
       (err) => {
         console.error("Geolocation error", err);
-        alert(t("payment.unableToGetLocation"));
+        toast.error(t("payment.unableToGetLocation"));
         setLoadingLocation(false);
       }
     );
   };
 
   return (
-    <div className="mb-4 relative">
+    <div className="mb-6 relative">
       <label
-        className={`block mb-1 font-medium ${
+        className={`block mb-3 font-semibold text-sm ${
           darktheme ? "text-gray-300" : "text-gray-700"
         }`}
       >
@@ -110,51 +119,57 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
         value={query}
         placeholder={t("payment.typePlaceholder")}
         onChange={(e) => handleSearch(e.target.value)}
-        className={`border p-2 w-full rounded ${
+        className={`border-2 p-4 w-full rounded-xl focus:ring-4 transition-all ${
           darktheme
-            ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-            : "bg-white border-gray-300 text-gray-900"
+            ? "bg-gray-900/50 border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20"
+            : "bg-white border-gray-200 text-gray-900 focus:border-blue-500 focus:ring-blue-500/20"
         }`}
       />
 
       {enableUseMyLocation && (
         <button
           type="button"
-          className={`text-sm mt-1 underline ${
-            darktheme ? "text-blue-400" : "text-blue-600"
+          className={`text-sm mt-3 font-semibold flex items-center gap-2 ${
+            darktheme
+              ? "text-blue-400 hover:text-blue-300"
+              : "text-blue-600 hover:text-blue-700"
           }`}
           onClick={handleUseMyLocation}
           disabled={loadingLocation}
         >
-          {loadingLocation ? t("payment.gettingLocation") : t("payment.useMyLocation")}
+          <MapPin className="w-4 h-4" />
+          {loadingLocation
+            ? t("payment.gettingLocation")
+            : t("payment.useMyLocation")}
         </button>
       )}
 
       {loading && (
         <p
-          className={`text-sm mt-1 ${
-            darktheme ? "text-gray-500" : "text-gray-400"
+          className={`text-sm mt-2 flex items-center gap-2 ${
+            darktheme ? "text-gray-400" : "text-gray-500"
           }`}
         >
+          <div className="w-4 h-4 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
           {t("payment.searching")}
         </p>
       )}
 
       {suggestions.length > 0 && (
         <ul
-          className={`absolute z-10 w-full shadow rounded mt-1 max-h-40 overflow-y-auto ${
+          className={`absolute z-10 w-full shadow-2xl rounded-2xl mt-2 max-h-60 overflow-y-auto backdrop-blur-sm border ${
             darktheme
-              ? "bg-gray-800 border border-gray-600"
-              : "bg-white border border-gray-200"
+              ? "bg-gray-800/95 border-gray-700"
+              : "bg-white/95 border-gray-200"
           }`}
         >
           {suggestions.map((s, idx) => (
             <li
               key={idx}
-              className={`p-2 cursor-pointer text-sm ${
+              className={`p-4 cursor-pointer text-sm flex items-start gap-3 border-b last:border-b-0 transition-all ${
                 darktheme
-                  ? "text-gray-200 hover:bg-gray-700"
-                  : "text-gray-900 hover:bg-gray-100"
+                  ? "text-gray-200 hover:bg-gray-700 border-gray-700"
+                  : "text-gray-900 hover:bg-blue-50 border-gray-100"
               }`}
               onClick={() => {
                 const pos = { lat: parseFloat(s.lat), lon: parseFloat(s.lon) };
@@ -164,14 +179,23 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
                 setSuggestions([]);
               }}
             >
-              {s.display_name}
+              <MapPin
+                className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                  darktheme ? "text-blue-400" : "text-blue-600"
+                }`}
+              />
+              <span>{s.display_name}</span>
             </li>
           ))}
         </ul>
       )}
 
       {selectedPos && (
-        <div className="mt-4 h-64">
+        <div
+          className={`mt-4 h-72 rounded-2xl overflow-hidden shadow-2xl border-2 ${
+            darktheme ? "border-gray-700" : "border-gray-200"
+          }`}
+        >
           <MapContainer
             center={[selectedPos.lat, selectedPos.lon]}
             zoom={15}
@@ -209,15 +233,17 @@ const RazorpayPayment = () => {
   const [to, setTo] = useState(null);
   const [busId, setBusId] = useState("BUS-111");
   const [ticketData, setTicketData] = useState(null);
-  const [loadingPrice, setLoadingPrice] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState(false);
   const { deviceid } = useParams();
   const { getAccessTokenSilently } = useAuth0();
   const { darktheme } = useSelector((store) => store.auth);
   const { t } = useTranslation();
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [loadingPrice, setLoadingPrice] = useState(false);
 
   const handleCalculatePrice = async () => {
     if (!from || !to) {
-      alert(t("payment.selectBothLocations"));
+      toast.error(t("payment.selectBothLocations"));
       return;
     }
 
@@ -239,45 +265,85 @@ const RazorpayPayment = () => {
         }
       );
       const data = await res.json();
-      if (data.success) {
-        setTicketData(data.data);
-      } else {
-        alert(t("payment.failedCalculatePrice"));
+      if (!data.success) {
+        throw new Error(data.message || "Failed to calculate price");
       }
-    } catch (err) {
-      console.error(err);
-      alert(t("payment.errorCalculatingPrice"));
+      setTicketData(data.data);
+    } catch (error) {
+      console.error("Calculate price error:", error);
+      toast.error(error.message || "Failed to calculate price");
     } finally {
       setLoadingPrice(false);
     }
   };
 
   return (
-    <>
-      <div
-        className={`min-h-screen py-8 ${
-          darktheme
-            ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
-            : "bg-gradient-to-br from-green-50 via-white to-green-100"
-        }`}
-      >
-        <Navbar />
+    <div
+      className={`min-h-screen relative overflow-hidden ${
+        darktheme
+          ? "bg-gradient-to-br from-gray-900 via-slate-900 to-black"
+          : "bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50"
+      }`}
+    >
+      {/* Animated Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
-          className={`max-w-md mx-auto p-6 rounded-lg shadow-lg ${
-            darktheme
-              ? "bg-gray-800 border border-gray-700"
-              : "bg-white border border-gray-200"
-          }`}
-        >
-          <h2
-            className={`text-xl font-semibold mb-4 ${
-              darktheme ? "text-white" : "text-gray-800"
-            }`}
+          className={`absolute top-20 left-10 w-96 h-96 ${
+            darktheme ? "bg-blue-500/5" : "bg-blue-300/20"
+          } rounded-full blur-3xl animate-pulse`}
+        ></div>
+        <div
+          className={`absolute bottom-20 right-10 w-96 h-96 ${
+            darktheme ? "bg-purple-500/5" : "bg-purple-300/20"
+          } rounded-full blur-3xl animate-pulse`}
+          style={{ animationDelay: "1s" }}
+        ></div>
+      </div>
+
+      <Navbar />
+      <div className="max-w-2xl mx-auto px-4 py-12 relative z-10">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-3 mb-6">
+            <div
+              className={`p-3 rounded-2xl ${
+                darktheme
+                  ? "bg-blue-500/20 border border-blue-500/30"
+                  : "bg-gradient-to-br from-blue-500 to-purple-500"
+              }`}
+            >
+              <CreditCard
+                className={`w-8 h-8 ${
+                  darktheme ? "text-blue-400" : "text-white"
+                }`}
+              />
+            </div>
+          </div>
+          <h1
+            className={`text-4xl font-bold mb-3 bg-gradient-to-r ${
+              darktheme
+                ? "from-blue-400 via-purple-400 to-pink-400"
+                : "from-blue-600 via-purple-600 to-pink-600"
+            } bg-clip-text text-transparent`}
           >
             {t("payment.pageTitle")}
-          </h2>
+          </h1>
+          <p
+            className={`text-lg ${
+              darktheme ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
+            Select your journey and book your ticket
+          </p>
+        </div>
 
-          <div className="mb-6">
+        <div
+          className={`rounded-3xl shadow-2xl p-8 backdrop-blur-sm border ${
+            darktheme
+              ? "bg-gray-800/80 border-gray-700/50"
+              : "bg-white/90 border-white/50"
+          }`}
+        >
+          <div className="mb-8">
             <PlaceSearch
               label={t("payment.from")}
               enableUseMyLocation={true}
@@ -290,54 +356,195 @@ const RazorpayPayment = () => {
           </div>
 
           <button
-            className={`w-full px-6 py-2 rounded-lg shadow-md mb-4 transition-colors ${
+            className={`w-full px-8 py-4 rounded-xl font-semibold shadow-lg transition-all duration-300 flex items-center justify-center gap-3 ${
               darktheme
-                ? "bg-blue-600 hover:bg-blue-700 text-white"
-                : "bg-blue-500 hover:bg-blue-600 text-white"
+                ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white"
+                : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+            } ${
+              !from || !to ? "opacity-50 cursor-not-allowed" : "hover:scale-105"
             }`}
             onClick={handleCalculatePrice}
-            disabled={loadingPrice}
+            disabled={loadingPrice || !from || !to}
           >
-            {loadingPrice ? t("payment.calculating") : t("payment.getTicketPrice")}
+            {loadingPrice ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span>{t("payment.calculating")}</span>
+              </>
+            ) : (
+              <>
+                <Calculator className="w-5 h-5" />
+                <span>{t("payment.getTicketPrice")}</span>
+              </>
+            )}
           </button>
 
           {ticketData && (
             <div
-              className={`p-4 rounded ${
+              className={`mt-8 rounded-2xl p-6 border ${
                 darktheme
-                  ? "bg-gray-700 border border-gray-600"
-                  : "bg-gray-100 border border-gray-200"
+                  ? "bg-gray-900/50 border-gray-700"
+                  : "bg-gray-50 border-gray-200"
               }`}
             >
-              <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
-                <strong>{t("payment.fromIndex")}</strong> {ticketData.fromIndex}
-              </p>
-              <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
-                <strong>{t("payment.toIndex")}</strong> {ticketData.toIndex}
-              </p>
-              <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
-                <strong>{t("payment.totalDistance")}</strong> {ticketData.totalDistance} {t("payment.km")}
-              </p>
-              <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
-                <strong>{t("payment.passengerDistance")}</strong>{" "}
-                {ticketData.passengerDistance} {t("payment.km")}
-              </p>
-              <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
-                <strong>{t("payment.ticketPrice")}</strong> ₹{ticketData.ticketPrice}
-              </p>
-              <p className={darktheme ? "text-gray-200" : "text-gray-800"}>
-                <strong>{t("payment.pricePerKm")}</strong> ₹{ticketData.pricePerKm}
-              </p>
+              <div className="flex items-center gap-3 mb-6">
+                <div
+                  className={`p-2 rounded-xl ${
+                    darktheme ? "bg-green-500/20" : "bg-green-100"
+                  }`}
+                >
+                  <CheckCircle
+                    className={`w-5 h-5 ${
+                      darktheme ? "text-green-400" : "text-green-600"
+                    }`}
+                  />
+                </div>
+                <h3
+                  className={`text-xl font-bold ${
+                    darktheme ? "text-white" : "text-gray-800"
+                  }`}
+                >
+                  Ticket Details
+                </h3>
+              </div>
 
+              <div className="space-y-4 mb-6">
+                <div
+                  className={`flex items-center justify-between p-4 rounded-xl ${
+                    darktheme ? "bg-gray-800" : "bg-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Navigation
+                      className={`w-5 h-5 ${
+                        darktheme ? "text-blue-400" : "text-blue-600"
+                      }`}
+                    />
+                    <span
+                      className={`font-medium ${
+                        darktheme ? "text-gray-300" : "text-gray-700"
+                      }`}
+                    >
+                      {t("payment.fromIndex")}
+                    </span>
+                  </div>
+                  <span
+                    className={`font-bold ${
+                      darktheme ? "text-white" : "text-gray-900"
+                    }`}
+                  >
+                    {ticketData.fromIndex}
+                  </span>
+                </div>
+
+                <div
+                  className={`flex items-center justify-between p-4 rounded-xl ${
+                    darktheme ? "bg-gray-800" : "bg-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <MapPin
+                      className={`w-5 h-5 ${
+                        darktheme ? "text-purple-400" : "text-purple-600"
+                      }`}
+                    />
+                    <span
+                      className={`font-medium ${
+                        darktheme ? "text-gray-300" : "text-gray-700"
+                      }`}
+                    >
+                      {t("payment.toIndex")}
+                    </span>
+                  </div>
+                  <span
+                    className={`font-bold ${
+                      darktheme ? "text-white" : "text-gray-900"
+                    }`}
+                  >
+                    {ticketData.toIndex}
+                  </span>
+                </div>
+
+                <div
+                  className={`flex items-center justify-between p-4 rounded-xl ${
+                    darktheme ? "bg-gray-800" : "bg-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <RouteIcon
+                      className={`w-5 h-5 ${
+                        darktheme ? "text-orange-400" : "text-orange-600"
+                      }`}
+                    />
+                    <span
+                      className={`font-medium ${
+                        darktheme ? "text-gray-300" : "text-gray-700"
+                      }`}
+                    >
+                      {t("payment.passengerDistance")}
+                    </span>
+                  </div>
+                  <span
+                    className={`font-bold ${
+                      darktheme ? "text-white" : "text-gray-900"
+                    }`}
+                  >
+                    {ticketData.passengerDistance} {t("payment.km")}
+                  </span>
+                </div>
+
+                <div
+                  className={`flex items-center justify-between p-4 rounded-xl border-2 ${
+                    darktheme
+                      ? "bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30"
+                      : "bg-gradient-to-r from-green-50 to-emerald-50 border-green-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <IndianRupee
+                      className={`w-6 h-6 ${
+                        darktheme ? "text-green-400" : "text-green-600"
+                      }`}
+                    />
+                    <div>
+                      <span
+                        className={`font-bold text-lg ${
+                          darktheme ? "text-green-400" : "text-green-700"
+                        }`}
+                      >
+                        {t("payment.ticketPrice")}
+                      </span>
+                      <p
+                        className={`text-xs ${
+                          darktheme ? "text-gray-500" : "text-gray-500"
+                        }`}
+                      >
+                        @ ₹{ticketData.pricePerKm}/km
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className={`font-bold text-2xl ${
+                      darktheme ? "text-green-400" : "text-green-700"
+                    }`}
+                  >
+                    ₹{ticketData.ticketPrice}
+                  </span>
+                </div>
+              </div>
+              {/* Turnstile CAPTCHA */}
+              <div className="my-6 flex justify-center">
+                <TurnstileCaptcha onVerify={setTurnstileToken} />
+              </div>
               <button
-                className={`w-full px-6 py-2 rounded-lg shadow-md mt-4 transition-colors ${
+                className={`w-full px-8 py-4 rounded-xl font-semibold shadow-lg transition-all duration-300 flex items-center justify-center gap-3 ${
                   darktheme
-                    ? "bg-green-600 hover:bg-green-700 text-white"
-                    : "bg-green-500 hover:bg-green-600 text-white"
-                }`}
+                    ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white"
+                    : "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+                } hover:scale-105`}
                 onClick={async () => {
-                  // Razorpay payment
-                  const res = await fetch(
+                  try {
+                    const res = await fetch(
                     `${import.meta.env.VITE_BASE_URL}/Bus/create-order`,
                     {
                       method: "POST",
@@ -355,29 +562,40 @@ const RazorpayPayment = () => {
                     description: `${t("payment.ticketFor")} ${busId}`,
                     order_id: order.id,
                     handler: async function (response) {
-                      const token = await getAccessTokenSilently({
-                        audience: "http://localhost:5000/api/v3",
-                      });
-                      const verifyRes = await axios.post(
-                        `${import.meta.env.VITE_BASE_URL}/Bus/verify-payment`,
+                      try {
+                        if (!turnstileToken) {
+                          toast.error("Please verify CAPTCHA");
+                          return;
+                        }
 
-                        {
-                          razorpay_order_id: response.razorpay_order_id,
-                          razorpay_payment_id: response.razorpay_payment_id,
-                          razorpay_signature: response.razorpay_signature,
-                          ticketData,
-                          busId: deviceid,
-                          fromLat: from.lat,
-                          fromLng: from.lon,
-                          toLat: to.lat,
-                          toLng: to.lon,
-                        },
-                        { headers: { Authorization: `Bearer ${token}` } }
-                      );
+                        const token = await getAccessTokenSilently({
+                          audience: "http://localhost:5000/api/v3",
+                        });
 
-                      const verifyData = await verifyRes.json();
-                      alert(verifyData.message);
-                      console.log("✅ Verify Response:", verifyData);
+                        const verifyRes = await axios.post(
+                          `${import.meta.env.VITE_BASE_URL}/Bus/verify-payment`,
+                          {
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            ticketData,
+                            busId: deviceid,
+                            fromLat: from.lat,
+                            fromLng: from.lon,
+                            toLat: to.lat,
+                            toLng: to.lon,
+                            turnstileToken,
+                          },
+                          { headers: { Authorization: `Bearer ${token}` } }
+                        );
+
+                        const verifyData = verifyRes.data; // ✅ correct
+                        toast.success(verifyData.message);
+                        console.log("✅ Verify Response:", verifyData);
+                      } catch (err) {
+                        console.error("Payment verification failed:", err);
+                        toast.error("Payment verification failed");
+                      }
                     },
 
                     prefill: {
@@ -388,17 +606,29 @@ const RazorpayPayment = () => {
                     theme: { color: "#3399cc" },
                   };
 
-                  const rzp1 = new window.Razorpay(options);
-                  rzp1.open();
+                    const rzp1 = new window.Razorpay(options);
+                    rzp1.on('payment.failed', function (response) {
+                      setProcessingPayment(false);
+                      toast.error(response.error.description || "Payment failed");
+                    });
+                    rzp1.open();
+                  } catch (error) {
+                    setProcessingPayment(false);
+                    toast.error("Failed to initiate payment");
+                    console.error("Payment error:", error);
+                  }
                 }}
               >
-                {t("payment.pay")} ₹{ticketData.ticketPrice}
+                <CreditCard className="w-5 h-5" />
+                <span>
+                  {t("payment.pay")} ₹{ticketData.ticketPrice}
+                </span>
               </button>
             </div>
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
