@@ -303,6 +303,7 @@ const BusDetailsPage2 = () => {
                     className={`font-bold text-lg mb-1 ${
                       darktheme ? "text-white" : "text-gray-800"
                     }`}
+                    
                   >
                     {bus.driver.name}
                   </p>
