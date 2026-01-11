@@ -78,7 +78,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
 
   const handleUseMyLocation = async () => {
     if (!navigator.geolocation) {
-      alert(t("payment.geolocationNotSupported"));
+      toast.error(t("payment.geolocationNotSupported"));
       return;
     }
 
@@ -98,7 +98,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
       },
       (err) => {
         console.error("Geolocation error", err);
-        alert(t("payment.unableToGetLocation"));
+        toast.error(t("payment.unableToGetLocation"));
         setLoadingLocation(false);
       }
     );
@@ -233,15 +233,17 @@ const RazorpayPayment = () => {
   const [to, setTo] = useState(null);
   const [busId, setBusId] = useState("BUS-111");
   const [ticketData, setTicketData] = useState(null);
-  const [loadingPrice, setLoadingPrice] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState(false);
   const { deviceid } = useParams();
   const { getAccessTokenSilently } = useAuth0();
   const { darktheme } = useSelector((store) => store.auth);
   const { t } = useTranslation();
   const [turnstileToken, setTurnstileToken] = useState("");
+  const [loadingPrice, setLoadingPrice] = useState(false);
+
   const handleCalculatePrice = async () => {
     if (!from || !to) {
-      alert(t("payment.selectBothLocations"));
+      toast.error(t("payment.selectBothLocations"));
       return;
     }
 
@@ -263,14 +265,13 @@ const RazorpayPayment = () => {
         }
       );
       const data = await res.json();
-      if (data.success) {
-        setTicketData(data.data);
-      } else {
-        alert(t("payment.failedCalculatePrice"));
+      if (!data.success) {
+        throw new Error(data.message || "Failed to calculate price");
       }
-    } catch (err) {
-      console.error(err);
-      alert(t("payment.errorCalculatingPrice"));
+      setTicketData(data.data);
+    } catch (error) {
+      console.error("Calculate price error:", error);
+      toast.error(error.message || "Failed to calculate price");
     } finally {
       setLoadingPrice(false);
     }
@@ -542,7 +543,8 @@ const RazorpayPayment = () => {
                     : "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
                 } hover:scale-105`}
                 onClick={async () => {
-                  const res = await fetch(
+                  try {
+                    const res = await fetch(
                     `${import.meta.env.VITE_BASE_URL}/Bus/create-order`,
                     {
                       method: "POST",
@@ -560,35 +562,42 @@ const RazorpayPayment = () => {
                     description: `${t("payment.ticketFor")} ${busId}`,
                     order_id: order.id,
                     handler: async function (response) {
-                      if (!turnstileToken) {
-                        toast.error("Please verify CAPTCHA");
-                        setLoading(false);
-                        return;
-                      }
-                      const token = await getAccessTokenSilently({
-                        audience: "http://localhost:5000/api/v3",
-                      });
-                      const verifyRes = await axios.post(
-                        `${import.meta.env.VITE_BASE_URL}/Bus/verify-payment`,
-                        {
-                          razorpay_order_id: response.razorpay_order_id,
-                          razorpay_payment_id: response.razorpay_payment_id,
-                          razorpay_signature: response.razorpay_signature,
-                          ticketData,
-                          busId: deviceid,
-                          fromLat: from.lat,
-                          fromLng: from.lon,
-                          toLat: to.lat,
-                          toLng: to.lon,
-                          turnstileToken,
-                        },
-                        { headers: { Authorization: `Bearer ${token}` } }
-                      );
+                      try {
+                        if (!turnstileToken) {
+                          toast.error("Please verify CAPTCHA");
+                          return;
+                        }
 
-                      const verifyData = await verifyRes.json();
-                      alert(verifyData.message);
-                      console.log("✅ Verify Response:", verifyData);
+                        const token = await getAccessTokenSilently({
+                          audience: "http://localhost:5000/api/v3",
+                        });
+
+                        const verifyRes = await axios.post(
+                          `${import.meta.env.VITE_BASE_URL}/Bus/verify-payment`,
+                          {
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            ticketData,
+                            busId: deviceid,
+                            fromLat: from.lat,
+                            fromLng: from.lon,
+                            toLat: to.lat,
+                            toLng: to.lon,
+                            turnstileToken,
+                          },
+                          { headers: { Authorization: `Bearer ${token}` } }
+                        );
+
+                        const verifyData = verifyRes.data; // ✅ correct
+                        toast.success(verifyData.message);
+                        console.log("✅ Verify Response:", verifyData);
+                      } catch (err) {
+                        console.error("Payment verification failed:", err);
+                        toast.error("Payment verification failed");
+                      }
                     },
+
                     prefill: {
                       name: "Ayan Manna",
                       email: "mannaayan777@gmail.com",
@@ -597,8 +606,17 @@ const RazorpayPayment = () => {
                     theme: { color: "#3399cc" },
                   };
 
-                  const rzp1 = new window.Razorpay(options);
-                  rzp1.open();
+                    const rzp1 = new window.Razorpay(options);
+                    rzp1.on('payment.failed', function (response) {
+                      setProcessingPayment(false);
+                      toast.error(response.error.description || "Payment failed");
+                    });
+                    rzp1.open();
+                  } catch (error) {
+                    setProcessingPayment(false);
+                    toast.error("Failed to initiate payment");
+                    console.error("Payment error:", error);
+                  }
                 }}
               >
                 <CreditCard className="w-5 h-5" />
