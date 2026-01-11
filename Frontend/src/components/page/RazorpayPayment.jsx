@@ -560,35 +560,42 @@ const RazorpayPayment = () => {
                     description: `${t("payment.ticketFor")} ${busId}`,
                     order_id: order.id,
                     handler: async function (response) {
-                      if (!turnstileToken) {
-                        toast.error("Please verify CAPTCHA");
-                        setLoading(false);
-                        return;
-                      }
-                      const token = await getAccessTokenSilently({
-                        audience: "http://localhost:5000/api/v3",
-                      });
-                      const verifyRes = await axios.post(
-                        `${import.meta.env.VITE_BASE_URL}/Bus/verify-payment`,
-                        {
-                          razorpay_order_id: response.razorpay_order_id,
-                          razorpay_payment_id: response.razorpay_payment_id,
-                          razorpay_signature: response.razorpay_signature,
-                          ticketData,
-                          busId: deviceid,
-                          fromLat: from.lat,
-                          fromLng: from.lon,
-                          toLat: to.lat,
-                          toLng: to.lon,
-                          turnstileToken,
-                        },
-                        { headers: { Authorization: `Bearer ${token}` } }
-                      );
+                      try {
+                        if (!turnstileToken) {
+                          toast.error("Please verify CAPTCHA");
+                          return;
+                        }
 
-                      const verifyData = await verifyRes.json();
-                      alert(verifyData.message);
-                      console.log("✅ Verify Response:", verifyData);
+                        const token = await getAccessTokenSilently({
+                          audience: "http://localhost:5000/api/v3",
+                        });
+
+                        const verifyRes = await axios.post(
+                          `${import.meta.env.VITE_BASE_URL}/Bus/verify-payment`,
+                          {
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            ticketData,
+                            busId: deviceid,
+                            fromLat: from.lat,
+                            fromLng: from.lon,
+                            toLat: to.lat,
+                            toLng: to.lon,
+                            turnstileToken,
+                          },
+                          { headers: { Authorization: `Bearer ${token}` } }
+                        );
+
+                        const verifyData = verifyRes.data; // ✅ correct
+                        toast.success(verifyData.message);
+                        console.log("✅ Verify Response:", verifyData);
+                      } catch (err) {
+                        console.error("Payment verification failed:", err);
+                        toast.error("Payment verification failed");
+                      }
                     },
+
                     prefill: {
                       name: "Ayan Manna",
                       email: "mannaayan777@gmail.com",
