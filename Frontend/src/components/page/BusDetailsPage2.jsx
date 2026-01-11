@@ -24,6 +24,8 @@ import {
 import Navbar from "../shared/Navbar";
 import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
+import { useApiCall } from "../../hooks/useApiCall";
+import { toast } from "sonner";
 
 const busIcon = new L.DivIcon({
   html: "🚌",
@@ -58,7 +60,6 @@ const BusDetailsPage2 = () => {
   const { t } = useTranslation();
   const [bus, setBus] = useState(null);
   const [activeSlot, setActiveSlot] = useState(null);
-
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -72,9 +73,14 @@ const BusDetailsPage2 = () => {
       } catch (err) {
         console.error(t("busDetails.errorFetchingBus"), err);
       }
-    };
-    fetchBusData();
-  }, [deviceID, t]);
+      return data;
+    },
+    showSuccessToast: false,
+    errorMessage: t("busDetails.errorFetchingBus"),
+    onSuccess: (data) => setBus(data),
+    immediate: true,
+    deps: [deviceID]
+  });
 
   useEffect(() => {
     if (!bus?.timeSlots) return;
@@ -88,7 +94,8 @@ const BusDetailsPage2 = () => {
     setActiveSlot(active);
   }, [bus]);
 
-  if (!bus)
+  // Loading state
+  if (loading) {
     return (
       <div
         className={`min-h-screen flex items-center justify-center relative overflow-hidden ${
@@ -119,6 +126,7 @@ const BusDetailsPage2 = () => {
         </div>
       </div>
     );
+  }
 
   return (
     <div

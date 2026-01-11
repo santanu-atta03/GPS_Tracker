@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { useApiCall } from "../../hooks/useApiCall";
 
 const SupportChat = () => {
   const { darktheme } = useSelector((store) => store.auth);
@@ -33,11 +34,30 @@ const SupportChat = () => {
     scrollToBottom();
   }, [messages]);
 
+  // API hook for asking support bot
+  const { loading: askingBot, execute: askBot } = useApiCall({
+    apiFunction: (question) => 
+      axios.post(`${import.meta.env.VITE_BASE_URL}/support/ask`, { question }),
+    showSuccessToast: false,
+    showErrorToast: false,
+    onSuccess: (data) => {
+      const botMsg = { sender: "bot", text: data.answer };
+      setMessages((prev) => [...prev, botMsg]);
+    },
+    onError: () => {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: t("support.errorMessage") },
+      ]);
+    }
+  });
+
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || askingBot) return;
 
     const userMsg = { sender: "user", text: input };
     setMessages((prev) => [...prev, userMsg]);
+    const question = input;
     setInput("");
     setIsTyping(true);
 

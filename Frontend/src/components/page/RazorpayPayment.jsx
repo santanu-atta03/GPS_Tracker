@@ -78,7 +78,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
 
   const handleUseMyLocation = async () => {
     if (!navigator.geolocation) {
-      alert(t("payment.geolocationNotSupported"));
+      toast.error(t("payment.geolocationNotSupported"));
       return;
     }
 
@@ -98,7 +98,7 @@ const PlaceSearch = ({ label, onSelect, enableUseMyLocation = false }) => {
       },
       (err) => {
         console.error("Geolocation error", err);
-        alert(t("payment.unableToGetLocation"));
+        toast.error(t("payment.unableToGetLocation"));
         setLoadingLocation(false);
       }
     );
@@ -233,7 +233,7 @@ const RazorpayPayment = () => {
   const [to, setTo] = useState(null);
   const [busId, setBusId] = useState("BUS-111");
   const [ticketData, setTicketData] = useState(null);
-  const [loadingPrice, setLoadingPrice] = useState(false);
+  const [processingPayment, setProcessingPayment] = useState(false);
   const { deviceid } = useParams();
   const { getAccessTokenSilently } = useAuth0();
   const { darktheme } = useSelector((store) => store.auth);
@@ -253,27 +253,49 @@ const RazorpayPayment = () => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            busId: deviceid,
-            fromLat: from.lat,
-            fromLng: from.lon,
-            toLat: to.lat,
-            toLng: to.lon,
-          }),
+          body: JSON.stringify({ busId: deviceid, fromLat, fromLng, toLat, toLng }),
         }
       );
       const data = await res.json();
-      if (data.success) {
-        setTicketData(data.data);
-      } else {
-        alert(t("payment.failedCalculatePrice"));
+      if (!data.success) {
+        throw new Error(data.message || "Failed to calculate price");
       }
-    } catch (err) {
-      console.error(err);
-      alert(t("payment.errorCalculatingPrice"));
-    } finally {
-      setLoadingPrice(false);
+      return data;
+    },
+    showSuccessToast: false,
+    onSuccess: (data) => setTicketData(data.data)
+  });
+
+  // API hook for payment verification
+  const { loading: verifyingPayment, execute: verifyPayment } = useApiCall({
+    apiFunction: async (paymentData) => {
+      const token = await getAccessTokenSilently({
+        audience: "http://localhost:5000/api/v3",
+      });
+      return axios.post(
+        `${import.meta.env.VITE_BASE_URL}/Bus/verify-payment`,
+        paymentData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    },
+    successMessage: (data) => data.message || "Payment successful!",
+    onSuccess: (data) => {
+      console.log("✅ Payment verified:", data);
     }
+  });
+
+  const handleCalculatePrice = async () => {
+    if (!from || !to) {
+      toast.error(t("payment.selectBothLocations"));
+      return;
+    }
+
+    await calculatePrice({
+      fromLat: from.lat,
+      fromLng: from.lon,
+      toLat: to.lat,
+      toLng: to.lon,
+    });
   };
 
   return (
@@ -597,8 +619,17 @@ const RazorpayPayment = () => {
                     theme: { color: "#3399cc" },
                   };
 
-                  const rzp1 = new window.Razorpay(options);
-                  rzp1.open();
+                    const rzp1 = new window.Razorpay(options);
+                    rzp1.on('payment.failed', function (response) {
+                      setProcessingPayment(false);
+                      toast.error(response.error.description || "Payment failed");
+                    });
+                    rzp1.open();
+                  } catch (error) {
+                    setProcessingPayment(false);
+                    toast.error("Failed to initiate payment");
+                    console.error("Payment error:", error);
+                  }
                 }}
               >
                 <CreditCard className="w-5 h-5" />
