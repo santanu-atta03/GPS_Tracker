@@ -34,14 +34,12 @@ const DriverLogin = () => {
           navigate("/");
         }
       } catch (error) {
-        console.log(
-          "Verification error:",
-          error.response?.data || error.message
-        );
+        // Silent error - driver doesn't exist yet, which is expected
+        console.log("Driver verification:", error.response?.data || error.message);
       }
     };
     fetchData();
-  }, [getAccessTokenSilently, navigate, user]);
+  }, [user, navigate]);
 
   const CreateDriver = async (e) => {
     e.preventDefault();
@@ -61,9 +59,7 @@ const DriverLogin = () => {
           licenceId,
           driverExp,
         },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (res.data.success) {

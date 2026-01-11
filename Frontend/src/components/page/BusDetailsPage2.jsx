@@ -24,6 +24,8 @@ import {
 import Navbar from "../shared/Navbar";
 import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
+import { useApiCall } from "../../hooks/useApiCall";
+import { toast } from "sonner";
 
 const busIcon = new L.DivIcon({
   html: "🚌",
@@ -57,13 +59,14 @@ const BusDetailsPage2 = () => {
   const { darktheme } = useSelector((store) => store.auth);
   const { t } = useTranslation();
   const [bus, setBus] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [activeSlot, setActiveSlot] = useState(null);
-
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBusData = async () => {
       try {
+        setLoading(true);
         const res = await fetch(
           `${import.meta.env.VITE_BASE_URL}/Myroute/bus-details/${deviceID}`
         );
@@ -71,6 +74,9 @@ const BusDetailsPage2 = () => {
         setBus(data);
       } catch (err) {
         console.error(t("busDetails.errorFetchingBus"), err);
+        toast.error(t("busDetails.errorFetchingBus"));
+      } finally {
+        setLoading(false);
       }
     };
     fetchBusData();
@@ -88,7 +94,8 @@ const BusDetailsPage2 = () => {
     setActiveSlot(active);
   }, [bus]);
 
-  if (!bus)
+  // Loading state
+  if (loading) {
     return (
       <div
         className={`min-h-screen flex items-center justify-center relative overflow-hidden ${
@@ -123,6 +130,7 @@ const BusDetailsPage2 = () => {
         </div>
       </div>
     );
+  }
 
   return (
     <div
