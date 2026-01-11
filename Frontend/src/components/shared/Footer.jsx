@@ -25,7 +25,7 @@ const Footer = () => {
       {/* Decorative gradient line */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
 
-      <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-12">
+      <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
         {/* Brand Section */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
@@ -133,43 +133,6 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Company */}
-        <div className="space-y-4">
-          <h3
-            className={`text-sm font-bold uppercase tracking-wider flex items-center gap-2 ${
-              darktheme ? "text-gray-300" : "text-gray-800"
-            }`}
-          >
-            <div
-              className={`w-1 h-4 rounded-full ${
-                darktheme ? "bg-purple-500" : "bg-purple-600"
-              }`}
-            ></div>
-            Company
-          </h3>
-          <ul className="space-y-3">
-            <li>
-              <a
-                href="/about"
-                className={`text-sm flex items-center gap-2 group transition-all ${
-                  darktheme
-                    ? "text-gray-400 hover:text-purple-400"
-                    : "text-gray-600 hover:text-purple-600"
-                }`}
-              >
-                <Shield
-                  className={`w-4 h-4 transition-all ${
-                    darktheme
-                      ? "text-gray-600 group-hover:text-purple-400"
-                      : "text-gray-400 group-hover:text-purple-600"
-                  }`}
-                />
-                About Us
-              </a>
-            </li>
-
-          </ul>
-        </div>
         {/* Legal */}
         <div className="space-y-4">
           <h3
