@@ -42,11 +42,9 @@ You can contribute in many ways, including:
 ## 🛠️ Getting Started
 
 ### 1️⃣ Fork the Repository
-
 Click the **Fork** button on GitHub.
 
 ### 2️⃣ Clone Your Fork
-
 ```bash
 git clone https://github.com/<your-username>/GPS_Tracker.git
 cd GPS_Tracker
@@ -147,4 +145,3 @@ We’re happy to help you learn and grow 🚀
 Every contribution matters — thank you for helping make Where Is My Bus better for everyone!
 
 Happy Coding 💻✨
-```
