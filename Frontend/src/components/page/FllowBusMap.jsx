@@ -158,11 +158,7 @@ const FllowBusMap = () => {
         }`}
       >
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div
-            className={`absolute top-20 left-10 w-96 h-96 ${
-              darktheme ? "bg-blue-500/5" : "bg-blue-300/20"
-            } rounded-full blur-3xl animate-pulse`}
-          ></div>
+          <div className={`absolute top-20 left-10 w-96 h-96 ${darktheme ? 'bg-blue-500/5' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
         </div>
         <div
           className={`text-center text-xl font-medium ${
@@ -194,17 +190,8 @@ const FllowBusMap = () => {
     >
       {/* Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className={`absolute top-20 left-10 w-96 h-96 ${
-            darktheme ? "bg-blue-500/5" : "bg-blue-300/20"
-          } rounded-full blur-3xl animate-pulse`}
-        ></div>
-        <div
-          className={`absolute bottom-20 right-10 w-96 h-96 ${
-            darktheme ? "bg-purple-500/5" : "bg-purple-300/20"
-          } rounded-full blur-3xl animate-pulse`}
-          style={{ animationDelay: "1s" }}
-        ></div>
+        <div className={`absolute top-20 left-10 w-96 h-96 ${darktheme ? 'bg-blue-500/5' : 'bg-blue-300/20'} rounded-full blur-3xl animate-pulse`}></div>
+        <div className={`absolute bottom-20 right-10 w-96 h-96 ${darktheme ? 'bg-purple-500/5' : 'bg-purple-300/20'} rounded-full blur-3xl animate-pulse`} style={{animationDelay: '1s'}}></div>
       </div>
 
       <Navbar />
@@ -213,42 +200,22 @@ const FllowBusMap = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-3 mb-4">
-            <div
-              className={`p-3 rounded-2xl ${
-                darktheme
-                  ? "bg-blue-500/20 border border-blue-500/30"
-                  : "bg-gradient-to-br from-blue-500 to-purple-500"
-              }`}
-            >
-              <Navigation
-                className={`w-8 h-8 ${
-                  darktheme ? "text-blue-400" : "text-white"
-                }`}
-              />
+            <div className={`p-3 rounded-2xl ${darktheme ? 'bg-blue-500/20 border border-blue-500/30' : 'bg-gradient-to-br from-blue-500 to-purple-500'}`}>
+              <Navigation className={`w-8 h-8 ${darktheme ? 'text-blue-400' : 'text-white'}`} />
             </div>
           </div>
           <h1
             className={`text-4xl font-bold mb-3 bg-gradient-to-r ${
-              darktheme
-                ? "from-blue-400 via-purple-400 to-pink-400"
+              darktheme 
+                ? "from-blue-400 via-purple-400 to-pink-400" 
                 : "from-blue-600 via-purple-600 to-pink-600"
             } bg-clip-text text-transparent`}
           >
             Live Journey Tracking
           </h1>
-          <div
-            className={`flex items-center justify-center gap-2 mt-4 ${
-              darktheme ? "text-gray-400" : "text-gray-600"
-            }`}
-          >
-            <Radio
-              className={`w-5 h-5 ${
-                darktheme ? "text-green-400" : "text-green-600"
-              } animate-pulse`}
-            />
-            <span className="font-medium">
-              Tracking your location in real-time
-            </span>
+          <div className={`flex items-center justify-center gap-2 mt-4 ${darktheme ? 'text-gray-400' : 'text-gray-600'}`}>
+            <Radio className={`w-5 h-5 ${darktheme ? 'text-green-400' : 'text-green-600'} animate-pulse`} />
+            <span className="font-medium">Tracking your location in real-time</span>
           </div>
         </div>
 
@@ -262,22 +229,10 @@ const FllowBusMap = () => {
         >
           <div className="p-4">
             <div className="flex items-center gap-3 mb-4">
-              <div
-                className={`p-2 rounded-xl ${
-                  darktheme ? "bg-green-500/20" : "bg-green-100"
-                }`}
-              >
-                <MapPin
-                  className={`w-5 h-5 ${
-                    darktheme ? "text-green-400" : "text-green-600"
-                  }`}
-                />
+              <div className={`p-2 rounded-xl ${darktheme ? 'bg-green-500/20' : 'bg-green-100'}`}>
+                <MapPin className={`w-5 h-5 ${darktheme ? 'text-green-400' : 'text-green-600'}`} />
               </div>
-              <h2
-                className={`text-xl font-bold ${
-                  darktheme ? "text-white" : "text-gray-800"
-                }`}
-              >
+              <h2 className={`text-xl font-bold ${darktheme ? 'text-white' : 'text-gray-800'}`}>
                 Route Map
               </h2>
             </div>
@@ -304,9 +259,7 @@ const FllowBusMap = () => {
 
               {busesUsed.map((bus, idx) => {
                 const coordIndex =
-                  idx < pathCoordinates.length
-                    ? idx
-                    : pathCoordinates.length - 1;
+                  idx < pathCoordinates.length ? idx : pathCoordinates.length - 1;
                 return (
                   <Marker
                     key={`bus-${idx}`}
@@ -320,9 +273,8 @@ const FllowBusMap = () => {
                         <br />
                         <strong>{t("followBusMap.to")}:</strong> {bus.to}
                         <br />
-                        <strong>{t("followBusMap.time")}:</strong>{" "}
-                        {bus.nextStartTime?.startTime}{" "}
-                        {t("followBusMap.timeTo")} {bus.nextStartTime?.endTime}
+                        <strong>{t("followBusMap.time")}:</strong> {bus.nextStartTime?.startTime} {t("followBusMap.timeTo")}{" "}
+                        {bus.nextStartTime?.endTime}
                       </div>
                     </Popup>
                   </Marker>
@@ -347,33 +299,17 @@ const FllowBusMap = () => {
           }`}
         >
           <div className="flex items-center gap-3 mb-8">
-            <div
-              className={`p-2 rounded-xl ${
-                darktheme ? "bg-purple-500/20" : "bg-purple-100"
-              }`}
-            >
-              <Zap
-                className={`w-5 h-5 ${
-                  darktheme ? "text-purple-400" : "text-purple-600"
-                }`}
-              />
+            <div className={`p-2 rounded-xl ${darktheme ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
+              <Zap className={`w-5 h-5 ${darktheme ? 'text-purple-400' : 'text-purple-600'}`} />
             </div>
-            <h2
-              className={`text-xl font-bold ${
-                darktheme ? "text-white" : "text-gray-800"
-              }`}
-            >
+            <h2 className={`text-xl font-bold ${darktheme ? 'text-white' : 'text-gray-800'}`}>
               Journey Timeline
             </h2>
           </div>
 
           <div className="relative pl-8">
             {/* Vertical Line */}
-            <div
-              className={`absolute left-4 top-0 bottom-0 w-0.5 ${
-                darktheme ? "bg-gray-700" : "bg-gray-300"
-              }`}
-            ></div>
+            <div className={`absolute left-4 top-0 bottom-0 w-0.5 ${darktheme ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
 
             {pathAddresses.map((addr, idx) => {
               const isStart = idx === 0;
@@ -384,23 +320,18 @@ const FllowBusMap = () => {
               if (!isStart && !isEnd && !hasBus && !showBusIcon) return null;
 
               return (
-                <div key={`step-${idx}`} className="relative mb-8 last:mb-0">
+                <div
+                  key={`step-${idx}`}
+                  className="relative mb-8 last:mb-0"
+                >
                   {/* Timeline Dot */}
-                  <div
-                    className={`absolute left-[-18px] top-2 w-4 h-4 rounded-full border-4 ${
-                      isStart
-                        ? darktheme
-                          ? "bg-green-500 border-green-400"
-                          : "bg-green-500 border-green-400"
-                        : isEnd
-                        ? darktheme
-                          ? "bg-red-500 border-red-400"
-                          : "bg-red-500 border-red-400"
-                        : darktheme
-                        ? "bg-blue-500 border-blue-400"
-                        : "bg-blue-500 border-blue-400"
-                    }`}
-                  ></div>
+                  <div className={`absolute left-[-18px] top-2 w-4 h-4 rounded-full border-4 ${
+                    isStart 
+                      ? darktheme ? 'bg-green-500 border-green-400' : 'bg-green-500 border-green-400'
+                      : isEnd 
+                      ? darktheme ? 'bg-red-500 border-red-400' : 'bg-red-500 border-red-400'
+                      : darktheme ? 'bg-blue-500 border-blue-400' : 'bg-blue-500 border-blue-400'
+                  }`}></div>
 
                   {/* User Bus Icon */}
                   {showBusIcon && (
@@ -415,26 +346,14 @@ const FllowBusMap = () => {
                   {/* Content */}
                   <div className="pl-4">
                     {/* Label */}
-                    <div
-                      className={`text-sm font-bold uppercase tracking-wide mb-2 ${
-                        isStart
-                          ? darktheme
-                            ? "text-green-400"
-                            : "text-green-600"
-                          : isEnd
-                          ? darktheme
-                            ? "text-red-400"
-                            : "text-red-600"
-                          : darktheme
-                          ? "text-blue-400"
-                          : "text-blue-600"
-                      }`}
-                    >
-                      {isStart
-                        ? t("followBusMap.start")
-                        : isEnd
-                        ? t("followBusMap.destination")
-                        : t("followBusMap.changeHere")}
+                    <div className={`text-sm font-bold uppercase tracking-wide mb-2 ${
+                      isStart 
+                        ? darktheme ? 'text-green-400' : 'text-green-600'
+                        : isEnd 
+                        ? darktheme ? 'text-red-400' : 'text-red-600'
+                        : darktheme ? 'text-blue-400' : 'text-blue-600'
+                    }`}>
+                      {isStart ? t("followBusMap.start") : isEnd ? t("followBusMap.destination") : t("followBusMap.changeHere")}
                     </div>
 
                     {/* Address */}
@@ -458,16 +377,8 @@ const FllowBusMap = () => {
                         }`}
                       >
                         <div className="flex items-center gap-3 mb-4">
-                          <div
-                            className={`p-2 rounded-xl ${
-                              darktheme ? "bg-blue-500/20" : "bg-blue-100"
-                            }`}
-                          >
-                            <Bus
-                              className={`w-5 h-5 ${
-                                darktheme ? "text-blue-400" : "text-blue-600"
-                              }`}
-                            />
+                          <div className={`p-2 rounded-xl ${darktheme ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+                            <Bus className={`w-5 h-5 ${darktheme ? 'text-blue-400' : 'text-blue-600'}`} />
                           </div>
                           <div
                             className={`text-lg font-bold ${
@@ -478,40 +389,17 @@ const FllowBusMap = () => {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <div
-                            className={`flex items-center gap-2 text-sm ${
-                              darktheme ? "text-gray-300" : "text-gray-700"
-                            }`}
-                          >
+                          <div className={`flex items-center gap-2 text-sm ${darktheme ? "text-gray-300" : "text-gray-700"}`}>
                             <Navigation className="w-4 h-4" />
-                            <span>
-                              <strong>{t("followBusMap.route")}:</strong>{" "}
-                              {busesUsed[idx].from} → {busesUsed[idx].to}
-                            </span>
+                            <span><strong>{t("followBusMap.route")}:</strong> {busesUsed[idx].from} → {busesUsed[idx].to}</span>
                           </div>
-                          <div
-                            className={`flex items-center gap-2 text-sm ${
-                              darktheme ? "text-gray-300" : "text-gray-700"
-                            }`}
-                          >
+                          <div className={`flex items-center gap-2 text-sm ${darktheme ? "text-gray-300" : "text-gray-700"}`}>
                             <MapPin className="w-4 h-4" />
-                            <span>
-                              <strong>{t("followBusMap.device")}:</strong>{" "}
-                              {busesUsed[idx].deviceID}
-                            </span>
+                            <span><strong>{t("followBusMap.device")}:</strong> {busesUsed[idx].deviceID}</span>
                           </div>
-                          <div
-                            className={`flex items-center gap-2 text-sm ${
-                              darktheme ? "text-gray-300" : "text-gray-700"
-                            }`}
-                          >
+                          <div className={`flex items-center gap-2 text-sm ${darktheme ? "text-gray-300" : "text-gray-700"}`}>
                             <Clock className="w-4 h-4" />
-                            <span>
-                              <strong>{t("followBusMap.time")}:</strong>{" "}
-                              {busesUsed[idx].nextStartTime?.startTime}{" "}
-                              {t("followBusMap.timeTo")}{" "}
-                              {busesUsed[idx].nextStartTime?.endTime}
-                            </span>
+                            <span><strong>{t("followBusMap.time")}:</strong> {busesUsed[idx].nextStartTime?.startTime} {t("followBusMap.timeTo")} {busesUsed[idx].nextStartTime?.endTime}</span>
                           </div>
                         </div>
                       </div>
