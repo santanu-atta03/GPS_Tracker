@@ -349,7 +349,6 @@ const SupportChat = () => {
         }
       `}</style>
     </div>
-    
   );
 };
 

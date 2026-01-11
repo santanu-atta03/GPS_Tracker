@@ -605,7 +605,6 @@ const RazorpayPayment = () => {
                     },
                     theme: { color: "#3399cc" },
                   };
-                  
 
                     const rzp1 = new window.Razorpay(options);
                     rzp1.on('payment.failed', function (response) {
