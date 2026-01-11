@@ -82,7 +82,7 @@ const NearbyPOIMap = () => {
       },
       (err) => {
         console.warn("Geolocation error:", err);
-      }
+      },
     );
 
     return () => {
@@ -211,7 +211,7 @@ const NearbyPOIMap = () => {
 
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${value}&addressdetails=1&limit=5`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${value}&addressdetails=1&limit=5`,
       );
       const data = await res.json();
       setSuggestions(data);
@@ -355,8 +355,8 @@ const NearbyPOIMap = () => {
                           ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105"
                           : "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105"
                         : darktheme
-                        ? "bg-gray-700 text-gray-200 hover:bg-gray-600 hover:scale-105"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105"
+                          ? "bg-gray-700 text-gray-200 hover:bg-gray-600 hover:scale-105"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:scale-105"
                     }`}
                     onClick={() => handleBadgeClick(type.tag)}
                   >
