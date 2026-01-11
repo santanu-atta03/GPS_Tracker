@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 
-const INITIAL_DELAY = 2000;   // 2 seconds
-const MAX_DELAY = 60000;      // 60 seconds
+const INITIAL_DELAY = 2000; // 2 seconds
+const MAX_DELAY = 60000; // 60 seconds
 const BACKOFF_MULTIPLIER = 2;
 
 const LocationTracker = () => {
