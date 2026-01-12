@@ -32,5 +32,5 @@ const busReviewSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
- const Review= mongoose.model("BusReview", busReviewSchema);
- export default Review
+const Review = mongoose.model("BusReview", busReviewSchema);
+export default Review;
