@@ -110,7 +110,7 @@ export const updatelocation = async (req, res) => {
       bus.prevlocation = {
         type: "Point",
         coordinates: bus.location.coordinates, // old location
-        timestamp:bus.location.timestamp
+        timestamp: bus.location.timestamp,
       };
 
       bus.location = {
@@ -418,7 +418,7 @@ export const getLocation = async (req, res) => {
       driverPhone: allBus.driver?.phone || "Contact Support",
 
       prevlocation: allBus.location?.prevlocation,
-      livelocation:allBus.location?.location,
+      livelocation: allBus.location?.location,
 
       _id: allBus._id,
       __v: allBus.__v,
@@ -479,13 +479,36 @@ export const createBusId = async (req, res) => {
 
 export const getAllBusDetails = async (req, res) => {
   try {
-    const buses = await Bus.find({}).populate("driver").populate("location"); // this brings full Location doc
+    // 1. Parse valid page/limit from query params
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+
+    // Ensure valid positive integers
+    const validPage = page > 0 ? page : 1;
+    const validLimit = limit > 0 ? limit : 20;
+
+    const skip = (validPage - 1) * validLimit;
+
+    // 2. Fetch total count & paginated data in parallel
+    const [totalItems, buses] = await Promise.all([
+      Bus.countDocuments({}),
+      Bus.find({})
+        .populate("driver")
+        .populate("location")
+        .skip(skip)
+        .limit(validLimit)
+        .exec(),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / validLimit);
 
     if (!buses || buses.length === 0) {
-      return res.status(404).json({
-        message: "No buses found",
-        success: false,
-      });
+      if (totalItems === 0) {
+        return res.status(404).json({
+          message: "No buses found",
+          success: false,
+        });
+      }
     }
 
     const busData = buses.map((bus) => {
@@ -516,6 +539,12 @@ export const getAllBusDetails = async (req, res) => {
     return res.status(200).json({
       message: "All bus details found",
       success: true,
+      metadata: {
+        page: validPage,
+        limit: validLimit,
+        totalItems,
+        totalPages,
+      },
       buses: busData,
     });
   } catch (error) {
