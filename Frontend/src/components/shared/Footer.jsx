@@ -167,6 +167,25 @@ const Footer = () => {
                 About Us
               </a>
             </li>
+            <li>
+              <a
+                href="/about"
+                className={`text-sm flex items-center gap-2 group transition-all ${
+                  darktheme
+                    ? "text-gray-400 hover:text-purple-400"
+                    : "text-gray-600 hover:text-purple-600"
+                }`}
+              >
+                <Shield
+                  className={`w-4 h-4 transition-all ${
+                    darktheme
+                      ? "text-gray-600 group-hover:text-purple-400"
+                      : "text-gray-400 group-hover:text-purple-600"
+                  }`}
+                />
+                Contact Us
+              </a>
+            </li>
 
           </ul>
         </div>
