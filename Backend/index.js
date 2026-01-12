@@ -31,7 +31,7 @@ const globalLimiter = rateLimit({
   max: 100, // Limit each IP to 100 requests per windowMs
   message: {
     error: "Too many requests from this IP, please try again later.",
-    retryAfter: "15 minutes"
+    retryAfter: "15 minutes",
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
@@ -47,7 +47,7 @@ const authLimiter = rateLimit({
   max: 5, // Limit each IP to 5 login/signup requests per windowMs
   message: {
     error: "Too many authentication attempts, please try again later.",
-    retryAfter: "15 minutes"
+    retryAfter: "15 minutes",
   },
   skipSuccessfulRequests: true, // Don't count successful requests
 });
@@ -58,7 +58,7 @@ const apiLimiter = rateLimit({
   max: 30, // Limit each IP to 30 requests per minute
   message: {
     error: "Too many API requests, please slow down.",
-    retryAfter: "1 minute"
+    retryAfter: "1 minute",
   },
 });
 
@@ -68,7 +68,7 @@ const supportLimiter = rateLimit({
   max: 10, // Limit each IP to 10 requests per minute
   message: {
     error: "Too many support requests, please wait before trying again.",
-    retryAfter: "1 minute"
+    retryAfter: "1 minute",
   },
 });
 
@@ -78,7 +78,7 @@ const emailLimiter = rateLimit({
   max: 5, // Limit each IP to 5 email requests per hour
   message: {
     error: "Too many email requests, please try again later.",
-    retryAfter: "1 hour"
+    retryAfter: "1 hour",
   },
 });
 
@@ -94,9 +94,7 @@ app.use((req, res, next) => {
     const url = req.originalUrl;
     const status = res.statusCode;
 
-    console.log(
-      `[${method}] ${url} → ${status} (${duration}ms)`
-    );
+    console.log(`[${method}] ${url} → ${status} (${duration}ms)`);
   });
 
   next();
@@ -110,7 +108,7 @@ const corsOptions = {
     "http://localhost:5173",
     "https://gps-tracker-umber.vercel.app",
     "https://gps-tracker-ecru.vercel.app",
-    "https://where-is-my-bus.netlify.app"
+    "https://where-is-my-bus.netlify.app",
   ],
   credentials: true,
 };
