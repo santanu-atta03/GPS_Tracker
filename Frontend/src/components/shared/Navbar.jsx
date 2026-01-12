@@ -34,6 +34,7 @@ const Navbar = () => {
     localStorage.getItem("selectedLanguage") || "en"
   );
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   const LANGUAGES = {
@@ -103,6 +104,32 @@ const Navbar = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isSidebarOpen && !event.target.closest(".sidebar-container")) {
+        setIsSidebarOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isSidebarOpen]);
+
+  const sidebarMenuItems = [
+    { path: "/", label: "Dashboard", icon: Home },
+    { path: "/see-history", label: "My Trips", icon: History },
+    { path: "/view/map", label: "Live Tracking", icon: MapPin },
+    { path: "/nearBy/search", label: "Nearby Buses", icon: Bus },
+    { path: "/find/ticket", label: "Tickets", icon: Ticket },
+    { path: "/settings", label: "Settings", icon: Settings },
+    { path: "/help", label: "Help & Support", icon: HelpCircle },
+    { path: "/about", label: "About", icon: Info },
+  ];
+
+  const handleSidebarNavigation = (path) => {
+    navigate(path);
+    setIsSidebarOpen(false);
+  };
 
   return (
     <div
@@ -174,15 +201,25 @@ const Navbar = () => {
                 {t("navbar.tagline")}
               </p>
             </div>
+          </nav>
 
-            <div className="block md:hidden">
-              <h1 className={`text-lg font-bold bg-gradient-to-r ${
-                darktheme ? "from-blue-400 to-purple-400" : "from-blue-600 to-purple-600"
-              } bg-clip-text text-transparent`}>
+          {/* Sidebar Footer */}
+          <div className={`p-4 border-t ${darktheme ? "border-gray-800" : "border-gray-200"
+            }`}>
+            <div className={`p-4 rounded-xl ${darktheme ? "bg-gray-800/50" : "bg-gray-50"
+              }`}>
+              <p className={`text-xs ${darktheme ? "text-gray-400" : "text-gray-600"
+                }`}>
                 {t("navbar.appName")}
-              </h1>
+              </p>
+              <p className={`text-xs mt-1 ${darktheme ? "text-gray-500" : "text-gray-500"
+                }`}>
+                Version 1.0.0
+              </p>
             </div>
           </div>
+        </div>
+      </div>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-4">
@@ -416,8 +453,7 @@ const Navbar = () => {
               </div>
             </button>
           </div>
-        </div>
-      </header>
+        </header>
 
       {/* Mobile Menu - Enhanced */}
       {isMobileMenuOpen && (
@@ -527,7 +563,7 @@ const Navbar = () => {
                       : "border-2 border-gray-300 text-gray-700 hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100"
                   }`}
                   onClick={() => {
-                    navigate("/profile");
+                    loginWithRedirect();
                     setIsMobileMenuOpen(false);
                   }}
                 >
@@ -562,9 +598,9 @@ const Navbar = () => {
               </Button>
             )}
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 };
 
