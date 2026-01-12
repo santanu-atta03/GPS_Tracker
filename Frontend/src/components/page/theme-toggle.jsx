@@ -40,12 +40,9 @@ export function ThemeToggle() {
                style={{animationDuration: '1.8s', animationDelay: '0.6s'}} />
           <div className="absolute top-2 right-6 w-0.5 h-0.5 bg-yellow-100 rounded-full animate-pulse" 
                style={{animationDuration: '2.2s', animationDelay: '0.9s'}} />
-<<<<<<< HEAD
-=======
           {/* Shooting star */}
           <div className="absolute top-1 right-10 w-4 h-0.5 bg-linear-to-r from-white to-transparent rounded-full opacity-70 animate-pulse"
                style={{transform: 'rotate(-30deg)', animationDuration: '3s'}} />
->>>>>>> 345e75a43ff42563f94da5dd0c10d2eb65b4d7e0
         </>
       )}
 
