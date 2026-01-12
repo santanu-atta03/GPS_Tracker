@@ -1,13 +1,19 @@
 import Bus from "../models/Bus.model.js";
 import Driver from "../models/Driver.model.js";
 import Location from "../models/Location.model.js";
- 
 
 export const CreateBus = async (req, res) => {
   try {
-    const { name, deviceID, to, from, timeSlots,ticketPrice } = req.body;
+    const { name, deviceID, to, from, timeSlots, ticketPrice } = req.body;
 
-    if (!name || !deviceID || !to || !from || !ticketPrice|| !timeSlots?.length) {
+    if (
+      !name ||
+      !deviceID ||
+      !to ||
+      !from ||
+      !ticketPrice ||
+      !timeSlots?.length
+    ) {
       return res.status(400).json({
         message: "All fields including time slots are required",
         success: false,
@@ -42,7 +48,7 @@ export const CreateBus = async (req, res) => {
       from,
       driver: user._id,
       location: newBusLocation._id,
-      ticketprice:ticketPrice,
+      ticketprice: ticketPrice,
       timeSlots,
     };
 
@@ -99,7 +105,7 @@ export const getAllBUs = async (req, res) => {
       // The original code returned 404 if no buses existed at all.
       // Let's preserve that behavior if totalItems === 0.
       if (totalItems === 0) {
-         return res.status(404).json({
+        return res.status(404).json({
           message: "No bus created",
           success: false,
         });

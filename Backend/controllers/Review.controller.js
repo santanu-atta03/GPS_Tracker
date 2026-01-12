@@ -1,4 +1,3 @@
- 
 import Bus from "../models/Bus.model.js";
 import Review from "../models/Review.model.js";
 import User from "../models/User.model.js";
