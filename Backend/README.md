@@ -1,3 +1,4 @@
+
 # GPS Tracker Backend
 
 ## Overview
@@ -11,14 +12,14 @@ The GPS Tracker system follows a modular, scalable architecture:
 - **GPS Device**  
   Sends real-time location data (latitude, longitude, timestamp)
 
-- **Backend API (Node.js + Express)**
-  - Validates and processes location data
-  - Stores data in MongoDB
-  - Uses Redis for caching and performance optimization
+- **Backend API (Node.js + Express)**  
+  - Validates and processes location data  
+  - Stores data in MongoDB  
+  - Uses Redis for caching and performance optimization  
   - Exposes REST APIs for frontend consumption
 
-- **Frontend (React + Leaflet)**
-  - Displays real-time bus locations on interactive maps
+- **Frontend (React + Leaflet)**  
+  - Displays real-time bus locations on interactive maps  
   - Handles journey planning, ticket booking, and user interaction
 
 This separation allows independent scaling of frontend, backend, and device layers.
@@ -108,14 +109,14 @@ The GPS Tracker system follows a modular, scalable architecture:
 - **GPS Device**  
   Sends real-time location data (latitude, longitude, timestamp)
 
-- **Backend API (Node.js + Express)**
-  - Validates and processes location data
-  - Stores data in MongoDB
-  - Uses Redis for caching and performance optimization
+- **Backend API (Node.js + Express)**  
+  - Validates and processes location data  
+  - Stores data in MongoDB  
+  - Uses Redis for caching and performance optimization  
   - Exposes REST APIs for frontend consumption
 
-- **Frontend (React + Leaflet)**
-  - Displays real-time bus locations on interactive maps
+- **Frontend (React + Leaflet)**  
+  - Displays real-time bus locations on interactive maps  
   - Handles journey planning, ticket booking, and user interaction
 
 This separation allows independent scaling of frontend, backend, and device layers.
