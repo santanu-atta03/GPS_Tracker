@@ -32,27 +32,17 @@ export function ThemeToggle() {
       {/* Stars (dark mode only) with twinkling effect */}
       {darktheme && (
         <>
-          <div
-            className="absolute top-1 left-3 w-0.5 h-0.5 bg-white rounded-full animate-pulse"
-            style={{ animationDuration: "1.5s" }}
-          />
-          <div
-            className="absolute top-1.5 left-5 w-0.5 h-0.5 bg-yellow-200 rounded-full animate-pulse"
-            style={{ animationDuration: "2s", animationDelay: "0.3s" }}
-          />
-          <div
-            className="absolute top-1 right-4 w-0.5 h-0.5 bg-white rounded-full animate-pulse"
-            style={{ animationDuration: "1.8s", animationDelay: "0.6s" }}
-          />
-          <div
-            className="absolute top-2 right-6 w-0.5 h-0.5 bg-yellow-100 rounded-full animate-pulse"
-            style={{ animationDuration: "2.2s", animationDelay: "0.9s" }}
-          />
+          <div className="absolute top-1 left-3 w-0.5 h-0.5 bg-white rounded-full animate-pulse" 
+               style={{animationDuration: '1.5s'}} />
+          <div className="absolute top-1.5 left-5 w-0.5 h-0.5 bg-yellow-200 rounded-full animate-pulse" 
+               style={{animationDuration: '2s', animationDelay: '0.3s'}} />
+          <div className="absolute top-1 right-4 w-0.5 h-0.5 bg-white rounded-full animate-pulse" 
+               style={{animationDuration: '1.8s', animationDelay: '0.6s'}} />
+          <div className="absolute top-2 right-6 w-0.5 h-0.5 bg-yellow-100 rounded-full animate-pulse" 
+               style={{animationDuration: '2.2s', animationDelay: '0.9s'}} />
           {/* Shooting star */}
-          <div
-            className="absolute top-1 right-10 w-4 h-0.5 bg-linear-to-r from-white to-transparent rounded-full opacity-70 animate-pulse"
-            style={{ transform: "rotate(-30deg)", animationDuration: "3s" }}
-          />
+          <div className="absolute top-1 right-10 w-4 h-0.5 bg-linear-to-r from-white to-transparent rounded-full opacity-70 animate-pulse"
+               style={{transform: 'rotate(-30deg)', animationDuration: '3s'}} />
         </>
       )}
 
