@@ -20,9 +20,6 @@ import History from "./components/page/History";
 import BusDetailsPage2 from "./components/page/BusDetailsPage2";
 import LocationTracker from "./components/page/LocationTracker";
 import Footer from "./components/shared/Footer";
-import HelpSupport from "./components/page/HelpSupport";
-import ChatBot from "./components/shared/ChatBot";
-import About from "./components/page/About";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import PrivacyPolicy from "./components/page/PrivacyPolicy";
@@ -114,14 +111,6 @@ function App() {
       element: <History />,
     },
     {
-      path: "/help",
-      element: <HelpSupport />,
-    },
-    {
-      path: "/about",
-      element: <About />,
-    },
-    {
       path: "*",
       element: <NotFound />,
     },
@@ -141,7 +130,7 @@ function App() {
     <>
       <LocationTracker />
       <RouterProvider router={approute} />
-      <ChatBot />
+      <SupportChat />
       <Footer />
       <backtoTop />
     </>

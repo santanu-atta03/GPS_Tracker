@@ -1,15 +1,13 @@
 import React from "react";
+import Navbar from "../shared/Navbar";
 import BusSearch from "./BusSearch";
-import UniqueFeatures from "../shared/UniqueFeatures";
+import SupportPopover from "./SupportPopover";
+import SupportChat from "./SupportChat";
 
 const Home = () => {
   return (
     <>
       <BusSearch />
-<<<<<<< HEAD
-      <UniqueFeatures />
-=======
->>>>>>> e48f42e9c4365298ad7bc13d5e8c81cec4692c7d
     </>
   );
 };
